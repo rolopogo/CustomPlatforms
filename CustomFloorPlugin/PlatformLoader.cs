@@ -7,53 +7,51 @@ using System.IO;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
-namespace CustomPlatformPlugin
+namespace CustomFloorPlugin
 {
+    /// <summary>
+    /// Loads AssetBundles containing CustomPlatforms and handles cycling between them
+    /// </summary>
     class PlatformLoader : MonoBehaviour
     {
         public static PlatformLoader Instance;
-        
+
+        private EnvironmentHider envHider;
         private const string customFolder = "CustomPlatforms";
+        private CustomPlatform[] platforms;
+        private int platformIndex = 0;
 
-        GameObject[] platforms;
-        ArrayList originalPlatform;
-        int platformIndex = 0;
-        bool originalPlatformActive = true;
-
+        /// <summary>
+        /// Create a GameObject with this component attached.
+        /// Call this from an IPA Plugin.
+        /// </summary>
         public static void OnLoad()
         {
             if (Instance != null) return;
             new GameObject("Platform Loader").AddComponent<PlatformLoader>();
         }
 
+        /// <summary>
+        /// Called when the GameObject is created.
+        /// 
+        /// </summary>
         private void Awake()
         {
             if (Instance != null) return;
             Instance = this;
 
-            SceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
+            envHider = new EnvironmentHider();
 
-            // find bundles in our 
-            string[] bundlePaths = Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, customFolder), "*.plat");
+            CreateAllPlatforms();
 
-            platforms = new GameObject[bundlePaths.Length];
-
-            for (int i = 0; i < bundlePaths.Length; i++)
-            {
-                // load bundle
-                AssetBundle bundle = AssetBundle.LoadFromFile(bundlePaths[i]);
-                platforms[i] = CreatePlatform(bundle);
-                bundle.Unload(false);
-            }
-
-            // Get index from player prefs
+            // Retrieve saved index from player prefs if it exists
+            // Platform will be loaded 
             if (PlayerPrefs.HasKey("CustomPlatformIndex"))
             {
-                
                 int savedIndex = PlayerPrefs.GetInt("CustomPlatformIndex");
 
                 // safety to account for removing assetbundles
-                if (savedIndex >= 0 && savedIndex < bundlePaths.Length)
+                if (savedIndex >= 0 && savedIndex < platforms.Length)
                 {
                     platformIndex = savedIndex;
                 }
@@ -62,38 +60,48 @@ namespace CustomPlatformPlugin
             DontDestroyOnLoad(gameObject);
         }
 
+        /// <summary>
+        /// Handles active scene change. Hides Objects as required for the current platform
+        /// </summary>
+        /// <param name="arg0">Previous Active Scene</param>
+        /// <param name="arg1">New Active Scene</param>
         private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
-            FindOriginalPlatform();
-            originalPlatformActive = true;
-
-            PlayerPrefs.SetInt("CustomPlatformIndex", platformIndex);
-
-            // update to the right platform
-            SetOriginalPlatformActive(false);
-
-            // show new platform
-            SetPlatformActive(platformIndex, true);
+            // Find environment parts after scene change
+            envHider.FindEnvironment();
+            // Hide environment
+            envHider.HideObjectsForPlatform(platforms[platformIndex]);
         }
 
-        private void FindOriginalPlatform()
+        /// <summary>
+        /// Loads AssetBundles and populates the platforms array with CustomPlatform objects
+        /// </summary>
+        private void CreateAllPlatforms()
         {
-            // find parts of original platform
-            originalPlatform = new ArrayList();
-            FindAddGameObject("Column", originalPlatform);
-            FindAddGameObject("Feet", originalPlatform);
-            FindAddGameObject("GlowLine", originalPlatform);
-            FindAddGameObject("GlowLine (1)", originalPlatform);
-            FindAddGameObject("GlowLine (2)", originalPlatform);
-            FindAddGameObject("GlowLine (3)", originalPlatform);
-            FindAddGameObject("BorderLine (13)", originalPlatform);
-            FindAddGameObject("BorderLine (14)", originalPlatform);
-            FindAddGameObject("BorderLine (15)", originalPlatform);
-            FindAddGameObject("MirrorSurface", originalPlatform);
-            FindAddGameObject("PlayersPlace/PlayersPlace", originalPlatform);
-            Log("done");
-        }
+            // Find AssetBundles in our CustomPlatforms directory
+            string[] bundlePaths = Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, customFolder), "*.plat");
 
+            // Load and instantiate each AssetBundle
+            platforms = new CustomPlatform[bundlePaths.Length + 1];
+
+            // Create a dummy CustomPlatform for the original platform
+            platforms[0] = new GameObject("Default Platform").AddComponent<CustomPlatform>();
+            // By default no environment items are hidden
+            platforms[0].platName = "Default Platform";
+            platforms[0].platAuthor = "Beat Saber";
+
+            for (int i = 0; i < bundlePaths.Length; i++)
+            {
+                AssetBundle bundle = AssetBundle.LoadFromFile(bundlePaths[i]);
+                platforms[i+1] = CreatePlatform(bundle);
+            }
+        }
+        
+        /// <summary>
+        /// Attempts to find a GameObject by namd and add it to the provided arraylist
+        /// </summary>
+        /// <param name="name">The name of a GameObject</param>
+        /// <param name="alist">The ArrayList to add to</param>
         private void FindAddGameObject(string name, ArrayList alist)
         {
             GameObject go = GameObject.Find(name);
@@ -103,24 +111,34 @@ namespace CustomPlatformPlugin
             }
         }
 
+        /// <summary>
+        /// Called every frame.
+        /// Handles user input to cycle platforms
+        /// </summary>
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.P))
             {
-                // hide current platform
-                SetPlatformActive(platformIndex, false);
-                // increment index
+                // Hide current Platform
+                platforms[platformIndex].gameObject.SetActive(false);
+                // Increment index
                 platformIndex = (platformIndex + 1) % (platforms.Length + 1);
-                // save index into prefs
+                // Save index into PlayerPrefs
                 PlayerPrefs.SetInt("CustomPlatformIndex", platformIndex);
-                // show new platform
-                SetPlatformActive(platformIndex, true);
+                // Show new platform
+                platforms[platformIndex].gameObject.SetActive(true);
+                // Hide environment parts
+                envHider.HideObjectsForPlatform(platforms[platformIndex]);
             }
         }
         
-        public GameObject CreatePlatform(AssetBundle bundle)
+        /// <summary>
+        /// Instantiate a platform from an assetbundle.
+        /// </summary>
+        /// <param name="bundle">An AssetBundle containing a CustomPlatform</param>
+        /// <returns></returns>
+        public CustomPlatform CreatePlatform(AssetBundle bundle)
         {
-            
             GameObject platformPrefab = bundle.LoadAsset<GameObject>("_CustomPlatform");
             if (platformPrefab == null)
             {
@@ -131,6 +149,9 @@ namespace CustomPlatformPlugin
             GameObject newPlatform = Instantiate(platformPrefab.gameObject);
             newPlatform.transform.parent = transform;
 
+            bundle.Unload(false);
+
+            // Collect author and name
             CustomPlatform customPlatform = newPlatform.GetComponent<CustomPlatform>();
             if (customPlatform != null)
             {
@@ -142,39 +163,8 @@ namespace CustomPlatformPlugin
 
             newPlatform.SetActive(false);
             
-            return newPlatform;
+            return customPlatform;
             
-        }
-
-        private void SetPlatformActive(int index, bool active)
-        {
-            if (index > platforms.Length || index < 0)
-            {
-                Log("Bad index passed to CreatePlatform: " + index);
-                return;
-            }
-
-            if (index == 0)
-            {
-                SetOriginalPlatformActive(active);
-            }
-            else
-            {
-                if (platforms[index - 1] == null) SetOriginalPlatformActive(active);
-                platforms[index - 1].SetActive(active);
-            }
-        }
-
-        private void SetOriginalPlatformActive(bool active)
-        {
-            if (active == originalPlatformActive) return; // no change
-
-            foreach (GameObject go in originalPlatform)
-            {
-                go.SetActive(active);
-            }
-
-            originalPlatformActive = active;
         }
         
         private static void Log(string s)

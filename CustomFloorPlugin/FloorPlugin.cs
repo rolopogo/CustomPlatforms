@@ -6,12 +6,15 @@ using UnityEngine;
 using IllusionPlugin;
 using UnityEngine.SceneManagement;
 
-namespace CustomPlatformPlugin
+namespace CustomFloorPlugin
 {
+    /// <summary>
+    /// An IPA IPlugin to create a PlatformLoader GameObject
+    /// </summary>
     public class CustomFloorPlugin : IPlugin
     {
         public string Name => "Custom Platforms";
-        public string Version => "1.0.1";
+        public string Version => "1.1.0";
         public void OnApplicationStart()
         {
             SceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;

@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CustomPlatform.cs" />
+    <Compile Include="EnvironmentHider.cs" />
     <Compile Include="FloorPlugin.cs" />
     <Compile Include="PlatformLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

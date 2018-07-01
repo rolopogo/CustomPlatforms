@@ -8,27 +8,37 @@ namespace CustomFloorPlugin
     /// <summary> 
     /// Activates and deactivates world geometry in the active scene as required by CustomPlatforms
     /// </summary>
-    public class EnvironmentHider
+    class EnvironmentHider
     {
         private ArrayList originalPlatform;
-        private ArrayList towers;
-        private ArrayList highway;
-        private ArrayList visualizer;
         private ArrayList smallRings;
         private ArrayList bigRings;
-        
+        private ArrayList visualizer;
+        private ArrayList towers;
+        private ArrayList highway;
+        private ArrayList backColumns;
+        private ArrayList doubleColorLasers;
+        private ArrayList backLasers;
+        private ArrayList rotatingLasers;
+        private ArrayList trackLights;
+
         /// <summary>
         /// Hide and unhide world objects as required by a platform
         /// </summary>
         /// <param name="platform">A platform that defines which objects are to be hidden</param>
         public void HideObjectsForPlatform(CustomPlatform platform)
         {
-            SetCollectionActive(originalPlatform, platform.hideDefaultPlatform);
-            SetCollectionActive(smallRings, platform.hideSmallRings);
-            SetCollectionActive(bigRings, platform.hideBigRings);
-            SetCollectionActive(visualizer, platform.hideEQVisualizer);
-            SetCollectionActive(towers, platform.hideTowers);
-            SetCollectionActive(highway, platform.hideHighway);
+            SetCollectionHidden(originalPlatform, platform.hideDefaultPlatform);
+            SetCollectionHidden(smallRings, platform.hideSmallRings);
+            SetCollectionHidden(bigRings, platform.hideBigRings);
+            SetCollectionHidden(visualizer, platform.hideEQVisualizer);
+            SetCollectionHidden(towers, platform.hideTowers);
+            SetCollectionHidden(highway, platform.hideHighway);
+            SetCollectionHidden(backColumns, platform.hideBackColumns);
+            SetCollectionHidden(backLasers, platform.hideBackLasers);
+            SetCollectionHidden(doubleColorLasers, platform.hideDoubleColorLasers);
+            SetCollectionHidden(rotatingLasers, platform.hideRotatingLasers);
+            SetCollectionHidden(trackLights, platform.hideTrackLights);
         }
 
         /// <summary>
@@ -43,19 +53,24 @@ namespace CustomFloorPlugin
             FindVisualizers();
             FindTowers();
             FindHighway();
+            FindBackColumns();
+            FindBackLasers();
+            FindRotatingLasers();
+            FindDoubleColorLasers();
+            FindTrackLights();
         }
 
         /// <summary>
         /// Set the active state of a Collection of GameObjects
         /// </summary>
         /// <param name="arlist">An ArrayList of GameObjects</param>
-        /// <param name="active">A boolean describing the desired active state</param>
-        private void SetCollectionActive(ArrayList arlist, bool active)
+        /// <param name="hidden">A boolean describing the desired hidden state</param>
+        private void SetCollectionHidden(ArrayList arlist, bool hidden)
         {
             if (arlist == null) return;
             foreach (GameObject go in arlist)
             {
-                go.SetActive(active);
+                go.SetActive(!hidden);
             }
         }
 
@@ -72,16 +87,9 @@ namespace CustomFloorPlugin
                 alist.Add(go);
             }
         }
-
-       
-
-        /// <summary>
-        /// Finds all GameObjects that make up the default Platform
-        /// and adds them to the originalPlatform collection
-        /// </summary>
+        
         private void FindOriginalPlatform()
         {
-            // find parts of original platform
             originalPlatform = new ArrayList();
             FindAddGameObject("Column", originalPlatform);
             FindAddGameObject("Feet", originalPlatform);
@@ -95,54 +103,100 @@ namespace CustomFloorPlugin
             FindAddGameObject("MirrorSurface", originalPlatform);
             FindAddGameObject("PlayersPlace/PlayersPlace", originalPlatform);
         }
-
-        /// <summary>
-        /// Finds all GameObjects that make up the small spinning rings
-        /// and adds them to the smallRings collection
-        /// </summary>
+        
         private void FindSmallRings()
         {
+            smallRings = new ArrayList();
             FindAddGameObject("SmallTrackLaneRings", smallRings);
+            FindAddGameObject("TriangleTrackLaneRings", smallRings); // Triangle Rings from TriangleEnvironment
         }
-
-        /// <summary>
-        /// Finds all GameObjects that make up the large spinning rings
-        /// and adds them to the bigRings collection
-        /// </summary>
+        
         private void FindBigRings()
         {
+            bigRings = new ArrayList();
             FindAddGameObject("BigTrackLaneRings", bigRings);
         }
-
-        /// <summary>
-        /// Finds all GameObjects that make up the EQ visualizers
-        /// and adds them to the visualizer collection
-        /// </summary>
+        
         private void FindVisualizers()
         {
+            visualizer = new ArrayList();
             FindAddGameObject("SpectrogramLeft", visualizer);
             FindAddGameObject("SpectrogramRight", visualizer);
         }
-
-        /// <summary>
-        /// Finds all GameObjects that make up the background towers
-        /// and adds them to the tower collection
-        /// </summary>
+        
         private void FindTowers()
         {
+            towers = new ArrayList();
+            // Song Environments
             FindAddGameObject("NearBuilding", towers);
             FindAddGameObject("NearBuilding (1)", towers);
             FindAddGameObject("NearBuilding (2)", towers);
             FindAddGameObject("NearBuilding (3)", towers);
+            // Menu
+            FindAddGameObject("NearBuilding (4)", towers);
+            FindAddGameObject("NearBuilding (5)", towers);
+            FindAddGameObject("NearBuilding (6)", towers);
+            FindAddGameObject("NearBuilding (7)", towers);
         }
-
-        /// <summary>
-        /// Finds all GameObjects that make up the note highway
-        /// and adds them to the highway collection
-        /// </summary>
+        
         private void FindHighway()
         {
+            highway = new ArrayList();
             FindAddGameObject("Construction", highway);
+            FindAddGameObject("MirrorOccluders", highway);
+        }
+        
+        private void FindBackColumns()
+        {
+            backColumns = new ArrayList();
+            FindAddGameObject("BackColumns", backColumns);
+            FindAddGameObject("BackColumnNeon", backColumns);
+            FindAddGameObject("BackColumnNeon (1)", backColumns);
+        }
+
+        private void FindRotatingLasers()
+        {
+            rotatingLasers = new ArrayList();
+            FindAddGameObject("RotatingLaserLeft0", rotatingLasers);
+            FindAddGameObject("RotatingLaserLeft1", rotatingLasers);
+            FindAddGameObject("RotatingLaserLeft2", rotatingLasers);
+            FindAddGameObject("RotatingLaserLeft3", rotatingLasers);
+            FindAddGameObject("RotatingLaserRight0", rotatingLasers);
+            FindAddGameObject("RotatingLaserRight1", rotatingLasers);
+            FindAddGameObject("RotatingLaserRight2", rotatingLasers);
+            FindAddGameObject("RotatingLaserRight3", rotatingLasers);
+        }
+
+        private void FindDoubleColorLasers()
+        {
+            doubleColorLasers = new ArrayList();
+            FindAddGameObject("DoubleColorLaser", doubleColorLasers);
+            FindAddGameObject("DoubleColorLaser (1)", doubleColorLasers);
+            FindAddGameObject("DoubleColorLaser (2)", doubleColorLasers);
+            FindAddGameObject("DoubleColorLaser (3)", doubleColorLasers);
+            FindAddGameObject("DoubleColorLaser (4)", doubleColorLasers);
+            FindAddGameObject("DoubleColorLaser (5)", doubleColorLasers);
+            FindAddGameObject("DoubleColorLaser (6)", doubleColorLasers);
+            FindAddGameObject("DoubleColorLaser (7)", doubleColorLasers);
+            FindAddGameObject("DoubleColorLaser (8)", doubleColorLasers);
+            FindAddGameObject("DoubleColorLaser (9)", doubleColorLasers);
+        }
+
+        private void FindBackLasers()
+        {
+            backLasers = new ArrayList();
+            FindAddGameObject("BackLaser", backLasers);
+            FindAddGameObject("BackLaser (1)", backLasers);
+            FindAddGameObject("BackLaser (2)", backLasers);
+            FindAddGameObject("BackLaser (3)", backLasers);
+            FindAddGameObject("BackLaser (4)", backLasers);
+            FindAddGameObject("BackLaser (5)", backLasers);
+        }
+
+        private void FindTrackLights()
+        {
+            trackLights = new ArrayList();
+            FindAddGameObject("BackLaser", trackLights);
         }
     }
 }

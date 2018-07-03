@@ -27,7 +27,8 @@ namespace CustomFloorPlugin
 
         private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
-            PlatformLoader.OnLoad();
+            // Load in the menu scene
+            if(arg0.buildIndex == 1) PlatformLoader.OnLoad();
         }
         
         public void OnApplicationQuit()

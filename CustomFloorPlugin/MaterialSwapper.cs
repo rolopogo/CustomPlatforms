@@ -8,9 +8,10 @@ namespace CustomFloorPlugin
     {
         Material dark;
         Material glow;
+        Material mirror;
 
-        string darkReplaceMatName = "_dark_replace";
-        string glowReplaceMatName = "_glow_replace";
+        string darkReplaceMatName = "_dark_replace (Instance)";
+        string glowReplaceMatName = "_glow_replace (Instance)";
 
         public void GetMaterials()
         {
@@ -22,41 +23,36 @@ namespace CustomFloorPlugin
 
         public void ReplaceMaterialsForGameObject(GameObject go)
         {
-            foreach (Renderer r in go.GetComponentsInChildren<Renderer>())
+            ReplaceAllMaterialsForGameObjectChildren(go, dark, darkReplaceMatName);
+            ReplaceAllMaterialsForGameObjectChildren(go, glow, glowReplaceMatName);
+        }
+
+        public void ReplaceAllMaterialsForGameObjectChildren(GameObject go, Material mat, string matToReplaceName = "")
+        {
+            foreach (Renderer r in go.GetComponentsInChildren<Renderer>(true))
             {
-                for (int i = 0; i < r.materials.Length; i++)
-                {
-                    if (r.materials[i].name == darkReplaceMatName)
-                    {
-                        r.materials[i] = dark;
-                    }
-                    else if (r.materials[i].name == glowReplaceMatName)
-                    {
-                        r.materials[i] = glow;
-                    }
-                }
+                ReplaceAllMaterialsForGameObject(r.gameObject, mat, matToReplaceName);
             }
         }
 
-        public void ReplaceMaterialsForGameObjectWithDark(GameObject go)
+        public void ReplaceAllMaterialsForGameObject(GameObject go, Material mat, string matToReplaceName = "")
         {
-            foreach (Renderer r in go.GetComponentsInChildren<Renderer>())
+            Renderer r = go.GetComponent<Renderer>();
+            Material[] materialsCopy = r.materials;
+            bool materialsDidChange = false;
+
+            for (int i = 0; i < r.materials.Length; i++)
             {
-                for (int i = 0; i < r.materials.Length; i++)
+                if (materialsCopy[i].name.Equals(matToReplaceName) || matToReplaceName == "")
                 {
-                    r.materials[i] = dark;
+                    Color oldCol;
+                    materialsCopy[i] = mat;
+                    materialsDidChange = true;
                 }
             }
-        }
-
-        public void ReplaceMaterialsForGameObjectWithGlow(GameObject go)
-        {
-            foreach (Renderer r in go.GetComponentsInChildren<Renderer>())
+            if (materialsDidChange)
             {
-                for (int i = 0; i < r.materials.Length; i++)
-                {
-                    r.materials[i] = glow;
-                }
+                r.materials = materialsCopy;
             }
         }
     }

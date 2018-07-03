@@ -50,7 +50,7 @@ namespace CustomFloorPlugin
             envHider = new EnvironmentHider();
             matSwapper = new MaterialSwapper();
             matSwapper.GetMaterials();
-            
+
             CreateAllPlatforms();
             
             // Retrieve saved path from player prefs if it exists
@@ -64,8 +64,8 @@ namespace CustomFloorPlugin
                     Log(bundlePaths.ElementAt(i));
                     if (savedPath == bundlePaths.ElementAt(i))
                     {
-                        platformIndex = i + 1;
-                        Log("Found match: " + (i + 1));
+                        platformIndex = i;
+                        Log("Found match: " + i);
                     }
                 }
             }
@@ -149,12 +149,8 @@ namespace CustomFloorPlugin
         /// </summary>
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.V))
-            {
-                envHider.FindEnvironment();
-            }
 
-                if (Input.GetKeyDown(KeyCode.P))
+            if (Input.GetKeyDown(KeyCode.P))
             {
                 // Hide current Platform
                 platforms.ElementAt(platformIndex).gameObject.SetActive(false);
@@ -215,7 +211,7 @@ namespace CustomFloorPlugin
                 }
                 else
                 {
-                    // no customplatform component, use filename? don't create?
+                    // no customplatform component, abort
                     Log("loaded object had no customplatform attached, skipping");
                     Destroy(newPlatform);
                     return null;

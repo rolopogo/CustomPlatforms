@@ -28,17 +28,26 @@ namespace CustomFloorPlugin
         /// <param name="platform">A platform that defines which objects are to be hidden</param>
         public void HideObjectsForPlatform(CustomPlatform platform)
         {
-            SetCollectionHidden(originalPlatform, platform.hideDefaultPlatform);
-            SetCollectionHidden(smallRings, platform.hideSmallRings);
-            SetCollectionHidden(bigRings, platform.hideBigRings);
-            SetCollectionHidden(visualizer, platform.hideEQVisualizer);
-            SetCollectionHidden(towers, platform.hideTowers);
-            SetCollectionHidden(highway, platform.hideHighway);
-            SetCollectionHidden(backColumns, platform.hideBackColumns);
-            SetCollectionHidden(backLasers, platform.hideBackLasers);
-            SetCollectionHidden(doubleColorLasers, platform.hideDoubleColorLasers);
-            SetCollectionHidden(rotatingLasers, platform.hideRotatingLasers);
-            SetCollectionHidden(trackLights, platform.hideTrackLights);
+            HideEnvironment hideEnv = platform.GetComponent<HideEnvironment>();
+            if (hideEnv == null)
+            {
+                Console.WriteLine("no HideEnvironment object found");
+                return;
+            }
+
+            SetCollectionHidden(originalPlatform, hideEnv.hideDefaultPlatform);
+            SetCollectionHidden(smallRings, hideEnv.hideSmallRings);
+            SetCollectionHidden(bigRings, hideEnv.hideBigRings);
+            SetCollectionHidden(visualizer, hideEnv.hideEQVisualizer);
+            SetCollectionHidden(towers, hideEnv.hideTowers);
+            SetCollectionHidden(highway, hideEnv.hideHighway);
+            SetCollectionHidden(backColumns, hideEnv.hideBackColumns);
+            SetCollectionHidden(backLasers, hideEnv.hideBackLasers);
+            SetCollectionHidden(doubleColorLasers, hideEnv.hideDoubleColorLasers);
+            SetCollectionHidden(rotatingLasers, hideEnv.hideRotatingLasers);
+            SetCollectionHidden(trackLights, hideEnv.hideTrackLights);
+
+            Console.WriteLine("Environment hidden");
         }
 
         /// <summary>
@@ -143,9 +152,10 @@ namespace CustomFloorPlugin
         {
             highway = new ArrayList();
             FindAddGameObject("Construction", highway);
-            FindAddGameObject("MirrorOccluders", highway);
+            FindAddGameObject("Environment/Static/Floor/Floor", highway);
+            FindAddGameObject("FrontColumns", highway);
         }
-        
+
         private void FindBackColumns()
         {
             backColumns = new ArrayList();
@@ -196,7 +206,15 @@ namespace CustomFloorPlugin
         private void FindTrackLights()
         {
             trackLights = new ArrayList();
-            FindAddGameObject("BackLaser", trackLights);
+            FindAddGameObject("GlowLineR", trackLights);
+            FindAddGameObject("GlowLineL", trackLights);
+            FindAddGameObject("GlowLineL (1)", trackLights);
+            FindAddGameObject("GlowLineL (2)", trackLights);
+            FindAddGameObject("GlowLineL (3)", trackLights);
+            FindAddGameObject("GlowLineL (4)", trackLights);
+            FindAddGameObject("GlowLineL (5)", trackLights);
+            FindAddGameObject("GlowLineL (6)", trackLights);
+            FindAddGameObject("GlowLineL (7)", trackLights);
         }
     }
 }

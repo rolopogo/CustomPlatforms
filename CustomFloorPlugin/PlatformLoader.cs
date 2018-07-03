@@ -21,8 +21,8 @@ namespace CustomFloorPlugin
         private MaterialSwapper matSwapper;
         private EnvironmentHider envHider;
 
-        private string[] bundlePaths;
-        private CustomPlatform[] platforms;
+        private List<string> bundlePaths;
+        private List<CustomPlatform> platforms;
         private int platformIndex = 0;
 
         /// <summary>
@@ -52,23 +52,33 @@ namespace CustomFloorPlugin
             matSwapper.GetMaterials();
             
             CreateAllPlatforms();
-
+            
             // Retrieve saved path from player prefs if it exists
             if (PlayerPrefs.HasKey("CustomPlatformPath"))
             {
                 string savedPath = PlayerPrefs.GetString("CustomPlatformPath");
                 Log("last platform = " + savedPath);
                 // Check if this path was loaded and update our platform index
-                for (int i = 0; i < bundlePaths.Length; i++)
+                for (int i = 0; i < bundlePaths.Count; i++)
                 {
-                    Log(bundlePaths[i]);
-                    if (savedPath == bundlePaths[i])
+                    Log(bundlePaths.ElementAt(i));
+                    if (savedPath == bundlePaths.ElementAt(i))
                     {
                         platformIndex = i + 1;
                         Log("Found match: " + (i + 1));
                     }
                 }
             }
+
+            // show current platform
+            platforms.ElementAt(platformIndex).gameObject.SetActive(true);
+
+            // find env
+            envHider.FindEnvironment();
+
+            // hide env for platform ( in case we missed the first hide on scene change )
+            envHider.HideObjectsForPlatform(platforms.ElementAt(platformIndex));
+
             DontDestroyOnLoad(gameObject);
         }
 
@@ -84,13 +94,18 @@ namespace CustomFloorPlugin
         /// <param name="arg1">New Active Scene</param>
         private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
-            // Show current platform
-            platforms[platformIndex].gameObject.SetActive(true);
+            // Ensure we have already created platforms
+            if (platforms != null)
+            {
+                if (platforms.ElementAt(platformIndex) != null)
+                {
+                    // Find environment parts after scene change
+                    envHider.FindEnvironment();
 
-            // Find environment parts after scene change
-            envHider.FindEnvironment();
-            
-            envHider.HideObjectsForPlatform(platforms[platformIndex]);
+                    Log("hide environment for platform");
+                    envHider.HideObjectsForPlatform(platforms.ElementAt(platformIndex));
+                }
+            }
         }
 
         /// <summary>
@@ -99,29 +114,32 @@ namespace CustomFloorPlugin
         private void CreateAllPlatforms()
         {
             // Find AssetBundles in our CustomPlatforms directory
-            bundlePaths = Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, customFolder), "*.plat");
+            string[] allBundlePaths = Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, customFolder), "*.plat");
 
-            // Load and instantiate each AssetBundle
-            platforms = new CustomPlatform[bundlePaths.Length + 1];
+            platforms = new List<CustomPlatform>();
+            bundlePaths = new List<string>();
 
             // Create a dummy CustomPlatform for the original platform
-            platforms[0] = new GameObject("Default Platform").AddComponent<CustomPlatform>();
-            platforms[0].transform.parent = transform;
-            platforms[0].platName = "Default Platform";
-            platforms[0].platAuthor = "Beat Saber";
-            
-            // Populate the platforms array
-            for (int i = 0; i < bundlePaths.Length; i++)
-            {
-                AssetBundle bundle = AssetBundle.LoadFromFile(bundlePaths[i]);
+            CustomPlatform defaultPlatform = new GameObject("Default Platform").AddComponent<CustomPlatform>();
+            defaultPlatform.transform.parent = transform;
+            defaultPlatform.platName = "Default Platform";
+            defaultPlatform.platAuthor = "Beat Saber";
+            platforms.Add(defaultPlatform);
+            bundlePaths.Add("");
 
-                platforms[i+1] = CreatePlatform(bundle);
-                // Rename outdated platform to filename (workaround for losing data?)
-                if(platforms[i+1].name == "_CustomPlatform(Clone)")
+            // Populate the platforms array
+            for (int i = 0; i < allBundlePaths.Length; i++)
+            {
+                AssetBundle bundle = AssetBundle.LoadFromFile(allBundlePaths[i]);
+                
+                CustomPlatform newPlatform = CreatePlatform(bundle);
+
+                if(newPlatform != null)
                 {
-                    platforms[i + 1].name = Path.GetFileName(bundlePaths[i]);
+                    platforms.Add(newPlatform);
+                    bundlePaths.Add(allBundlePaths[i]);
+                    Log("Loaded: " + newPlatform.name);
                 }
-                Log("Loaded: " + platforms[i + 1].name);
             }
         }
         
@@ -131,21 +149,31 @@ namespace CustomFloorPlugin
         /// </summary>
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.P))
+            if (Input.GetKeyDown(KeyCode.V))
+            {
+                envHider.FindEnvironment();
+            }
+
+                if (Input.GetKeyDown(KeyCode.P))
             {
                 // Hide current Platform
-                platforms[platformIndex].gameObject.SetActive(false);
-                // Increment index
-                platformIndex = (platformIndex + 1) % platforms.Length;
-                // Save index into PlayerPrefs
-                string currentPlatformPath = platformIndex == 0 ? "" : bundlePaths[platformIndex-1];
-                PlayerPrefs.SetString("CustomPlatformPath", currentPlatformPath);
-                Log("Saved platformpath = " + currentPlatformPath);
-                // Show new platform
-                platforms[platformIndex].gameObject.SetActive(true);
+                platforms.ElementAt(platformIndex).gameObject.SetActive(false);
 
-                envHider.HideObjectsForPlatform(platforms[platformIndex]);
-                Log("finished swapping platform");
+                // Increment index
+                platformIndex = (platformIndex + 1) % platforms.Count;
+
+                // Save path into PlayerPrefs
+                PlayerPrefs.SetString("CustomPlatformPath", bundlePaths.ElementAt(platformIndex));
+
+                CustomPlatform newPlaform = platforms.ElementAt(platformIndex);
+
+                // Show new platform
+                newPlaform.gameObject.SetActive(true);
+
+
+
+                // Hide environment for new platform
+                envHider.HideObjectsForPlatform(newPlaform);
             }
         }
         
@@ -170,17 +198,34 @@ namespace CustomFloorPlugin
 
             // Collect author and name
             CustomPlatform customPlatform = newPlatform.GetComponent<CustomPlatform>();
-            newPlatform.name = customPlatform.platName + " by " + customPlatform.platAuthor;
-            
-            if(newPlatform.GetComponent<HideEnvironment>() == null)
+            if (customPlatform == null)
             {
-                // add a new HideEnvironment that hides only the default platform for legacy platforms
-                newPlatform.AddComponent<HideEnvironment>().hideDefaultPlatform = true;
+                // Check for old platform 
+                global::CustomPlatform legacyPlatform = newPlatform.GetComponent<global::CustomPlatform>();
+                if(legacyPlatform != null)
+                {
+                    Log("legacy version of customPlatform detected, updating");
+                    // Replace legacyplatform component with up to date one
+                    customPlatform = newPlatform.AddComponent<CustomPlatform>();
+                    customPlatform.platName = legacyPlatform.platName;
+                    customPlatform.platAuthor = legacyPlatform.platAuthor;
+                    customPlatform.hideDefaultPlatform = true;
+                    // Remove old platform data
+                    Destroy(legacyPlatform);
+                }
+                else
+                {
+                    // no customplatform component, use filename? don't create?
+                    Log("loaded object had no customplatform attached, skipping");
+                    Destroy(newPlatform);
+                    return null;
+                }
             }
 
+            newPlatform.name = customPlatform.platName + " by " + customPlatform.platAuthor;
+            
             // TODO display name on screen ?
-
-
+            
             // Replace materials for this object
             matSwapper.ReplaceMaterialsForGameObject(newPlatform);
 

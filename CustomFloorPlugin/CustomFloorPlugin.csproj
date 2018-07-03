@@ -52,9 +52,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CustomPlatform.cs" />
+    <Compile Include="CustomPlatformLegacy.cs" />
     <Compile Include="EnvironmentHider.cs" />
     <Compile Include="FloorPlugin.cs" />
-    <Compile Include="HideEnvironment.cs" />
     <Compile Include="MaterialSwapper.cs" />
     <Compile Include="PlatformLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

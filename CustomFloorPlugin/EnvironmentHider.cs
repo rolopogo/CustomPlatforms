@@ -28,24 +28,19 @@ namespace CustomFloorPlugin
         /// <param name="platform">A platform that defines which objects are to be hidden</param>
         public void HideObjectsForPlatform(CustomPlatform platform)
         {
-            HideEnvironment hideEnv = platform.GetComponent<HideEnvironment>();
-            if (hideEnv == null)
-            {
-                Console.WriteLine("no HideEnvironment object found");
-                return;
-            }
+            Console.WriteLine("Hiding env for: " + platform.platName);
 
-            SetCollectionHidden(originalPlatform, hideEnv.hideDefaultPlatform);
-            SetCollectionHidden(smallRings, hideEnv.hideSmallRings);
-            SetCollectionHidden(bigRings, hideEnv.hideBigRings);
-            SetCollectionHidden(visualizer, hideEnv.hideEQVisualizer);
-            SetCollectionHidden(towers, hideEnv.hideTowers);
-            SetCollectionHidden(highway, hideEnv.hideHighway);
-            SetCollectionHidden(backColumns, hideEnv.hideBackColumns);
-            SetCollectionHidden(backLasers, hideEnv.hideBackLasers);
-            SetCollectionHidden(doubleColorLasers, hideEnv.hideDoubleColorLasers);
-            SetCollectionHidden(rotatingLasers, hideEnv.hideRotatingLasers);
-            SetCollectionHidden(trackLights, hideEnv.hideTrackLights);
+            SetCollectionHidden(originalPlatform, platform.hideDefaultPlatform);
+            SetCollectionHidden(smallRings, platform.hideSmallRings);
+            SetCollectionHidden(bigRings, platform.hideBigRings);
+            SetCollectionHidden(visualizer, platform.hideEQVisualizer);
+            SetCollectionHidden(towers, platform.hideTowers);
+            SetCollectionHidden(highway, platform.hideHighway);
+            SetCollectionHidden(backColumns, platform.hideBackColumns);
+            SetCollectionHidden(backLasers, platform.hideBackLasers);
+            SetCollectionHidden(doubleColorLasers, platform.hideDoubleColorLasers);
+            SetCollectionHidden(rotatingLasers, platform.hideRotatingLasers);
+            SetCollectionHidden(trackLights, platform.hideTrackLights);
 
             Console.WriteLine("Environment hidden");
         }

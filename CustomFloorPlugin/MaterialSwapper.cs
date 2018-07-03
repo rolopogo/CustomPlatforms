@@ -8,7 +8,6 @@ namespace CustomFloorPlugin
     {
         Material dark;
         Material glow;
-        Material mirror;
 
         string darkReplaceMatName = "_dark_replace";
         string glowReplaceMatName = "_glow_replace";

@@ -48,8 +48,8 @@ namespace CustomFloorPlugin
             SceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
 
             envHider = new EnvironmentHider();
-            //matSwapper = new MaterialSwapper();
-            //matSwapper.GetMaterials();
+            matSwapper = new MaterialSwapper();
+            matSwapper.GetMaterials();
             
             CreateAllPlatforms();
 
@@ -182,7 +182,7 @@ namespace CustomFloorPlugin
 
 
             // Replace materials for this object
-            //matSwapper.ReplaceMaterialsForGameObject(newPlatform);
+            matSwapper.ReplaceMaterialsForGameObject(newPlatform);
 
             newPlatform.SetActive(false);
             

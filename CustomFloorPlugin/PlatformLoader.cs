@@ -69,17 +69,17 @@ namespace CustomFloorPlugin
                     }
                 }
             }
+            
+            DontDestroyOnLoad(gameObject);
+        }
 
-            // show current platform
-            platforms.ElementAt(platformIndex).gameObject.SetActive(true);
-
+        private void Start()
+        {
             // find env
             envHider.FindEnvironment();
 
             // hide env for platform ( in case we missed the first hide on scene change )
             envHider.HideObjectsForPlatform(platforms.ElementAt(platformIndex));
-
-            DontDestroyOnLoad(gameObject);
         }
 
         public void OnApplicationQuit()
@@ -149,6 +149,7 @@ namespace CustomFloorPlugin
         /// </summary>
         private void Update()
         {
+            platforms.ElementAt(platformIndex).gameObject.SetActive(true);
 
             if (Input.GetKeyDown(KeyCode.P))
             {
@@ -165,11 +166,12 @@ namespace CustomFloorPlugin
 
                 // Show new platform
                 newPlaform.gameObject.SetActive(true);
-
-
-
+                
                 // Hide environment for new platform
                 envHider.HideObjectsForPlatform(newPlaform);
+
+                // Update lightSwitchEvent TubeLight references
+                TubeLightManager.UpdateEventTubeLightList();
             }
         }
         
@@ -226,6 +228,19 @@ namespace CustomFloorPlugin
             matSwapper.ReplaceMaterialsForGameObject(newPlatform);
 
             newPlatform.SetActive(false);
+
+            try
+            {
+                // Add a tube light controller if there are tube lights in this platform
+                if (newPlatform.GetComponentInChildren<TubeLight>(true) != null)
+                {
+                    TubeLightManager tlm = newPlatform.AddComponent<TubeLightManager>();
+                    tlm.CreateTubeLights();
+                }
+            } catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
             
             return customPlatform;
         }

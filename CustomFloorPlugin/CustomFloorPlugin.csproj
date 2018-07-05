@@ -58,6 +58,9 @@
     <Compile Include="MaterialSwapper.cs" />
     <Compile Include="PlatformLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReflectionUtil.cs" />
+    <Compile Include="TubeLight.cs" />
+    <Compile Include="TubeLightManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

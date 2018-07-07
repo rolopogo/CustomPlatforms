@@ -49,7 +49,7 @@ namespace CustomFloorPlugin
 
             envHider = new EnvironmentHider();
             matSwapper = new MaterialSwapper();
-            matSwapper.GetMaterialsMenu();
+            matSwapper.GetMaterials();
 
             CreateAllPlatforms();
             
@@ -57,7 +57,6 @@ namespace CustomFloorPlugin
             if (PlayerPrefs.HasKey("CustomPlatformPath"))
             {
                 string savedPath = PlayerPrefs.GetString("CustomPlatformPath");
-                Log("last platform = " + savedPath);
                 // Check if this path was loaded and update our platform index
                 for (int i = 0; i < bundlePaths.Count; i++)
                 {
@@ -65,7 +64,6 @@ namespace CustomFloorPlugin
                     if (savedPath == bundlePaths.ElementAt(i))
                     {
                         platformIndex = i;
-                        Log("Found match: " + i);
                     }
                 }
             }
@@ -228,13 +226,11 @@ namespace CustomFloorPlugin
             newPlatform.SetActive(false);
 
             // Replace materials for this object
-            Log("Swapping Materials");
             matSwapper.ReplaceMaterialsForGameObject(newPlatform);
 
             // Add a tube light manager if there are tube light descriptors
             if (newPlatform.GetComponentInChildren<TubeLight>(true) != null)
             {
-                Log("Building Tube Lights");
                 TubeLightManager tlm = newPlatform.AddComponent<TubeLightManager>();
                 tlm.CreateTubeLights();
             }
@@ -242,7 +238,6 @@ namespace CustomFloorPlugin
             // Rotation effect manager
             if (newPlatform.GetComponentInChildren<RotationEventEffect>(true) != null)
             {
-                Log("Building roteffect");
                 RotationEventEffectManager rotManager = newPlatform.AddComponent<RotationEventEffectManager>();
                 rotManager.CreateEffects();
             }
@@ -257,19 +252,16 @@ namespace CustomFloorPlugin
                     // nested prefabs?
 
                     // Replace mats in the prefab
-                    Log("Replacing materials for ring prefab");
                     matSwapper.ReplaceMaterialsForGameObject(ringPrefab);
 
                     // Add a tube light controller if there are tube light descriptors in prefab
                     if (ringPrefab.GetComponentInChildren<TubeLight>(true) != null)
                     {
-                        Log("Building Tube Lights for ring prefab");
                         TubeLightManager tlm = ringPrefab.AddComponent<TubeLightManager>();
                         tlm.CreateTubeLights();
                     }
                 }
-
-                Log("Building TrackRings");
+                
                 TrackRingsManagerSpawner trms = newPlatform.AddComponent<TrackRingsManagerSpawner>();
                 trms.CreateTrackRings();
             }
@@ -284,21 +276,27 @@ namespace CustomFloorPlugin
                     // nested prefabs?
 
                     // Replace mats in the prefab
-                    Log("Replacing materials for ring prefab");
                     matSwapper.ReplaceMaterialsForGameObject(colPrefab);
 
                     // Add a tube light controller if there are tube light descriptors in prefab
                     if (colPrefab.GetComponentInChildren<TubeLight>(true) != null)
                     {
-                        Log("Building Tube Lights for ring prefab");
                         TubeLightManager tlm = colPrefab.AddComponent<TubeLightManager>();
                         tlm.CreateTubeLights();
                     }
                 }
-
-                Log("Building spectrogram");
+                
                 SpectrogramColumnManager specManager = newPlatform.AddComponent<SpectrogramColumnManager>();
                 specManager.CreateColumns();
+            }
+
+            if(newPlatform.GetComponentInChildren<SongEventHandler>() != null)
+            {
+                foreach (SongEventHandler handler in newPlatform.GetComponentsInChildren<SongEventHandler>())
+                {
+                    SongEventManager manager = handler.gameObject.AddComponent<SongEventManager>();
+                    manager.songEventHandler = handler;
+                }
             }
 
             return customPlatform;

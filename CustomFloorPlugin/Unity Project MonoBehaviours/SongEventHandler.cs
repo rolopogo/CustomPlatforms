@@ -13,13 +13,5 @@ namespace CustomFloorPlugin
         public int value; // enum?
         public bool anyValue;
         public UnityEvent OnTrigger;
-        
-        private void Awake()
-        {
-            SongEventManager manager = gameObject.AddComponent<SongEventManager>();
-            manager.songEventHandler = this;
-        }
-
-        
     }
 }

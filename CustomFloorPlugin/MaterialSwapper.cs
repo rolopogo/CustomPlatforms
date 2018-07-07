@@ -8,7 +8,6 @@ namespace CustomFloorPlugin
     {
         Material dark;
         Material glow;
-        Material mirror;
 
         string darkReplaceMatName = "_dark_replace (Instance)";
         string glowReplaceMatName = "_glow_replace (Instance)";
@@ -45,7 +44,6 @@ namespace CustomFloorPlugin
             {
                 if (materialsCopy[i].name.Equals(matToReplaceName) || matToReplaceName == "")
                 {
-                    Color oldCol;
                     materialsCopy[i] = mat;
                     materialsDidChange = true;
                 }

@@ -11,6 +11,7 @@ namespace CustomFloorPlugin
     class SongEventManager : MonoBehaviour
     {
         public SongEventHandler songEventHandler;
+
         private SongController _songController;
 
         public void HandleSongEvent(SongEventData songEventData)

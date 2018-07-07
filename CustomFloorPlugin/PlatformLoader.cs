@@ -151,6 +151,21 @@ namespace CustomFloorPlugin
         {
             platforms.ElementAt(platformIndex).gameObject.SetActive(true);
 
+            if (Input.GetKeyDown(KeyCode.V))
+            {
+                TrackLaneRingsPositionStepEffectSpawner[] stepSpawners = Resources.FindObjectsOfTypeAll<TrackLaneRingsPositionStepEffectSpawner>();
+                TrackLaneRingsRotationEffectSpawner[] rotSpawners = Resources.FindObjectsOfTypeAll<TrackLaneRingsRotationEffectSpawner>();
+
+                foreach (TrackLaneRingsRotationEffectSpawner rotSpawner in rotSpawners)
+                {
+                    Console.WriteLine("RotSpawner: " + rotSpawner.name + " " + ReflectionUtil.GetPrivateField<SongEventData.Type>(rotSpawner, "_songEventType"));
+                }
+
+                foreach (TrackLaneRingsPositionStepEffectSpawner stepSpawner in stepSpawners)
+                {
+                    Console.WriteLine("StepSpawner: " + stepSpawner.name + " " + ReflectionUtil.GetPrivateField<SongEventData.Type>(stepSpawner, "_songEventType"));
+                }
+            }
             if (Input.GetKeyDown(KeyCode.P))
             {
                 // Hide current Platform
@@ -222,26 +237,49 @@ namespace CustomFloorPlugin
 
             newPlatform.name = customPlatform.platName + " by " + customPlatform.platAuthor;
             
-            // TODO display name on screen ?
-            
-            // Replace materials for this object
-            matSwapper.ReplaceMaterialsForGameObject(newPlatform);
-
             newPlatform.SetActive(false);
 
-            try
+            // Add a tube light controller if there are tube light descriptors
+            if (newPlatform.GetComponentInChildren<TubeLight>(true) != null)
             {
-                // Add a tube light controller if there are tube lights in this platform
-                if (newPlatform.GetComponentInChildren<TubeLight>(true) != null)
-                {
-                    TubeLightManager tlm = newPlatform.AddComponent<TubeLightManager>();
-                    tlm.CreateTubeLights();
-                }
-            } catch (Exception e)
-            {
-                Console.WriteLine(e);
+                Log("Building Tube Lights");
+                TubeLightManager tlm = newPlatform.AddComponent<TubeLightManager>();
+                tlm.CreateTubeLights();
             }
+
+            // Replace materials for this object
+            Log("Swapping Materials");
+            matSwapper.ReplaceMaterialsForGameObject(newPlatform);
             
+
+            // Add a trackRing controller if there are track ring descriptors
+            if (newPlatform.GetComponentInChildren<TrackRings>(true) != null)
+            {
+                foreach (TrackRings trackRings in newPlatform.GetComponentsInChildren<TrackRings>(true))
+                {
+                    GameObject ringPrefab = trackRings.trackLaneRingPrefab;
+
+                    // nested prefabs?
+
+                    // Replace mats in the prefab
+                    Log("Replacing materials for ring prefab");
+                    matSwapper.ReplaceMaterialsForGameObject(ringPrefab);
+
+                    // Add a tube light controller if there are tube light descriptors in prefab
+                    if (ringPrefab.GetComponentInChildren<TubeLight>(true) != null)
+                    {
+                        Log("Building Tube Lights for ring prefab");
+                        TubeLightManager tlm = ringPrefab.AddComponent<TubeLightManager>();
+                        tlm.CreateTubeLights();
+                    }
+                }
+
+                Log("Building TrackRings");
+                TrackRingsManagerSpawner trms = newPlatform.AddComponent<TrackRingsManagerSpawner>();
+                trms.CreateTrackRings();
+                
+            }
+
             return customPlatform;
         }
         

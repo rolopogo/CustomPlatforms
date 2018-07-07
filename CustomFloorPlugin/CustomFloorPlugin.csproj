@@ -59,6 +59,8 @@
     <Compile Include="PlatformLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionUtil.cs" />
+    <Compile Include="TrackRings.cs" />
+    <Compile Include="TrackRingsManagerSpawner.cs" />
     <Compile Include="TubeLight.cs" />
     <Compile Include="TubeLightManager.cs" />
   </ItemGroup>

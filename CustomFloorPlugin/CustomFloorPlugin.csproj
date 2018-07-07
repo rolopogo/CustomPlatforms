@@ -59,6 +59,13 @@
     <Compile Include="PlatformLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionUtil.cs" />
+    <Compile Include="RotationEventEffect.cs" />
+    <Compile Include="RotationEventEffectManager.cs" />
+    <Compile Include="SongEventHandler.cs" />
+    <Compile Include="SongEventManager.cs" />
+    <Compile Include="SongEventType.cs" />
+    <Compile Include="Spectrogram.cs" />
+    <Compile Include="SpectrogramColumnManager.cs" />
     <Compile Include="TrackRings.cs" />
     <Compile Include="TrackRingsManagerSpawner.cs" />
     <Compile Include="TubeLight.cs" />

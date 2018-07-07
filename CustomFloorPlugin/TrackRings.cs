@@ -34,19 +34,7 @@ namespace CustomFloorPlugin
         public float minPositionStep = 1f;
         public float maxPositionStep = 2f;
         public float moveSpeed = 1f;
-
-        public enum SongEventType {
-            BackLights = 0,
-            BigRingLights = 1,
-            LeftLasers = 2,
-            RightLasers = 3,
-            TrackAndBottom = 4,
-            RingsRotationEffect = 8,
-            RingsStepEffect = 9,
-            RingSpeedLeft = 12,
-            RingSpeedRight = 13 
-        }
-
+        
         private void OnDrawGizmos()
         {
             Gizmos.matrix = transform.localToWorldMatrix;

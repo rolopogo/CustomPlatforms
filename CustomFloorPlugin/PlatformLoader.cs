@@ -49,7 +49,7 @@ namespace CustomFloorPlugin
 
             envHider = new EnvironmentHider();
             matSwapper = new MaterialSwapper();
-            matSwapper.GetMaterials();
+            matSwapper.GetMaterialsMenu();
 
             CreateAllPlatforms();
             
@@ -131,7 +131,9 @@ namespace CustomFloorPlugin
             for (int i = 0; i < allBundlePaths.Length; i++)
             {
                 AssetBundle bundle = AssetBundle.LoadFromFile(allBundlePaths[i]);
-                
+
+                Log("Loading: " + Path.GetFileName(allBundlePaths[i]));
+
                 CustomPlatform newPlatform = CreatePlatform(bundle);
 
                 if(newPlatform != null)
@@ -151,21 +153,7 @@ namespace CustomFloorPlugin
         {
             platforms.ElementAt(platformIndex).gameObject.SetActive(true);
 
-            if (Input.GetKeyDown(KeyCode.V))
-            {
-                TrackLaneRingsPositionStepEffectSpawner[] stepSpawners = Resources.FindObjectsOfTypeAll<TrackLaneRingsPositionStepEffectSpawner>();
-                TrackLaneRingsRotationEffectSpawner[] rotSpawners = Resources.FindObjectsOfTypeAll<TrackLaneRingsRotationEffectSpawner>();
-
-                foreach (TrackLaneRingsRotationEffectSpawner rotSpawner in rotSpawners)
-                {
-                    Console.WriteLine("RotSpawner: " + rotSpawner.name + " " + ReflectionUtil.GetPrivateField<SongEventData.Type>(rotSpawner, "_songEventType"));
-                }
-
-                foreach (TrackLaneRingsPositionStepEffectSpawner stepSpawner in stepSpawners)
-                {
-                    Console.WriteLine("StepSpawner: " + stepSpawner.name + " " + ReflectionUtil.GetPrivateField<SongEventData.Type>(stepSpawner, "_songEventType"));
-                }
-            }
+            
             if (Input.GetKeyDown(KeyCode.P))
             {
                 // Hide current Platform
@@ -239,7 +227,11 @@ namespace CustomFloorPlugin
             
             newPlatform.SetActive(false);
 
-            // Add a tube light controller if there are tube light descriptors
+            // Replace materials for this object
+            Log("Swapping Materials");
+            matSwapper.ReplaceMaterialsForGameObject(newPlatform);
+
+            // Add a tube light manager if there are tube light descriptors
             if (newPlatform.GetComponentInChildren<TubeLight>(true) != null)
             {
                 Log("Building Tube Lights");
@@ -247,11 +239,14 @@ namespace CustomFloorPlugin
                 tlm.CreateTubeLights();
             }
 
-            // Replace materials for this object
-            Log("Swapping Materials");
-            matSwapper.ReplaceMaterialsForGameObject(newPlatform);
+            // Rotation effect manager
+            if (newPlatform.GetComponentInChildren<RotationEventEffect>(true) != null)
+            {
+                Log("Building roteffect");
+                RotationEventEffectManager rotManager = newPlatform.AddComponent<RotationEventEffectManager>();
+                rotManager.CreateEffects();
+            }
             
-
             // Add a trackRing controller if there are track ring descriptors
             if (newPlatform.GetComponentInChildren<TrackRings>(true) != null)
             {
@@ -277,7 +272,33 @@ namespace CustomFloorPlugin
                 Log("Building TrackRings");
                 TrackRingsManagerSpawner trms = newPlatform.AddComponent<TrackRingsManagerSpawner>();
                 trms.CreateTrackRings();
-                
+            }
+
+            // Add spectrogram manager
+            if (newPlatform.GetComponentInChildren<Spectrogram>(true) != null)
+            {
+                foreach (Spectrogram spec in newPlatform.GetComponentsInChildren<Spectrogram>(true))
+                {
+                    GameObject colPrefab = spec.columnPrefab;
+
+                    // nested prefabs?
+
+                    // Replace mats in the prefab
+                    Log("Replacing materials for ring prefab");
+                    matSwapper.ReplaceMaterialsForGameObject(colPrefab);
+
+                    // Add a tube light controller if there are tube light descriptors in prefab
+                    if (colPrefab.GetComponentInChildren<TubeLight>(true) != null)
+                    {
+                        Log("Building Tube Lights for ring prefab");
+                        TubeLightManager tlm = colPrefab.AddComponent<TubeLightManager>();
+                        tlm.CreateTubeLights();
+                    }
+                }
+
+                Log("Building spectrogram");
+                SpectrogramColumnManager specManager = newPlatform.AddComponent<SpectrogramColumnManager>();
+                specManager.CreateColumns();
             }
 
             return customPlatform;

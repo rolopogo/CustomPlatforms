@@ -10,17 +10,21 @@ namespace CustomFloorPlugin
 {
     class SongEventManager : MonoBehaviour
     {
-        public SongEventHandler songEventHandler;
-
+        private SongEventHandler _songEventHandler;
         private SongController _songController;
+
+        public void Awake()
+        {
+            _songEventHandler = GetComponent<SongEventHandler>();
+        }
 
         public void HandleSongEvent(SongEventData songEventData)
         {
-            if (songEventData.type == (SongEventData.Type)songEventHandler.eventType)
+            if (songEventData.type == (SongEventData.Type)_songEventHandler.eventType)
             {
-                if (songEventData.value == songEventHandler.value || songEventHandler.anyValue)
+                if (songEventData.value == _songEventHandler.value || _songEventHandler.anyValue)
                 {
-                    songEventHandler.OnTrigger.Invoke();
+                    _songEventHandler.OnTrigger.Invoke();
                 }
             }
         }

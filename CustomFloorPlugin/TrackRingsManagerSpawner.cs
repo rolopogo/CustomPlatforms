@@ -9,7 +9,7 @@ namespace CustomFloorPlugin
 {
     class TrackRingsManagerSpawner : MonoBehaviour
     {
-        TrackRings[] trackRingsDescriptors;
+        List<TrackRings> trackRingsDescriptors;
         public List<TrackLaneRingsManager> trackLaneRingsManagers;
         List<TrackLaneRingsRotationEffectSpawner> rotationSpawners;
         List<TrackLaneRingsPositionStepEffectSpawner> stepSpawners;
@@ -30,15 +30,19 @@ namespace CustomFloorPlugin
             SceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
         }
 
-        public void CreateTrackRings()
+        public void CreateTrackRings(GameObject go)
         {
-            trackRingsDescriptors = gameObject.GetComponentsInChildren<TrackRings>();
-            rotationSpawners = new List<TrackLaneRingsRotationEffectSpawner>();
-            stepSpawners = new List<TrackLaneRingsPositionStepEffectSpawner>();
-            trackLaneRingsManagers = new List<TrackLaneRingsManager>();
+            if(rotationSpawners == null) rotationSpawners = new List<TrackLaneRingsRotationEffectSpawner>();
+            if (stepSpawners == null) stepSpawners = new List<TrackLaneRingsPositionStepEffectSpawner>();
+            if (trackLaneRingsManagers == null) trackLaneRingsManagers = new List<TrackLaneRingsManager>();
+            if (trackRingsDescriptors == null) trackRingsDescriptors = new List<TrackRings>();
+            
+            TrackRings[] ringsDescriptors = go.GetComponentsInChildren<TrackRings>();
 
-            foreach (TrackRings trackRingDesc in trackRingsDescriptors)
+            foreach (TrackRings trackRingDesc in ringsDescriptors)
             {
+                trackRingsDescriptors.Add(trackRingDesc);
+
                 TrackLaneRingsManager ringsManager =
                     trackRingDesc.gameObject.AddComponent<TrackLaneRingsManager>();
                 trackLaneRingsManagers.Add(ringsManager);

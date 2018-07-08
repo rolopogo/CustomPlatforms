@@ -6,7 +6,9 @@ using UnityEngine;
 
 namespace CustomFloorPlugin
 {
-    class TubeLight : MonoBehaviour
+    [RequireComponent(typeof(MeshFilter))]
+    [RequireComponent(typeof(MeshRenderer))]
+    public class TubeLight : MonoBehaviour
     {
         public enum LightsID { Static = 0, BackLights = 1, BigRingLights = 2, LeftLasers = 3, RightLasers = 4, TrackAndBottom = 5 }
 

@@ -7,12 +7,10 @@ using UnityEngine.SceneManagement;
 
 namespace CustomFloorPlugin
 {
-    [RequireComponent(typeof(MeshFilter))]
-    [RequireComponent(typeof(MeshRenderer))]
-    class TubeLightManager : MonoBehaviour
+    public class TubeLightManager : MonoBehaviour
     {
         private List<TubeBloomPrePassLight> tbppLights;
-        private TubeLight[] tubeLightDescriptors;
+        private List<TubeLight> tubeLightDescriptors;
         
         private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
@@ -38,15 +36,18 @@ namespace CustomFloorPlugin
         {
             SceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
         }
+        
 
-        public void CreateTubeLights()
+        public void CreateTubeLights(GameObject go)
         {
-            tbppLights = new List<TubeBloomPrePassLight>();
-            tubeLightDescriptors = gameObject.GetComponentsInChildren<TubeLight>(true);
+            if(tbppLights == null) tbppLights = new List<TubeBloomPrePassLight>();
+            if (tubeLightDescriptors == null) tubeLightDescriptors = new List<TubeLight>();
 
-            if (tubeLightDescriptors == null) return;
+            TubeLight[] localDescriptors = go.GetComponentsInChildren<TubeLight>(true);
 
-            foreach (TubeLight tl in tubeLightDescriptors)
+            if (localDescriptors == null) return;
+
+            foreach (TubeLight tl in localDescriptors)
             {
                 TubeBloomPrePassLight tubeBloomLight = tl.gameObject.AddComponent<TubeBloomPrePassLight>();
                 tubeBloomLight.Init();
@@ -58,8 +59,8 @@ namespace CustomFloorPlugin
                 ReflectionUtil.SetPrivateFieldBase(tubeBloomLight, "_ID", (int)tl.lightsID);
 
                 tbppLights.Add(tubeBloomLight);
+                tubeLightDescriptors.Add(tl);
             }
-            
         }
 
         private void DestroyTubeLights()

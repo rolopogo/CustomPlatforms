@@ -51,25 +51,29 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CustomPlatform.cs" />
     <Compile Include="CustomPlatformLegacy.cs" />
     <Compile Include="EnvironmentHider.cs" />
     <Compile Include="FloorPlugin.cs" />
     <Compile Include="MaterialSwapper.cs" />
+    <Compile Include="PlatformEventManager.cs" />
     <Compile Include="PlatformLoader.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionUtil.cs" />
-    <Compile Include="RotationEventEffect.cs" />
     <Compile Include="RotationEventEffectManager.cs" />
-    <Compile Include="SongEventHandler.cs" />
     <Compile Include="SongEventManager.cs" />
     <Compile Include="SongEventType.cs" />
-    <Compile Include="Spectrogram.cs" />
     <Compile Include="SpectrogramColumnManager.cs" />
-    <Compile Include="TrackRings.cs" />
     <Compile Include="TrackRingsManagerSpawner.cs" />
-    <Compile Include="TubeLight.cs" />
     <Compile Include="TubeLightManager.cs" />
+    <Compile Include="Unity Project MonoBehaviours\CustomPlatform.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Unity Project MonoBehaviours\EventFilterBehaviour.cs" />
+    <Compile Include="Unity Project MonoBehaviours\EventFilters.cs" />
+    <Compile Include="Unity Project MonoBehaviours\EventManager.cs" />
+    <Compile Include="Unity Project MonoBehaviours\RotationEventEffect.cs" />
+    <Compile Include="Unity Project MonoBehaviours\SongEventHandler.cs" />
+    <Compile Include="Unity Project MonoBehaviours\Spectrogram.cs" />
+    <Compile Include="Unity Project MonoBehaviours\TrackRings.cs" />
+    <Compile Include="Unity Project MonoBehaviours\TubeLight.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

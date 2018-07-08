@@ -9,7 +9,7 @@ namespace CustomFloorPlugin
 {
     public class RotationEventEffectManager : MonoBehaviour
     {
-        RotationEventEffect[] effectDescriptors;
+        List<RotationEventEffect> effectDescriptors;
         List<LightRotationEventEffect> lightRotationEffects;
 
         private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
@@ -34,12 +34,14 @@ namespace CustomFloorPlugin
             SceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
         }
 
-        public void CreateEffects()
+        public void CreateEffects(GameObject go)
         {
-            lightRotationEffects = new List<LightRotationEventEffect>();
-            effectDescriptors = gameObject.GetComponentsInChildren<RotationEventEffect>(true);
+            if(lightRotationEffects == null) lightRotationEffects = new List<LightRotationEventEffect>();
+            if (effectDescriptors == null) effectDescriptors = new List<RotationEventEffect>();
 
-            if (effectDescriptors == null) return;
+            RotationEventEffect[] localDescriptors = go.GetComponentsInChildren<RotationEventEffect>(true);
+
+            if (localDescriptors == null) return;
 
             foreach (RotationEventEffect effectDescriptor in effectDescriptors)
             {
@@ -50,6 +52,7 @@ namespace CustomFloorPlugin
                 ReflectionUtil.SetPrivateField(rotEvent, "_transform", rotEvent.transform);
                 ReflectionUtil.SetPrivateField(rotEvent, "_startRotation", rotEvent.transform.rotation);
                 lightRotationEffects.Add(rotEvent);
+                effectDescriptors.Add(effectDescriptor);
             }
         }
 

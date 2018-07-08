@@ -9,7 +9,7 @@ namespace CustomFloorPlugin
 {
     public class SpectrogramColumnManager : MonoBehaviour
     {
-        Spectrogram[] columnDescriptors;
+        List<Spectrogram> columnDescriptors;
         List<SpectrogramColumns> spectrogramColumns;
 
         private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
@@ -28,15 +28,16 @@ namespace CustomFloorPlugin
             SceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
         }
 
-        public void CreateColumns()
+        public void CreateColumns(GameObject go)
         {
-            spectrogramColumns = new List<SpectrogramColumns>();
-            columnDescriptors = gameObject.GetComponentsInChildren<Spectrogram>(true);
-
-            if (columnDescriptors == null) return;
-
-            foreach (Spectrogram spec in columnDescriptors)
+            if (spectrogramColumns == null) spectrogramColumns = new List<SpectrogramColumns>();
+            if (columnDescriptors == null) columnDescriptors = new List<Spectrogram>();
+            
+            Spectrogram[] localDescriptors = go.GetComponentsInChildren<Spectrogram>(true);
+            
+            foreach (Spectrogram spec in localDescriptors)
             {
+
                 SpectrogramColumns specCol = spec.gameObject.AddComponent<SpectrogramColumns>();
                 ReflectionUtil.SetPrivateField(specCol, "_columnPrefab", spec.columnPrefab);
                 ReflectionUtil.SetPrivateField(specCol, "_separator", spec.separator);
@@ -46,6 +47,7 @@ namespace CustomFloorPlugin
                 ReflectionUtil.SetPrivateField(specCol, "_columnDepth", spec.columnDepth);
                 specCol.CreateColums();
                 spectrogramColumns.Add(specCol);
+                columnDescriptors.Add(spec);
             }
         }
         

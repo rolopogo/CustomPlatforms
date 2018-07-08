@@ -150,32 +150,46 @@ namespace CustomFloorPlugin
         private void Update()
         {
             platforms.ElementAt(platformIndex).gameObject.SetActive(true);
-
             
             if (Input.GetKeyDown(KeyCode.P))
             {
-                // Hide current Platform
-                platforms.ElementAt(platformIndex).gameObject.SetActive(false);
-
-                // Increment index
-                platformIndex = (platformIndex + 1) % platforms.Count;
-
-                // Save path into PlayerPrefs
-                PlayerPrefs.SetString("CustomPlatformPath", bundlePaths.ElementAt(platformIndex));
-
-                CustomPlatform newPlaform = platforms.ElementAt(platformIndex);
-
-                // Show new platform
-                newPlaform.gameObject.SetActive(true);
-                
-                // Hide environment for new platform
-                envHider.HideObjectsForPlatform(newPlaform);
-
-                // Update lightSwitchEvent TubeLight references
-                TubeLightManager.UpdateEventTubeLightList();
+                NextPlatform();
             }
         }
-        
+
+        public void NextPlatform()
+        {
+            ChangeToPlatform(platformIndex + 1);
+        }
+
+        public void PrevPlatform()
+        {
+            ChangeToPlatform(platformIndex - 1);
+        }
+
+        public void ChangeToPlatform(int index)
+        {
+            // Hide current Platform
+            platforms.ElementAt(platformIndex).gameObject.SetActive(false);
+
+            // Increment index
+            platformIndex = index % platforms.Count;
+
+            // Save path into PlayerPrefs
+            PlayerPrefs.SetString("CustomPlatformPath", bundlePaths.ElementAt(platformIndex));
+
+            CustomPlatform newPlaform = platforms.ElementAt(platformIndex);
+
+            // Show new platform
+            newPlaform.gameObject.SetActive(true);
+
+            // Hide environment for new platform
+            envHider.HideObjectsForPlatform(newPlaform);
+
+            // Update lightSwitchEvent TubeLight references
+            TubeLightManager.UpdateEventTubeLightList();
+        }
+
         /// <summary>
         /// Instantiate a platform from an assetbundle.
         /// </summary>
@@ -225,81 +239,85 @@ namespace CustomFloorPlugin
             
             newPlatform.SetActive(false);
 
+            AddManagers(newPlatform);
+
+            return customPlatform;
+        }
+
+        private void AddManagers(GameObject go)
+        {
+            AddManagers(go, go);
+        }
+
+        private void AddManagers(GameObject go, GameObject root)
+        {
             // Replace materials for this object
-            matSwapper.ReplaceMaterialsForGameObject(newPlatform);
+            matSwapper.ReplaceMaterialsForGameObject(go);
 
             // Add a tube light manager if there are tube light descriptors
-            if (newPlatform.GetComponentInChildren<TubeLight>(true) != null)
+            if (go.GetComponentInChildren<TubeLight>(true) != null)
             {
-                TubeLightManager tlm = newPlatform.AddComponent<TubeLightManager>();
-                tlm.CreateTubeLights();
+                TubeLightManager tlm = root.GetComponent<TubeLightManager>();
+                if(tlm == null) tlm = root.AddComponent<TubeLightManager>();
+                tlm.CreateTubeLights(go);
             }
 
             // Rotation effect manager
-            if (newPlatform.GetComponentInChildren<RotationEventEffect>(true) != null)
+            if (go.GetComponentInChildren<RotationEventEffect>(true) != null)
             {
-                RotationEventEffectManager rotManager = newPlatform.AddComponent<RotationEventEffectManager>();
-                rotManager.CreateEffects();
+                RotationEventEffectManager rotManager = root.GetComponent<RotationEventEffectManager>();
+                if(rotManager == null) rotManager = root.AddComponent<RotationEventEffectManager>();
+                rotManager.CreateEffects(go);
             }
-            
+
             // Add a trackRing controller if there are track ring descriptors
-            if (newPlatform.GetComponentInChildren<TrackRings>(true) != null)
+            if (go.GetComponentInChildren<TrackRings>(true) != null)
             {
-                foreach (TrackRings trackRings in newPlatform.GetComponentsInChildren<TrackRings>(true))
+                foreach (TrackRings trackRings in go.GetComponentsInChildren<TrackRings>(true))
                 {
                     GameObject ringPrefab = trackRings.trackLaneRingPrefab;
 
-                    // nested prefabs?
-
-                    // Replace mats in the prefab
-                    matSwapper.ReplaceMaterialsForGameObject(ringPrefab);
-
-                    // Add a tube light controller if there are tube light descriptors in prefab
-                    if (ringPrefab.GetComponentInChildren<TubeLight>(true) != null)
-                    {
-                        TubeLightManager tlm = ringPrefab.AddComponent<TubeLightManager>();
-                        tlm.CreateTubeLights();
-                    }
+                    // Add managers to prefabs (nesting)
+                    AddManagers(ringPrefab, root);
                 }
-                
-                TrackRingsManagerSpawner trms = newPlatform.AddComponent<TrackRingsManagerSpawner>();
-                trms.CreateTrackRings();
+
+                TrackRingsManagerSpawner trms = root.GetComponent<TrackRingsManagerSpawner>();
+                if(trms == null) trms = root.AddComponent<TrackRingsManagerSpawner>();
+                trms.CreateTrackRings(go);
             }
 
             // Add spectrogram manager
-            if (newPlatform.GetComponentInChildren<Spectrogram>(true) != null)
+            if (go.GetComponentInChildren<Spectrogram>(true) != null)
             {
-                foreach (Spectrogram spec in newPlatform.GetComponentsInChildren<Spectrogram>(true))
+                foreach (Spectrogram spec in go.GetComponentsInChildren<Spectrogram>(true))
                 {
                     GameObject colPrefab = spec.columnPrefab;
 
-                    // nested prefabs?
-
-                    // Replace mats in the prefab
-                    matSwapper.ReplaceMaterialsForGameObject(colPrefab);
-
-                    // Add a tube light controller if there are tube light descriptors in prefab
-                    if (colPrefab.GetComponentInChildren<TubeLight>(true) != null)
-                    {
-                        TubeLightManager tlm = colPrefab.AddComponent<TubeLightManager>();
-                        tlm.CreateTubeLights();
-                    }
+                    AddManagers(colPrefab, root);
                 }
-                
-                SpectrogramColumnManager specManager = newPlatform.AddComponent<SpectrogramColumnManager>();
-                specManager.CreateColumns();
+
+                SpectrogramColumnManager specManager = go.GetComponent<SpectrogramColumnManager>();
+                if(specManager == null) specManager = go.AddComponent<SpectrogramColumnManager>();
+                specManager.CreateColumns(go);
             }
 
-            if(newPlatform.GetComponentInChildren<SongEventHandler>() != null)
+            // Add Song event manager
+            if (go.GetComponentInChildren<SongEventHandler>(true) != null)
             {
-                foreach (SongEventHandler handler in newPlatform.GetComponentsInChildren<SongEventHandler>())
+                foreach (SongEventHandler handler in go.GetComponentsInChildren<SongEventHandler>())
                 {
                     SongEventManager manager = handler.gameObject.AddComponent<SongEventManager>();
-                    manager.songEventHandler = handler;
                 }
             }
 
-            return customPlatform;
+            // Add EventManager 
+            if (go.GetComponentInChildren<EventManager>(true) != null)
+            {
+                foreach (EventManager em in go.GetComponentsInChildren<EventManager>())
+                {
+                    em.gameObject.AddComponent<PlatformEventManager>();
+                }
+            }
         }
         
         private static void Log(string s)

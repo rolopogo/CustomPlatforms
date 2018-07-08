@@ -15,7 +15,7 @@ namespace CustomFloorPlugin
     class PlatformLoader : MonoBehaviour
     {
         public static PlatformLoader Instance;
-
+        
         private const string customFolder = "CustomPlatforms";
 
         private MaterialSwapper matSwapper;
@@ -46,13 +46,18 @@ namespace CustomFloorPlugin
             Instance = this;
             
             SceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
+            
+            DontDestroyOnLoad(gameObject);
+        }
 
+        private void Start()
+        {
             envHider = new EnvironmentHider();
             matSwapper = new MaterialSwapper();
             matSwapper.GetMaterials();
 
             CreateAllPlatforms();
-            
+
             // Retrieve saved path from player prefs if it exists
             if (PlayerPrefs.HasKey("CustomPlatformPath"))
             {
@@ -60,19 +65,14 @@ namespace CustomFloorPlugin
                 // Check if this path was loaded and update our platform index
                 for (int i = 0; i < bundlePaths.Count; i++)
                 {
-                    Log(bundlePaths.ElementAt(i));
                     if (savedPath == bundlePaths.ElementAt(i))
                     {
                         platformIndex = i;
                     }
                 }
             }
-            
-            DontDestroyOnLoad(gameObject);
-        }
 
-        private void Start()
-        {
+            PlatformUI.OnLoad();
             // find env
             envHider.FindEnvironment();
 
@@ -92,6 +92,11 @@ namespace CustomFloorPlugin
         /// <param name="arg1">New Active Scene</param>
         private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
+            if(arg0.buildIndex == 1)
+            {
+                PlatformUI.OnLoad();
+            }
+
             // Ensure we have already created platforms
             if (platforms != null)
             {
@@ -99,8 +104,7 @@ namespace CustomFloorPlugin
                 {
                     // Find environment parts after scene change
                     envHider.FindEnvironment();
-
-                    Log("hide environment for platform");
+                    
                     envHider.HideObjectsForPlatform(platforms.ElementAt(platformIndex));
                 }
             }
@@ -120,8 +124,9 @@ namespace CustomFloorPlugin
             // Create a dummy CustomPlatform for the original platform
             CustomPlatform defaultPlatform = new GameObject("Default Platform").AddComponent<CustomPlatform>();
             defaultPlatform.transform.parent = transform;
-            defaultPlatform.platName = "Default Platform";
+            defaultPlatform.platName = "Default Environment";
             defaultPlatform.platAuthor = "Beat Saber";
+            defaultPlatform.icon = Resources.FindObjectsOfTypeAll<Sprite>().Where(x => x.name == "InsaneCover").FirstOrDefault();
             platforms.Add(defaultPlatform);
             bundlePaths.Add("");
 
@@ -132,7 +137,7 @@ namespace CustomFloorPlugin
 
                 Log("Loading: " + Path.GetFileName(allBundlePaths[i]));
 
-                CustomPlatform newPlatform = CreatePlatform(bundle);
+                CustomPlatform newPlatform = LoadPlatform(bundle);
 
                 if(newPlatform != null)
                 {
@@ -167,6 +172,11 @@ namespace CustomFloorPlugin
             ChangeToPlatform(platformIndex - 1);
         }
 
+        public int GetPlatformIndex()
+        {
+            return platformIndex;
+        }
+
         public void ChangeToPlatform(int index)
         {
             // Hide current Platform
@@ -190,12 +200,22 @@ namespace CustomFloorPlugin
             TubeLightManager.UpdateEventTubeLightList();
         }
 
+        public List<CustomPlatform> GetPlatforms()
+        {
+            return platforms;
+        }
+
+        public CustomPlatform GetPlatform(int i)
+        {
+            return platforms.ElementAt(i);
+        }
+
         /// <summary>
         /// Instantiate a platform from an assetbundle.
         /// </summary>
         /// <param name="bundle">An AssetBundle containing a CustomPlatform</param>
         /// <returns></returns>
-        public CustomPlatform CreatePlatform(AssetBundle bundle)
+        public CustomPlatform LoadPlatform(AssetBundle bundle)
         {
             GameObject platformPrefab = bundle.LoadAsset<GameObject>("_CustomPlatform");
             if (platformPrefab == null)
@@ -229,14 +249,15 @@ namespace CustomFloorPlugin
                 else
                 {
                     // no customplatform component, abort
-                    Log("loaded object had no customplatform attached, skipping");
+                    Log("Loaded object had no customplatform attached, skipping");
                     Destroy(newPlatform);
                     return null;
                 }
             }
 
             newPlatform.name = customPlatform.platName + " by " + customPlatform.platAuthor;
-            
+            if (customPlatform.icon == null) customPlatform.icon = Resources.FindObjectsOfTypeAll<Sprite>().Where(x => x.name == "InsaneCover").FirstOrDefault();
+
             newPlatform.SetActive(false);
 
             AddManagers(newPlatform);

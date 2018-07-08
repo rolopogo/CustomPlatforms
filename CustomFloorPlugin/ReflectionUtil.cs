@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using UnityEngine;
+using System;
 
 static class ReflectionUtil
 {
@@ -44,5 +46,19 @@ static class ReflectionUtil
     {
         MethodInfo dynMethod = obj.GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
         dynMethod.Invoke(obj, methodParams);
+    }
+
+    public static Component CopyComponent(Component original, Type originalType, Type overridingType,
+            GameObject destination)
+    {
+        var copy = destination.AddComponent(overridingType);
+        var fields = originalType.GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance |
+                                            BindingFlags.GetField);
+        foreach (var field in fields)
+        {
+            field.SetValue(copy, field.GetValue(original));
+        }
+
+        return copy;
     }
 }

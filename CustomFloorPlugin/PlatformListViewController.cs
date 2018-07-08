@@ -79,6 +79,7 @@ namespace CustomFloorPlugin
                 }
 
                 _platformsTableView.SelectRow(PlatformLoader.Instance.GetPlatformIndex());
+                _platformsTableView.ScrollToRow(PlatformLoader.Instance.GetPlatformIndex(), true);
             }
             catch (Exception e)
             {

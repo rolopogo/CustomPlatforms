@@ -14,7 +14,7 @@ namespace CustomFloorPlugin
     public class CustomFloorPlugin : IPlugin
     {
         public string Name => "Custom Platforms";
-        public string Version => "2.0.1";
+        public string Version => "2.0.2";
         public void OnApplicationStart()
         {
             SceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;

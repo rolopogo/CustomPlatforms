@@ -71,6 +71,7 @@
     <Compile Include="EnvironmentHider.cs" />
     <Compile Include="FloorPlugin.cs" />
     <Compile Include="MaterialSwapper.cs" />
+    <Compile Include="MeshBloomPrePassLight.cs" />
     <Compile Include="PlatformEventManager.cs" />
     <Compile Include="PlatformListViewController.cs" />
     <Compile Include="PlatformLoader.cs" />

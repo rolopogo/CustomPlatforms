@@ -9,14 +9,14 @@ namespace CustomFloorPlugin
 {
     public class TubeLightManager : MonoBehaviour
     {
-        private List<TubeBloomPrePassLight> tbppLights;
+        private List<BloomPrePassLight> tbppLights;
         private List<TubeLight> tubeLightDescriptors;
         
         private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
             foreach (TubeLight tl in tubeLightDescriptors)
             {
-                TubeBloomPrePassLight tubeBloomLight = tl.gameObject.GetComponent<TubeBloomPrePassLight>();
+                BloomPrePassLight tubeBloomLight = tl.gameObject.GetComponent<BloomPrePassLight>();
                 tubeBloomLight.color = tl.color;
             }
         }
@@ -27,7 +27,7 @@ namespace CustomFloorPlugin
 
             foreach (TubeLight tl in tubeLightDescriptors)
             {
-                TubeBloomPrePassLight tubeBloomLight = tl.gameObject.GetComponent<TubeBloomPrePassLight>();
+                BloomPrePassLight tubeBloomLight = tl.gameObject.GetComponent<BloomPrePassLight>();
                 tubeBloomLight.color = tl.color;
             }
         }
@@ -40,7 +40,7 @@ namespace CustomFloorPlugin
 
         public void CreateTubeLights(GameObject go)
         {
-            if(tbppLights == null) tbppLights = new List<TubeBloomPrePassLight>();
+            if(tbppLights == null) tbppLights = new List<BloomPrePassLight>();
             if (tubeLightDescriptors == null) tubeLightDescriptors = new List<TubeLight>();
 
             TubeLight[] localDescriptors = go.GetComponentsInChildren<TubeLight>(true);
@@ -49,8 +49,17 @@ namespace CustomFloorPlugin
 
             foreach (TubeLight tl in localDescriptors)
             {
-                TubeBloomPrePassLight tubeBloomLight = tl.gameObject.AddComponent<TubeBloomPrePassLight>();
-                tubeBloomLight.Init();
+                BloomPrePassLight tubeBloomLight;
+
+                if (tl.GetComponent<MeshFilter>().mesh.vertexCount == 0)
+                {
+                    tubeBloomLight = tl.gameObject.AddComponent<TubeBloomPrePassLight>();
+                    (tubeBloomLight as TubeBloomPrePassLight).Init();
+                } else
+                {
+                    tubeBloomLight = tl.gameObject.AddComponent<MeshBloomPrePassLight>();
+                    (tubeBloomLight as MeshBloomPrePassLight).Init();
+                }
 
                 ReflectionUtil.SetPrivateField(tubeBloomLight, "_width", tl.width);
                 ReflectionUtil.SetPrivateField(tubeBloomLight, "_length", tl.length);

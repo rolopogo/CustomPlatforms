@@ -7,6 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using VRUI;
+using IllusionPlugin;
 
 namespace CustomFloorPlugin
 {
@@ -17,7 +18,8 @@ namespace CustomFloorPlugin
 
         public Button _pageUpButton;
         public Button _pageDownButton;
-        
+        public TextMeshProUGUI _versionNumber;
+
         public TableView _platformsTableView;
         SongListTableCell _songListTableCellInstance;
         
@@ -42,7 +44,7 @@ namespace CustomFloorPlugin
                     (_platformsTableView.transform as RectTransform).anchorMax = new Vector2(1f, 0.5f);
                     (_platformsTableView.transform as RectTransform).sizeDelta = new Vector2(0f, 60f);
                     (_platformsTableView.transform as RectTransform).position = new Vector3(0f, 0f, 2.4f);
-                    (_platformsTableView.transform as RectTransform).anchoredPosition = new Vector3(0f, -3f);
+                    (_platformsTableView.transform as RectTransform).anchoredPosition = new Vector3(0f, 0f); // -3
 
                     _platformsTableView.DidSelectRowEvent += _PlatformTableView_DidSelectRowEvent;
 
@@ -57,7 +59,7 @@ namespace CustomFloorPlugin
                     _pageUpButton = Instantiate(Resources.FindObjectsOfTypeAll<Button>().First(x => (x.name == "PageUpButton")), rectTransform, false);
                     (_pageUpButton.transform as RectTransform).anchorMin = new Vector2(0.5f, 1f);
                     (_pageUpButton.transform as RectTransform).anchorMax = new Vector2(0.5f, 1f);
-                    (_pageUpButton.transform as RectTransform).anchoredPosition = new Vector2(0f, -14f);
+                    (_pageUpButton.transform as RectTransform).anchoredPosition = new Vector2(0f, -10f);//-14
                     _pageUpButton.interactable = true;
                     _pageUpButton.onClick.AddListener(delegate ()
                     {
@@ -70,12 +72,24 @@ namespace CustomFloorPlugin
                     _pageDownButton = Instantiate(Resources.FindObjectsOfTypeAll<Button>().First(x => (x.name == "PageDownButton")), rectTransform, false);
                     (_pageDownButton.transform as RectTransform).anchorMin = new Vector2(0.5f, 0f);
                     (_pageDownButton.transform as RectTransform).anchorMax = new Vector2(0.5f, 0f);
-                    (_pageDownButton.transform as RectTransform).anchoredPosition = new Vector2(0f, 8f);
+                    (_pageDownButton.transform as RectTransform).anchoredPosition = new Vector2(0f, 10);//8
                     _pageDownButton.interactable = true;
                     _pageDownButton.onClick.AddListener(delegate ()
                     {
                         _platformsTableView.PageScrollDown();
                     });
+                }
+
+                if(_versionNumber == null)
+                {
+                    _versionNumber = Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().First(x => (x.name == "BuildInfoText")), rectTransform, false);
+                    DestroyImmediate(_versionNumber.GetComponent<BuildInfoText>());
+
+                    (_versionNumber.transform as RectTransform).anchoredPosition = new Vector2(44f, 2f);
+
+                    string versionNumber = (IllusionInjector.PluginManager.Plugins.Where(x => x.Name == "Custom Platforms").First()).Version;
+                    _versionNumber.text = versionNumber;
+                    _versionNumber.fontSize = 5;
                 }
 
                 _platformsTableView.SelectRow(PlatformLoader.Instance.GetPlatformIndex());

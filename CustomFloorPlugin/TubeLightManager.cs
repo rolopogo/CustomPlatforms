@@ -14,10 +14,28 @@ namespace CustomFloorPlugin
         
         private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
+            SetColorToDefault();
+        }
+
+        private void SetColorToDefault()
+        {
+            tubeLightDescriptors = GameObject.FindObjectsOfType<TubeLight>().ToList();
+
             foreach (TubeLight tl in tubeLightDescriptors)
             {
-                BloomPrePassLight tubeBloomLight = tl.gameObject.GetComponent<BloomPrePassLight>();
-                tubeBloomLight.color = tl.color;
+                TubeBloomPrePassLight tube = tl.gameObject.GetComponent<TubeBloomPrePassLight>();
+                if (tube != null)
+                {
+                    tube.color = tl.color;
+                }
+
+                MeshBloomPrePassLight mesh = tl.gameObject.GetComponent<MeshBloomPrePassLight>();
+                if (mesh != null)
+                {
+                    Console.WriteLine("before: " + tube.color);
+                    mesh.color = tl.color;
+                    Console.WriteLine("after:" + tube.color);
+                }
             }
         }
 
@@ -25,11 +43,7 @@ namespace CustomFloorPlugin
         {
             SceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
 
-            foreach (TubeLight tl in tubeLightDescriptors)
-            {
-                BloomPrePassLight tubeBloomLight = tl.gameObject.GetComponent<BloomPrePassLight>();
-                tubeBloomLight.color = tl.color;
-            }
+            SetColorToDefault();
         }
 
         private void OnDisable()

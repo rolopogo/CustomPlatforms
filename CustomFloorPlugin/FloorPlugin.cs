@@ -31,7 +31,7 @@ namespace CustomFloorPlugin
             if (arg0.buildIndex == 1)
             {
                 PlatformLoader.OnLoad();
-                Application.logMessageReceived += LogCallback;
+                //Application.logMessageReceived += LogCallback;
             }
         }
 

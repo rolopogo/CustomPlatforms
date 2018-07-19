@@ -22,7 +22,6 @@ namespace CustomFloorPlugin
 
         private Button _buttonInstance;
         private Button _backButtonInstance;
-        private GameObject _loadingIndicatorInstance;
 
         public static PlatformUI _instance;
 
@@ -53,7 +52,6 @@ namespace CustomFloorPlugin
                 _backButtonInstance = Resources.FindObjectsOfTypeAll<Button>().First(x => (x.name == "BackArrowButton"));
                 _mainMenuViewController = Resources.FindObjectsOfTypeAll<MainMenuViewController>().First();
                 _mainMenuRectTransform = _buttonInstance.transform.parent as RectTransform;
-                _loadingIndicatorInstance = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name == "LoadingIndicator").First();
             }
             catch (Exception e)
             {
@@ -62,7 +60,7 @@ namespace CustomFloorPlugin
 
             try
             {
-                CreateBeatSaverButton();
+                CreatePlatformsButton();
             }
             catch (Exception e)
             {
@@ -71,21 +69,19 @@ namespace CustomFloorPlugin
 
         }
         
-        private void CreateBeatSaverButton()
+        private void CreatePlatformsButton()
         {
 
-            Button _beatSaverButton = CreateUIButton(_mainMenuRectTransform, "SettingsButton");
+            Button _platformsButton = CreateUIButton(_mainMenuRectTransform, "SettingsButton");
 
             try
             {
-                (_beatSaverButton.transform as RectTransform).anchoredPosition += new Vector2(0f, 12f);
-                (_beatSaverButton.transform as RectTransform).sizeDelta = new Vector2(28f, 10f);
+                (_platformsButton.transform as RectTransform).anchoredPosition += new Vector2(0f, 20f);
+                (_platformsButton.transform as RectTransform).sizeDelta = new Vector2(28f, 10f);
 
-                SetButtonText(ref _beatSaverButton, "Platforms");
-
-                SetButtonIcon(ref _beatSaverButton, icons.First(x => (x.name == "SettingsIcon")));
-
-                _beatSaverButton.onClick.AddListener(delegate () {
+                SetButtonText(ref _platformsButton, "Platforms");
+                
+                _platformsButton.onClick.AddListener(delegate () {
 
                     try
                     {
@@ -152,13 +148,7 @@ namespace CustomFloorPlugin
 
             return vc;
         }
-
-        public GameObject CreateLoadingIndicator(Transform parent)
-        {
-            GameObject indicator = Instantiate(_loadingIndicatorInstance, parent, false);
-            return indicator;
-        }
-
+        
         public TextMeshProUGUI CreateText(RectTransform parent, string text, Vector2 position)
         {
             TextMeshProUGUI textMesh = new GameObject("TextMeshProUGUI_GO").AddComponent<TextMeshProUGUI>();

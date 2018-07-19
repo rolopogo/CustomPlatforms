@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CustomFloorPlugin</RootNamespace>
     <AssemblyName>CustomFloorPlugin</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
@@ -54,6 +56,10 @@
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
@@ -71,33 +77,45 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CustomPlatformLegacy.cs" />
+    <Compile Include="Legacy Behaviours\CustomPlatformLegacy.cs" />
     <Compile Include="EnvironmentHider.cs" />
     <Compile Include="FloorPlugin.cs" />
     <Compile Include="MaterialSwapper.cs" />
-    <Compile Include="MeshBloomPrePassLight.cs" />
-    <Compile Include="PlatformEventManager.cs" />
-    <Compile Include="PlatformListViewController.cs" />
+    <Compile Include="Behaviours\MeshBloomPrePassLight.cs" />
+    <Compile Include="Behaviour Managers\PlatformEventManager.cs" />
+    <Compile Include="UI\PlatformListViewController.cs" />
     <Compile Include="PlatformLoader.cs" />
-    <Compile Include="PlatformMasterViewController.cs" />
-    <Compile Include="PlatformUI.cs" />
-    <Compile Include="ReflectionUtil.cs" />
-    <Compile Include="RotationEventEffectManager.cs" />
-    <Compile Include="SongEventManager.cs" />
+    <Compile Include="UI\PlatformMasterViewController.cs" />
+    <Compile Include="UI\PlatformUI.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Util\ReflectionUtil.cs" />
+    <Compile Include="Behaviour Managers\RotationEventEffectManager.cs" />
+    <Compile Include="Behaviour Managers\SongEventManager.cs" />
     <Compile Include="SongEventType.cs" />
-    <Compile Include="SpectrogramColumnManager.cs" />
-    <Compile Include="TrackRingsManagerSpawner.cs" />
-    <Compile Include="TubeLightManager.cs" />
-    <Compile Include="Unity Project MonoBehaviours\CustomPlatform.cs" />
+    <Compile Include="Behaviour Managers\SpectrogramColumnManager.cs" />
+    <Compile Include="Behaviour Managers\TrackRingsManagerSpawner.cs" />
+    <Compile Include="Behaviour Managers\TubeLightManager.cs" />
+    <Compile Include="Behaviour Descriptors\CustomPlatform.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Unity Project MonoBehaviours\EventFilterBehaviour.cs" />
-    <Compile Include="Unity Project MonoBehaviours\EventFilters.cs" />
-    <Compile Include="Unity Project MonoBehaviours\EventManager.cs" />
-    <Compile Include="Unity Project MonoBehaviours\RotationEventEffect.cs" />
-    <Compile Include="Unity Project MonoBehaviours\SongEventHandler.cs" />
-    <Compile Include="Unity Project MonoBehaviours\Spectrogram.cs" />
-    <Compile Include="Unity Project MonoBehaviours\TrackRings.cs" />
-    <Compile Include="Unity Project MonoBehaviours\TubeLight.cs" />
+    <Compile Include="Behaviour Descriptors\EventFilterBehaviour.cs" />
+    <Compile Include="Behaviour Descriptors\EventFilters.cs" />
+    <Compile Include="Behaviour Descriptors\EventManager.cs" />
+    <Compile Include="Behaviour Descriptors\RotationEventEffect.cs" />
+    <Compile Include="Behaviour Descriptors\SongEventHandler.cs" />
+    <Compile Include="Behaviour Descriptors\Spectrogram.cs" />
+    <Compile Include="Behaviour Descriptors\TrackRings.cs" />
+    <Compile Include="Behaviour Descriptors\TubeLight.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

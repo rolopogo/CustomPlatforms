@@ -85,11 +85,9 @@ namespace CustomFloorPlugin
         /// <param name="alist">The ArrayList to be added to</param>
         private void FindAddGameObject(string name, ArrayList alist)
         {
-            Console.WriteLine("finding " + name);
             GameObject go = GameObject.Find(name);
             if (go != null)
             {
-                Console.WriteLine("found " + name);
                 alist.Add(go);
             }
         }

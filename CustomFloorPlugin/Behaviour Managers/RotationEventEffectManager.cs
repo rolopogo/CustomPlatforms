@@ -47,7 +47,7 @@ namespace CustomFloorPlugin
             {
                 LightRotationEventEffect rotEvent = effectDescriptor.gameObject.AddComponent<LightRotationEventEffect>();
 
-                ReflectionUtil.SetPrivateField(rotEvent, "_event", (SongEventData.Type)effectDescriptor.eventType);
+                ReflectionUtil.SetPrivateField(rotEvent, "_event", (BeatmapEventType)effectDescriptor.eventType);
                 ReflectionUtil.SetPrivateField(rotEvent, "_rotationVector", effectDescriptor.rotationVector);
                 ReflectionUtil.SetPrivateField(rotEvent, "_transform", rotEvent.transform);
                 ReflectionUtil.SetPrivateField(rotEvent, "_startRotation", rotEvent.transform.rotation);
@@ -58,13 +58,14 @@ namespace CustomFloorPlugin
 
         public void UpdateSongController()
         {
-            SongController songController = Resources.FindObjectsOfTypeAll<SongController>().First();
-            if (songController == null) return;
+            BeatmapObjectCallbackController beatmapObjectCallbackController = Resources.FindObjectsOfTypeAll<BeatmapObjectCallbackController>().First();
+            
+            if (beatmapObjectCallbackController == null) return;
 
             foreach (LightRotationEventEffect rotationEffect in lightRotationEffects)
             {
-                ReflectionUtil.SetPrivateField(rotationEffect, "_songController", songController);
-                songController.songEvent += rotationEffect.HandleSongEvent;
+                ReflectionUtil.SetPrivateField(rotationEffect, "_beatmapObjectCallbackController", beatmapObjectCallbackController);
+                beatmapObjectCallbackController.beatmapEventDidTriggerEvent += rotationEffect.HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger;
             }
         }
     }

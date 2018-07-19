@@ -11,16 +11,16 @@ namespace CustomFloorPlugin
     class SongEventManager : MonoBehaviour
     {
         private SongEventHandler _songEventHandler;
-        private SongController _songController;
+        private BeatmapObjectCallbackController _beatmapObjectCallbackController;
 
         public void Awake()
         {
             _songEventHandler = GetComponent<SongEventHandler>();
         }
 
-        public void HandleSongEvent(SongEventData songEventData)
+        public void HandleSongEvent(BeatmapEventData songEventData)
         {
-            if (songEventData.type == (SongEventData.Type)_songEventHandler.eventType)
+            if (songEventData.type == (BeatmapEventType)_songEventHandler.eventType)
             {
                 if (songEventData.value == _songEventHandler.value || _songEventHandler.anyValue)
                 {
@@ -32,25 +32,27 @@ namespace CustomFloorPlugin
         private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
             UpdateSongController();
-            _songController.songEvent += HandleSongEvent;
+            _beatmapObjectCallbackController.beatmapEventDidTriggerEvent -= HandleSongEvent;
+            _beatmapObjectCallbackController.beatmapEventDidTriggerEvent += HandleSongEvent;
         }
 
         private void OnEnable()
         {
             SceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
             UpdateSongController();
-            _songController.songEvent += HandleSongEvent;
+            _beatmapObjectCallbackController.beatmapEventDidTriggerEvent -= HandleSongEvent;
+            _beatmapObjectCallbackController.beatmapEventDidTriggerEvent += HandleSongEvent;
         }
 
         private void OnDisable()
         {
             SceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
-            _songController.songEvent -= HandleSongEvent;
+            _beatmapObjectCallbackController.beatmapEventDidTriggerEvent -= HandleSongEvent;
         }
 
         public void UpdateSongController()
         {
-            _songController = Resources.FindObjectsOfTypeAll<SongController>().First();
+            _beatmapObjectCallbackController = Resources.FindObjectsOfTypeAll<BeatmapObjectCallbackController>().First();
         }
     }
 }

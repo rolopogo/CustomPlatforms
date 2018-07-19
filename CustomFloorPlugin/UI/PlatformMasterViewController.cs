@@ -20,13 +20,11 @@ namespace CustomFloorPlugin
 
         public PlatformListViewController _platformListViewController;
         
-        private List<LevelStaticData> _notUpdatedSongs = new List<LevelStaticData>();
-
         Button _backButton;
         
         public int _selectedRow = -1;
         
-        protected override void DidActivate()
+        protected override void DidActivate(bool firstActivation, ActivationType activationType)
         {
             ui = PlatformUI._instance;
 
@@ -60,13 +58,13 @@ namespace CustomFloorPlugin
                 });
             }
 
-            base.DidActivate();
+            base.DidActivate(firstActivation, activationType);
 
         }
 
-        protected override void DidDeactivate()
+        protected override void DidDeactivate(DeactivationType type)
         {
-            base.DidDeactivate();
+            base.DidDeactivate(type);
         }
     }
 }

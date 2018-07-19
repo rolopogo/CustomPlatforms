@@ -16,13 +16,26 @@ namespace CustomFloorPlugin
 
         private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
-            FindSongController();
+            FindBeatMapEventController();
         }
 
         private void OnEnable()
         {
             SceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
-            FindSongController();
+            FindBeatMapEventController();
+        }
+
+        private void Start()
+        {
+            // make sure the rings are parented to this transform
+            foreach (TrackLaneRingsManager trackLaneRingsManager in trackLaneRingsManagers)
+            {
+                TrackLaneRing[] rings = ReflectionUtil.GetPrivateField<TrackLaneRing[]>(trackLaneRingsManager, "_rings");
+                foreach (TrackLaneRing ring in rings)
+                {
+                    ring.transform.parent = transform;
+                }
+            }
         }
 
         private void OnDisable()
@@ -68,7 +81,7 @@ namespace CustomFloorPlugin
                         trackRingDesc.gameObject.AddComponent<TrackLaneRingsRotationEffectSpawner>();
                     rotationSpawners.Add(rotationEffectSpawner);
 
-                    ReflectionUtil.SetPrivateField(rotationEffectSpawner, "_songEventType", (SongEventData.Type)trackRingDesc.rotationSongEventType);
+                    ReflectionUtil.SetPrivateField(rotationEffectSpawner, "_beatmapEventType", (BeatmapEventType)trackRingDesc.rotationSongEventType);
                     ReflectionUtil.SetPrivateField(rotationEffectSpawner, "_rotationStep", trackRingDesc.rotationStep);
                     ReflectionUtil.SetPrivateField(rotationEffectSpawner, "_rotationPropagationSpeed", trackRingDesc.rotationPropagationSpeed);
                     ReflectionUtil.SetPrivateField(rotationEffectSpawner, "_rotationFlexySpeed", trackRingDesc.rotationFlexySpeed);
@@ -81,7 +94,7 @@ namespace CustomFloorPlugin
                     stepSpawners.Add(stepEffectSpawner);
 
                     ReflectionUtil.SetPrivateField(stepEffectSpawner, "_trackLaneRingsManager", ringsManager);
-                    ReflectionUtil.SetPrivateField(stepEffectSpawner, "_songEventType", (SongEventData.Type)trackRingDesc.stepSongEventType);
+                    ReflectionUtil.SetPrivateField(stepEffectSpawner, "_beatmapEventType", (BeatmapEventType)trackRingDesc.stepSongEventType);
                     ReflectionUtil.SetPrivateField(stepEffectSpawner, "_minPositionStep", trackRingDesc.minPositionStep);
                     ReflectionUtil.SetPrivateField(stepEffectSpawner, "_maxPositionStep", trackRingDesc.maxPositionStep);
                     ReflectionUtil.SetPrivateField(stepEffectSpawner, "_moveSpeed", trackRingDesc.moveSpeed);
@@ -89,20 +102,20 @@ namespace CustomFloorPlugin
             }
         }
 
-        public void FindSongController()
+        public void FindBeatMapEventController()
         {
-            SongController songController = Resources.FindObjectsOfTypeAll<SongController>().First();
-            if (songController == null) return;
+            BeatmapObjectCallbackController _beatmapObjectCallbackController = Resources.FindObjectsOfTypeAll<BeatmapObjectCallbackController>().First();
+            if (_beatmapObjectCallbackController == null) return;
 
             foreach (TrackLaneRingsRotationEffectSpawner spawner in rotationSpawners)
             {
-                ReflectionUtil.SetPrivateField(spawner, "_songController", songController);
-                songController.songEvent += spawner.HandleSongEvent;
+                ReflectionUtil.SetPrivateField(spawner, "_beatmapObjectCallbackController", _beatmapObjectCallbackController);
+                _beatmapObjectCallbackController.beatmapEventDidTriggerEvent += spawner.HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger;
             }
             foreach (TrackLaneRingsPositionStepEffectSpawner spawner in stepSpawners)
             {
-                ReflectionUtil.SetPrivateField(spawner, "_songController", songController);
-                songController.songEvent += spawner.HandleSongEvent;
+                ReflectionUtil.SetPrivateField(spawner, "_beatmapObjectCallbackController", _beatmapObjectCallbackController);
+                _beatmapObjectCallbackController.beatmapEventDidTriggerEvent += spawner.HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger;
             }
         }
     }

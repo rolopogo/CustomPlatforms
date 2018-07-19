@@ -21,16 +21,16 @@ namespace CustomFloorPlugin
         public TextMeshProUGUI _versionNumber;
 
         public TableView _platformsTableView;
-        SongListTableCell _songListTableCellInstance;
+        StandardLevelListTableCell _songListTableCellInstance;
         
-        protected override void DidActivate()
+        protected override void DidActivate(bool firstActivation, ActivationType type)
         {
             ui = PlatformUI._instance;
             _parentMasterViewController = transform.parent.GetComponent<PlatformMasterViewController>();
 
             try
             {
-                _songListTableCellInstance = Resources.FindObjectsOfTypeAll<SongListTableCell>().First(x => (x.name == "SongListTableCell"));
+                _songListTableCellInstance = Resources.FindObjectsOfTypeAll<StandardLevelListTableCell>().First(x => (x.name == "StandardLevelListTableCell"));
 
                 if (_platformsTableView == null)
                 {
@@ -46,7 +46,7 @@ namespace CustomFloorPlugin
                     (_platformsTableView.transform as RectTransform).position = new Vector3(0f, 0f, 2.4f);
                     (_platformsTableView.transform as RectTransform).anchoredPosition = new Vector3(0f, 0f); // -3
 
-                    _platformsTableView.DidSelectRowEvent += _PlatformTableView_DidSelectRowEvent;
+                    _platformsTableView.didSelectRowEvent += _PlatformTableView_DidSelectRowEvent;
 
                 }
                 else
@@ -101,9 +101,9 @@ namespace CustomFloorPlugin
             }
         }
 
-        protected override void DidDeactivate()
+        protected override void DidDeactivate(DeactivationType type)
         {
-            base.DidDeactivate();
+            base.DidDeactivate(type);
         }
 
         public void RefreshScreen()
@@ -129,7 +129,7 @@ namespace CustomFloorPlugin
 
         public TableCell CellForRow(int row)
         {
-            SongListTableCell _tableCell = Instantiate(_songListTableCellInstance);
+            StandardLevelListTableCell _tableCell = Instantiate(_songListTableCellInstance);
 
             CustomPlatform platform = PlatformLoader.Instance.GetPlatform(row);
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,6 +11,7 @@ namespace CustomFloorPlugin
     /// </summary>
     class EnvironmentHider
     {
+        private ArrayList feet;
         private ArrayList originalPlatform;
         private ArrayList smallRings;
         private ArrayList bigRings;
@@ -22,6 +24,8 @@ namespace CustomFloorPlugin
         private ArrayList rotatingLasers;
         private ArrayList trackLights;
 
+        public bool showFeetOverride = false;
+
         /// <summary>
         /// Hide and unhide world objects as required by a platform
         /// </summary>
@@ -30,6 +34,7 @@ namespace CustomFloorPlugin
         {
             Console.WriteLine("Hiding env for: " + platform.platName);
 
+            SetCollectionHidden(feet, (platform.hideDefaultPlatform && !showFeetOverride));
             SetCollectionHidden(originalPlatform, platform.hideDefaultPlatform);
             SetCollectionHidden(smallRings, platform.hideSmallRings);
             SetCollectionHidden(bigRings, platform.hideBigRings);
@@ -51,6 +56,7 @@ namespace CustomFloorPlugin
         /// </summary>
         public void FindEnvironment()
         {
+            FindFeetIcon();
             FindOriginalPlatform();
             FindSmallRings();
             FindBigRings();
@@ -91,36 +97,50 @@ namespace CustomFloorPlugin
                 alist.Add(go);
             }
         }
-        
+
+        private void FindFeetIcon()
+        {
+            feet = new ArrayList();
+            GameObject feetgo = GameObject.Find("Feet");
+            if (feetgo != null)
+            {
+                feet.Add(feetgo);
+                feetgo.transform.parent = null; // remove from original platform 
+            }
+        }
+
         private void FindOriginalPlatform()
         {
             originalPlatform = new ArrayList();
-            FindAddGameObject("Column", originalPlatform);
-            FindAddGameObject("Feet", originalPlatform);
-            FindAddGameObject("GlowLine", originalPlatform);
-            FindAddGameObject("GlowLine (1)", originalPlatform);
-            FindAddGameObject("GlowLine (2)", originalPlatform);
-            FindAddGameObject("GlowLine (3)", originalPlatform);
-            FindAddGameObject("BorderLine (13)", originalPlatform);
-            FindAddGameObject("BorderLine (14)", originalPlatform);
-            FindAddGameObject("BorderLine (15)", originalPlatform);
-            FindAddGameObject("MirrorSurface", originalPlatform);
-            FindAddGameObject("PlayersPlace/PlayersPlace", originalPlatform);
+            FindAddGameObject("Static/PlayersPlace", originalPlatform);
+            FindAddGameObject("MenuPlayersPlace", originalPlatform);
         }
-        
+
         private void FindSmallRings()
         {
             smallRings = new ArrayList();
             FindAddGameObject("SmallTrackLaneRings", smallRings);
+            foreach (TrackLaneRing trackLaneRing in Resources.FindObjectsOfTypeAll<TrackLaneRing>().Where(x => x.name == "TrackLaneRing(Clone)"))
+            {
+                smallRings.Add(trackLaneRing.gameObject);
+            }
             FindAddGameObject("TriangleTrackLaneRings", smallRings); // Triangle Rings from TriangleEnvironment
+            foreach (TrackLaneRing trackLaneRing in Resources.FindObjectsOfTypeAll<TrackLaneRing>().Where(x => x.name == "TriangleTrackLaneRing(Clone)"))
+            {
+                smallRings.Add(trackLaneRing.gameObject);
+            }
         }
         
         private void FindBigRings()
         {
             bigRings = new ArrayList();
             FindAddGameObject("BigTrackLaneRings", bigRings);
+            foreach (var trackLaneRing in Resources.FindObjectsOfTypeAll<TrackLaneRing>().Where(x => x.name == "TrackLaneRingBig(Clone)"))
+            {
+                bigRings.Add(trackLaneRing.gameObject);
+            }
         }
-        
+
         private void FindVisualizers()
         {
             visualizer = new ArrayList();

@@ -92,21 +92,17 @@ namespace CustomFloorPlugin
         /// <param name="arg1">New Active Scene</param>
         private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
-            if(arg0.buildIndex == 1)
+            if(arg1.buildIndex == 1)
             {
                 PlatformUI.OnLoad();
             }
-
-            // Ensure we have already created platforms
-            if (platforms != null)
+            
+            if (platforms.ElementAt(platformIndex) != null)
             {
-                if (platforms.ElementAt(platformIndex) != null)
-                {
-                    // Find environment parts after scene change
-                    envHider.FindEnvironment();
-                    
-                    envHider.HideObjectsForPlatform(platforms.ElementAt(platformIndex));
-                }
+                // Find environment parts after scene change
+                envHider.FindEnvironment();
+
+                envHider.HideObjectsForPlatform(platforms.ElementAt(platformIndex));
             }
         }
 
@@ -115,8 +111,17 @@ namespace CustomFloorPlugin
         /// </summary>
         private void CreateAllPlatforms()
         {
+            
+            string customPlatformsFolderPath = Path.Combine(Environment.CurrentDirectory, customFolder);
+
+            // Create the CustomPlatforms folder if it doesn't already exist
+            if (!Directory.Exists(customPlatformsFolderPath))
+            {
+                Directory.CreateDirectory(customPlatformsFolderPath);
+            }
+
             // Find AssetBundles in our CustomPlatforms directory
-            string[] allBundlePaths = Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, customFolder), "*.plat");
+            string[] allBundlePaths = Directory.GetFiles(customPlatformsFolderPath, "*.plat");
 
             platforms = new List<CustomPlatform>();
             bundlePaths = new List<string>();
@@ -156,6 +161,7 @@ namespace CustomFloorPlugin
         {
             platforms.ElementAt(platformIndex).gameObject.SetActive(true);
             
+
             if (Input.GetKeyDown(KeyCode.P))
             {
                 NextPlatform();
@@ -256,6 +262,7 @@ namespace CustomFloorPlugin
             }
 
             newPlatform.name = customPlatform.platName + " by " + customPlatform.platAuthor;
+
             if (customPlatform.icon == null) customPlatform.icon = Resources.FindObjectsOfTypeAll<Sprite>().Where(x => x.name == "InsaneCover").FirstOrDefault();
 
             newPlatform.SetActive(false);

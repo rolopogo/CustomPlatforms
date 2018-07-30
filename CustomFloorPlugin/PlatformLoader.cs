@@ -73,11 +73,13 @@ namespace CustomFloorPlugin
             }
 
             PlatformUI.OnLoad();
-            // find env
-            envHider.FindEnvironment();
+            if (platforms.ElementAt(platformIndex) != null)
+            {
+                // Find environment parts after scene change
+                envHider.FindEnvironment();
 
-            // hide env for platform ( in case we missed the first hide on scene change )
-            envHider.HideObjectsForPlatform(platforms.ElementAt(platformIndex));
+                envHider.HideObjectsForPlatform(platforms.ElementAt(platformIndex));
+            }
         }
 
         public void OnApplicationQuit()
@@ -92,7 +94,7 @@ namespace CustomFloorPlugin
         /// <param name="arg1">New Active Scene</param>
         private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
-            if(arg1.buildIndex == 1)
+            if(arg1.name == "Menu")
             {
                 PlatformUI.OnLoad();
             }

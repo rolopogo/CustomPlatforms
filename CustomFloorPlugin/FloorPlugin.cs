@@ -14,7 +14,7 @@ namespace CustomFloorPlugin
     public class CustomFloorPlugin : IPlugin
     {
         public string Name => "Custom Platforms";
-        public string Version => "2.0.5";
+        public string Version => "2.1.0";
         public void OnApplicationStart()
         {
             SceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
@@ -28,7 +28,7 @@ namespace CustomFloorPlugin
         private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
             // Load in the menu scene
-            if (arg0.buildIndex == 1)
+            if (arg0.name == "Menu")
             {
                 PlatformLoader.OnLoad();
                 //Application.logMessageReceived += LogCallback;

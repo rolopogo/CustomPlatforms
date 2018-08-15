@@ -18,18 +18,26 @@ namespace CustomFloorPlugin
         private void Start()
         {
             //Console.WriteLine("PrefabLightmapData loaded");
-            SceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
+            //SceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
             ApplyLightmaps();
         }
 
         private void OnDestroy()
         {
-            SceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
+            //SceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
         }
         
         private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene scene)
         {
             ApplyLightmaps();
+        }
+
+        private void Update()
+        {
+            if(m_Renderers != null && m_Renderers.Length > 0 && m_Renderers[m_Renderers.Length-1].lightmapIndex >= LightmapSettings.lightmaps.Length)
+            {
+                ApplyLightmaps();
+            }
         }
 
         private void ApplyLightmaps()

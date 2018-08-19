@@ -32,7 +32,7 @@ namespace CustomFloorPlugin
         {
             if (spectrogramColumns == null) spectrogramColumns = new List<SpectrogramColumns>();
             if (columnDescriptors == null) columnDescriptors = new List<Spectrogram>();
-            
+
             Spectrogram[] localDescriptors = go.GetComponentsInChildren<Spectrogram>(true);
             
             foreach (Spectrogram spec in localDescriptors)

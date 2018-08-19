@@ -77,6 +77,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Behaviour Descriptors\SpectrogramMaterial.cs" />
+    <Compile Include="Behaviour Managers\SpectrogramMaterialManager.cs" />
     <Compile Include="Legacy Behaviours\CustomPlatformLegacy.cs" />
     <Compile Include="EnvironmentHider.cs" />
     <Compile Include="FloorPlugin.cs" />
@@ -116,6 +118,18 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assembly-CSharp.dll" />
+    <Content Include="IllusionInjector.dll" />
+    <Content Include="IllusionPlugin.dll" />
+    <Content Include="TextMeshPro-1.0.55.2017.1.0b12.dll" />
+    <Content Include="UnityEngine.AssetBundleModule.dll" />
+    <Content Include="UnityEngine.CoreModule.dll" />
+    <Content Include="UnityEngine.dll" />
+    <Content Include="UnityEngine.UI.dll" />
+    <Content Include="UnityEngine.UIModule.dll" />
+    <Content Include="UnityEngine.UnityWebRequestWWWModule.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

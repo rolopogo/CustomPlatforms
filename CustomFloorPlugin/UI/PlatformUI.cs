@@ -117,7 +117,7 @@ namespace CustomFloorPlugin
             }
 
             Button btn = Instantiate(Resources.FindObjectsOfTypeAll<Button>().First(x => (x.name == buttonTemplate)), parent, false);
-            DestroyImmediate(btn.GetComponent<GameEventOnUIButtonClick>());
+            DestroyImmediate(btn.GetComponent<SignalOnUIButtonClick>());
             btn.onClick = new Button.ButtonClickedEvent();
 
             return btn;
@@ -131,7 +131,7 @@ namespace CustomFloorPlugin
             }
 
             Button _button = Instantiate(_backButtonInstance, parent, false);
-            DestroyImmediate(_button.GetComponent<GameEventOnUIButtonClick>());
+            DestroyImmediate(_button.GetComponent<SignalOnUIButtonClick>());
             _button.onClick = new Button.ButtonClickedEvent();
 
             return _button;

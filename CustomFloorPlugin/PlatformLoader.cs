@@ -73,13 +73,7 @@ namespace CustomFloorPlugin
             }
 
             PlatformUI.OnLoad();
-            if (platforms.ElementAt(platformIndex) != null)
-            {
-                // Find environment parts after scene change
-                envHider.FindEnvironment();
-
-                envHider.HideObjectsForPlatform(platforms.ElementAt(platformIndex));
-            }
+            HideEnvironment();
         }
 
         public void OnApplicationQuit()
@@ -94,11 +88,28 @@ namespace CustomFloorPlugin
         /// <param name="arg1">New Active Scene</param>
         private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
-            if(arg1.name == "Menu")
+            if (arg1.name == "Menu")
             {
                 PlatformUI.OnLoad();
             }
-            
+
+            var asyncLoader = Resources.FindObjectsOfTypeAll<AsyncScenesLoader>().FirstOrDefault();
+
+            if (asyncLoader == null)
+            {
+                // The scene was loaded normally, hide environment as usual
+                HideEnvironment();
+            }
+            else
+            {
+                // AsyncScenesLoader is loading the scene, subscribe to the load complete event and hide once it's finished
+                asyncLoader.loadingDidFinishEvent -= HideEnvironment; // make sure we don't subscribe twice
+                asyncLoader.loadingDidFinishEvent += HideEnvironment;
+            }
+        }
+
+        private void HideEnvironment()
+        {
             if (platforms.ElementAt(platformIndex) != null)
             {
                 // Find environment parts after scene change
@@ -163,7 +174,6 @@ namespace CustomFloorPlugin
         {
             platforms.ElementAt(platformIndex).gameObject.SetActive(true);
             
-
             if (Input.GetKeyDown(KeyCode.P))
             {
                 NextPlatform();

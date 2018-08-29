@@ -341,6 +341,12 @@ namespace CustomFloorPlugin
                 specManager.CreateColumns(go);
             }
 
+            // Add spectrogram materials manager
+            SpectrogramMaterialManager specMatManager = go.GetComponent<SpectrogramMaterialManager>();
+            if (specMatManager == null) specMatManager = go.AddComponent<SpectrogramMaterialManager>();
+            specMatManager.UpdateMaterials();
+
+
             // Add Song event manager
             if (go.GetComponentInChildren<SongEventHandler>(true) != null)
             {

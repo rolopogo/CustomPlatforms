@@ -45,7 +45,7 @@ namespace CustomFloorPlugin
             if (Instance != null) return;
             Instance = this;
             
-            SceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
+            BSSceneManager.activeSceneChanged += BSSceneManagerOnActiveSceneChanged;
             
             DontDestroyOnLoad(gameObject);
         }
@@ -78,7 +78,7 @@ namespace CustomFloorPlugin
 
         public void OnApplicationQuit()
         {
-            SceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
+            BSSceneManager.activeSceneChanged -= BSSceneManagerOnActiveSceneChanged;
         }
         
         /// <summary>
@@ -86,26 +86,16 @@ namespace CustomFloorPlugin
         /// </summary>
         /// <param name="arg0">Previous Active Scene</param>
         /// <param name="arg1">New Active Scene</param>
-        private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
+        private void BSSceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
             if (arg1.name == "Menu")
             {
                 PlatformUI.OnLoad();
             }
-
-            var asyncLoader = Resources.FindObjectsOfTypeAll<AsyncScenesLoader>().FirstOrDefault();
-
-            if (asyncLoader == null)
-            {
-                // The scene was loaded normally, hide environment as usual
-                HideEnvironment();
-            }
-            else
-            {
-                // AsyncScenesLoader is loading the scene, subscribe to the load complete event and hide once it's finished
-                asyncLoader.loadingDidFinishEvent -= HideEnvironment; // make sure we don't subscribe twice
-                asyncLoader.loadingDidFinishEvent += HideEnvironment;
-            }
+            
+            // The scene was loaded normally, hide environment as usual
+            HideEnvironment();
+            
         }
 
         private void HideEnvironment()
@@ -346,6 +336,10 @@ namespace CustomFloorPlugin
             if (specMatManager == null) specMatManager = go.AddComponent<SpectrogramMaterialManager>();
             specMatManager.UpdateMaterials();
 
+            // Add spectrogram animation state manager
+            SpectrogramAnimationStateManager specAnimManager = go.GetComponent<SpectrogramAnimationStateManager>();
+            if (specAnimManager == null) specAnimManager = go.AddComponent<SpectrogramAnimationStateManager>();
+            specAnimManager.UpdateAnimationStates();
 
             // Add Song event manager
             if (go.GetComponentInChildren<SongEventHandler>(true) != null)

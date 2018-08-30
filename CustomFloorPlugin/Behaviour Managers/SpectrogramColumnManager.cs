@@ -12,24 +12,25 @@ namespace CustomFloorPlugin
         List<Spectrogram> columnDescriptors;
         List<SpectrogramColumns> spectrogramColumns;
 
-        private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
+        private void BSSceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
             UpdateSpectrogramDataProvider();
         }
 
         private void OnEnable()
         {
-            SceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
+            BSSceneManager.activeSceneChanged += BSSceneManagerOnActiveSceneChanged;
             UpdateSpectrogramDataProvider();
         }
 
         private void OnDisable()
         {
-            SceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
+            BSSceneManager.activeSceneChanged -= BSSceneManagerOnActiveSceneChanged;
         }
 
         public void CreateColumns(GameObject go)
         {
+            Console.WriteLine("creating columns");
             if (spectrogramColumns == null) spectrogramColumns = new List<SpectrogramColumns>();
             if (columnDescriptors == null) columnDescriptors = new List<Spectrogram>();
 
@@ -45,7 +46,7 @@ namespace CustomFloorPlugin
                 ReflectionUtil.SetPrivateField(specCol, "_maxHeight", spec.maxHeight);
                 ReflectionUtil.SetPrivateField(specCol, "_columnWidth", spec.columnWidth);
                 ReflectionUtil.SetPrivateField(specCol, "_columnDepth", spec.columnDepth);
-                specCol.CreateColums();
+                
                 spectrogramColumns.Add(specCol);
                 columnDescriptors.Add(spec);
             }

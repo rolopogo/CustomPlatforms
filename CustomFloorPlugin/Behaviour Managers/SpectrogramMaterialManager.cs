@@ -11,20 +11,20 @@ namespace CustomFloorPlugin
     {
         List<SpectrogramMaterial> spectrogramMaterials;
 
-        private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
+        private void BSSceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
             UpdateSpectrogramDataProvider();
         }
 
         private void OnEnable()
         {
-            SceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
+            BSSceneManager.activeSceneChanged += BSSceneManagerOnActiveSceneChanged;
             UpdateSpectrogramDataProvider();
         }
 
         private void OnDisable()
         {
-            SceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
+            BSSceneManager.activeSceneChanged -= BSSceneManagerOnActiveSceneChanged;
         }
 
         public void UpdateMaterials()

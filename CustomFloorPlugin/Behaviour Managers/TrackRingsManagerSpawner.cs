@@ -14,14 +14,14 @@ namespace CustomFloorPlugin
         List<TrackLaneRingsRotationEffectSpawner> rotationSpawners;
         List<TrackLaneRingsPositionStepEffectSpawner> stepSpawners;
 
-        private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
+        private void BSSceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
             FindBeatMapEventController();
         }
 
         private void OnEnable()
         {
-            SceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
+            BSSceneManager.activeSceneChanged += BSSceneManagerOnActiveSceneChanged;
             FindBeatMapEventController();
         }
 
@@ -40,7 +40,7 @@ namespace CustomFloorPlugin
 
         private void OnDisable()
         {
-            SceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
+            BSSceneManager.activeSceneChanged -= BSSceneManagerOnActiveSceneChanged;
         }
 
         public void CreateTrackRings(GameObject go)

@@ -14,22 +14,19 @@ namespace CustomFloorPlugin
     public class CustomFloorPlugin : IPlugin
     {
         public string Name => "Custom Platforms";
-        public string Version => "2.1.0";
+        public string Version => "2.2.0";
         public void OnApplicationStart()
         {
-            SceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
         }
-
-        private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
-        {
-        }
-
+        
         private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
+            
             // Load in the menu scene
             if (arg0.name == "Menu")
             {
+                BSSceneManager.OnLoad();
                 PlatformLoader.OnLoad();
                 //Application.logMessageReceived += LogCallback;
             }
@@ -44,7 +41,6 @@ namespace CustomFloorPlugin
 
         public void OnApplicationQuit()
         {
-            SceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
             SceneManager.sceneLoaded -= SceneManager_sceneLoaded;
         }
 

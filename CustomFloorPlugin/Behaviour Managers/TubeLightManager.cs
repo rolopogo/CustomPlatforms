@@ -12,7 +12,7 @@ namespace CustomFloorPlugin
         private List<BloomPrePassLight> tbppLights;
         private List<TubeLight> tubeLightDescriptors;
         
-        private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
+        private void BSSceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
             SetColorToDefault();
         }
@@ -41,14 +41,14 @@ namespace CustomFloorPlugin
 
         private void OnEnable()
         {
-            SceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
+            BSSceneManager.activeSceneChanged += BSSceneManagerOnActiveSceneChanged;
 
             SetColorToDefault();
         }
 
         private void OnDisable()
         {
-            SceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
+            BSSceneManager.activeSceneChanged -= BSSceneManagerOnActiveSceneChanged;
         }
         
 

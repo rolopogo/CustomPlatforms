@@ -56,6 +56,10 @@
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\BeatSaberUI\BeatSaberUI\bin\Debug\UnityEngine.AnimationModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
@@ -77,7 +81,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Behaviour Descriptors\SpectrogramAnimationState.cs" />
     <Compile Include="Behaviour Descriptors\SpectrogramMaterial.cs" />
+    <Compile Include="Behaviour Managers\SpectrogramAnimationStateManager.cs" />
     <Compile Include="Behaviour Managers\SpectrogramMaterialManager.cs" />
     <Compile Include="Legacy Behaviours\CustomPlatformLegacy.cs" />
     <Compile Include="EnvironmentHider.cs" />
@@ -94,6 +100,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Util\BSSceneManager.cs" />
     <Compile Include="Util\ReflectionUtil.cs" />
     <Compile Include="Behaviour Managers\RotationEventEffectManager.cs" />
     <Compile Include="Behaviour Managers\SongEventManager.cs" />
@@ -118,18 +125,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Assembly-CSharp.dll" />
-    <Content Include="IllusionInjector.dll" />
-    <Content Include="IllusionPlugin.dll" />
-    <Content Include="TextMeshPro-1.0.55.2017.1.0b12.dll" />
-    <Content Include="UnityEngine.AssetBundleModule.dll" />
-    <Content Include="UnityEngine.CoreModule.dll" />
-    <Content Include="UnityEngine.dll" />
-    <Content Include="UnityEngine.UI.dll" />
-    <Content Include="UnityEngine.UIModule.dll" />
-    <Content Include="UnityEngine.UnityWebRequestWWWModule.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

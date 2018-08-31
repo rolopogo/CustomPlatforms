@@ -15,8 +15,21 @@ namespace CustomFloorPlugin
     {
         public string Name => "Custom Platforms";
         public string Version => "2.2.0";
+
+        static CustomFloorPlugin Instance;
+        private bool init = false;
+
+        public static string PluginName
+        {
+            get
+            {
+                return Instance.Name;
+            }
+        }
+
         public void OnApplicationStart()
         {
+            Instance = this;
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
         }
         
@@ -24,11 +37,22 @@ namespace CustomFloorPlugin
         {
             
             // Load in the menu scene
-            if (arg0.name == "Menu")
+            if (arg0.name == "Menu" && !init)
             {
+                init = true;
+
+                SettingsUI.OnLoad();
                 BSSceneManager.OnLoad();
                 PlatformLoader.OnLoad();
-                //Application.logMessageReceived += LogCallback;
+
+                // Load from modprefs
+                EnvironmentHider.showFeetOverride = ModPrefs.GetBool(PluginName, "AlwaysShowFeet", false, true);
+                
+                EnvironmentSceneOverrider.overrideMode = (EnvironmentSceneOverrider.EnvOverrideMode)ModPrefs.GetInt(PluginName, "EnvironmentOverrideMode", 0, true);
+                EnvironmentSceneOverrider.GetSceneInfos();
+                EnvironmentSceneOverrider.OverrideEnvironmentScene();
+
+                Application.logMessageReceived += LogCallback;
             }
         }
 
@@ -36,6 +60,7 @@ namespace CustomFloorPlugin
         void LogCallback(string condition, string stackTrace, LogType type)
         {
             if (type == LogType.Log) return;
+            Console.WriteLine(condition);
             Console.WriteLine(stackTrace);
         }
 

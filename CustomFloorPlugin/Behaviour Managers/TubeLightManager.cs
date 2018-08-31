@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Reflection;
 
 namespace CustomFloorPlugin
 {
@@ -79,7 +80,9 @@ namespace CustomFloorPlugin
                 ReflectionUtil.SetPrivateField(tubeBloomLight, "_length", tl.length);
                 ReflectionUtil.SetPrivateField(tubeBloomLight, "_center", tl.center);
                 tubeBloomLight.color = tl.color;
-                ReflectionUtil.SetPrivateFieldBase(tubeBloomLight, "_ID", (int)tl.lightsID);
+
+                var prop = typeof(BloomPrePassLight).GetField("_ID", BindingFlags.NonPublic | BindingFlags.Instance);
+                prop.SetValue(tubeBloomLight, (int)tl.lightsID);
 
                 tbppLights.Add(tubeBloomLight);
                 tubeLightDescriptors.Add(tl);

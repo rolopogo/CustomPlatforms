@@ -85,6 +85,7 @@
     <Compile Include="Behaviour Descriptors\SpectrogramMaterial.cs" />
     <Compile Include="Behaviour Managers\SpectrogramAnimationStateManager.cs" />
     <Compile Include="Behaviour Managers\SpectrogramMaterialManager.cs" />
+    <Compile Include="EnvironmentSceneOverrider.cs" />
     <Compile Include="Legacy Behaviours\CustomPlatformLegacy.cs" />
     <Compile Include="EnvironmentHider.cs" />
     <Compile Include="FloorPlugin.cs" />
@@ -118,6 +119,7 @@
     <Compile Include="Behaviour Descriptors\Spectrogram.cs" />
     <Compile Include="Behaviour Descriptors\TrackRings.cs" />
     <Compile Include="Behaviour Descriptors\TubeLight.cs" />
+    <Compile Include="Util\SettingsUI.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

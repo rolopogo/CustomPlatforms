@@ -1,4 +1,5 @@
 ﻿using HMUI;
+using IllusionPlugin;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -28,6 +29,7 @@ namespace CustomFloorPlugin
         public static List<Sprite> icons = new List<Sprite>();
 
         public PlatformMasterViewController _platformMasterViewController;
+        
 
         internal static void OnLoad()
         {
@@ -58,17 +60,44 @@ namespace CustomFloorPlugin
                 Console.WriteLine("EXCEPTION ON AWAKE(TRY FIND BUTTONS): " + e);
             }
 
-            try
-            {
-                CreatePlatformsButton();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("EXCEPTION ON AWAKE(TRY CREATE BUTTON): " + e);
-            }
+            CreatePlatformsButton();
+            
+            CreateSettingsUI();
 
         }
-        
+
+        private static void CreateSettingsUI()
+        {
+            var subMenu = SettingsUI.CreateSubMenu("Platforms");
+
+            // Feet Icon Override
+            var feetMenu = subMenu.AddBool("Always Show Feet");
+
+            feetMenu.GetValue += delegate
+            {
+                return EnvironmentHider.showFeetOverride;
+            };
+            feetMenu.SetValue += delegate (bool value)
+            {
+                EnvironmentHider.showFeetOverride = value;
+                PlatformLoader.Instance.HideEnvironmentForCurrentPlatform();
+                ModPrefs.SetBool(CustomFloorPlugin.PluginName, "AlwaysShowFeet", EnvironmentHider.showFeetOverride);
+            };
+            
+            var environment = subMenu.AddList("Environment Override", EnvironmentSceneOverrider.OverrideModes());
+            environment.GetValue += delegate
+            {
+                return (float)EnvironmentSceneOverrider.overrideMode;
+            };
+            environment.SetValue += delegate (float value)
+            {
+                EnvironmentSceneOverrider.overrideMode = (EnvironmentSceneOverrider.EnvOverrideMode)value;
+                EnvironmentSceneOverrider.OverrideEnvironmentScene();
+                ModPrefs.SetInt(CustomFloorPlugin.PluginName, "EnvironmentOverrideMode", (int)EnvironmentSceneOverrider.overrideMode);
+            };
+            environment.FormatValue += delegate (float value) { return EnvironmentSceneOverrider.Name((EnvironmentSceneOverrider.EnvOverrideMode)value); };
+        }
+
         private void CreatePlatformsButton()
         {
 

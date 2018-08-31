@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using IllusionPlugin;
 
 namespace CustomFloorPlugin
 {
@@ -19,7 +20,7 @@ namespace CustomFloorPlugin
         private const string customFolder = "CustomPlatforms";
 
         private MaterialSwapper matSwapper;
-        private EnvironmentHider envHider;
+        public EnvironmentHider envHider;
 
         private List<string> bundlePaths;
         private List<CustomPlatform> platforms;
@@ -59,9 +60,9 @@ namespace CustomFloorPlugin
             CreateAllPlatforms();
 
             // Retrieve saved path from player prefs if it exists
-            if (PlayerPrefs.HasKey("CustomPlatformPath"))
+            if (ModPrefs.HasKey(CustomFloorPlugin.PluginName, "CustomPlatformPath"))
             {
-                string savedPath = PlayerPrefs.GetString("CustomPlatformPath");
+                string savedPath = ModPrefs.GetString(CustomFloorPlugin.PluginName, "CustomPlatformPath");
                 // Check if this path was loaded and update our platform index
                 for (int i = 0; i < bundlePaths.Count; i++)
                 {
@@ -71,7 +72,6 @@ namespace CustomFloorPlugin
                     }
                 }
             }
-
             PlatformUI.OnLoad();
             HideEnvironment();
         }
@@ -105,8 +105,13 @@ namespace CustomFloorPlugin
                 // Find environment parts after scene change
                 envHider.FindEnvironment();
 
-                envHider.HideObjectsForPlatform(platforms.ElementAt(platformIndex));
+                HideEnvironmentForCurrentPlatform();
             }
+        }
+
+        public void HideEnvironmentForCurrentPlatform()
+        {
+            envHider.HideObjectsForPlatform(platforms.ElementAt(platformIndex));
         }
 
         /// <summary>
@@ -193,8 +198,8 @@ namespace CustomFloorPlugin
             // Increment index
             platformIndex = index % platforms.Count;
 
-            // Save path into PlayerPrefs
-            PlayerPrefs.SetString("CustomPlatformPath", bundlePaths.ElementAt(platformIndex));
+            // Save path into ModPrefs
+            ModPrefs.SetString(CustomFloorPlugin.PluginName, "CustomPlatformPath", bundlePaths.ElementAt(platformIndex));
 
             CustomPlatform newPlaform = platforms.ElementAt(platformIndex);
 

@@ -14,7 +14,7 @@ namespace CustomFloorPlugin
     public class CustomFloorPlugin : IPlugin
     {
         public string Name => "Custom Platforms";
-        public string Version => "2.2.0";
+        public string Version => "2.3.0";
 
         static CustomFloorPlugin Instance;
         private bool init = false;
@@ -52,7 +52,7 @@ namespace CustomFloorPlugin
                 EnvironmentSceneOverrider.GetSceneInfos();
                 EnvironmentSceneOverrider.OverrideEnvironmentScene();
 
-                Application.logMessageReceived += LogCallback;
+                //Application.logMessageReceived += LogCallback;
             }
         }
 

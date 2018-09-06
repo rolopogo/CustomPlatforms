@@ -33,9 +33,7 @@ namespace CustomFloorPlugin
                 MeshBloomPrePassLight mesh = tl.gameObject.GetComponent<MeshBloomPrePassLight>();
                 if (mesh != null)
                 {
-                    Console.WriteLine("before: " + tube.color);
                     mesh.color = tl.color;
-                    Console.WriteLine("after:" + tube.color);
                 }
             }
         }

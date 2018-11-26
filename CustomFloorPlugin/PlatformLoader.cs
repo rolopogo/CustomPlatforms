@@ -46,7 +46,7 @@ namespace CustomFloorPlugin
             if (Instance != null) return;
             Instance = this;
             
-            BSSceneManager.activeSceneChanged += BSSceneManagerOnActiveSceneChanged;
+            BSSceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
             
             DontDestroyOnLoad(gameObject);
         }
@@ -78,7 +78,7 @@ namespace CustomFloorPlugin
 
         public void OnApplicationQuit()
         {
-            BSSceneManager.activeSceneChanged -= BSSceneManagerOnActiveSceneChanged;
+            BSSceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
         }
         
         /// <summary>
@@ -86,7 +86,7 @@ namespace CustomFloorPlugin
         /// </summary>
         /// <param name="arg0">Previous Active Scene</param>
         /// <param name="arg1">New Active Scene</param>
-        private void BSSceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
+        private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
             if (arg1.name == "Menu")
             {
@@ -94,8 +94,7 @@ namespace CustomFloorPlugin
             }
             
             // The scene was loaded normally, hide environment as usual
-            HideEnvironment();
-            
+            HideEnvironment();            
         }
 
         private void HideEnvironment()
@@ -139,7 +138,7 @@ namespace CustomFloorPlugin
             defaultPlatform.transform.parent = transform;
             defaultPlatform.platName = "Default Environment";
             defaultPlatform.platAuthor = "Beat Saber";
-            defaultPlatform.icon = Resources.FindObjectsOfTypeAll<Sprite>().Where(x => x.name == "InsaneCover").FirstOrDefault();
+            defaultPlatform.icon = Resources.FindObjectsOfTypeAll<Sprite>().Where(x => x.name == "LvlInsaneCover").FirstOrDefault();
             platforms.Add(defaultPlatform);
             bundlePaths.Add("");
 
@@ -269,8 +268,8 @@ namespace CustomFloorPlugin
             }
 
             newPlatform.name = customPlatform.platName + " by " + customPlatform.platAuthor;
-
-            if (customPlatform.icon == null) customPlatform.icon = Resources.FindObjectsOfTypeAll<Sprite>().Where(x => x.name == "InsaneCover").FirstOrDefault();
+            
+            if (customPlatform.icon == null) customPlatform.icon = Resources.FindObjectsOfTypeAll<Sprite>().Where(x => x.name == "FeetIcon").FirstOrDefault();
 
             newPlatform.SetActive(false);
 

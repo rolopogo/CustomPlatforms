@@ -125,20 +125,19 @@ public class MeshBloomPrePassLight : BloomPrePassLight
         return mesh;
     }
 
-    // Token: 0x060001BB RID: 443 RVA: 0x0000B4BC File Offset: 0x000096BC
-    public override void FillMeshData(int lightNum, Vector3[] vertices, Color32[] colors32, Vector2[] uv2, Vector2[] uv3, Matrix4x4 viewMatrix, Matrix4x4 projectionMatrix, float lineWidth)
+    public override void FillMeshData(int lightNum, Vector3[] vertices, Color[] colors, Vector4[] viewPos, Matrix4x4 viewMatrix, Matrix4x4 projectionMatrix, float lineWidth)
     {
         float y = -this._length * this._center;
         float y2 = this._length * (1f - this._center);
         Matrix4x4 localToWorldMatrix = this._transform.localToWorldMatrix;
         Vector3 point = localToWorldMatrix.MultiplyPoint3x4(new Vector4(0f, y, 0f));
         Vector3 point2 = localToWorldMatrix.MultiplyPoint3x4(new Vector4(0f, y2, 0f));
-        Vector3 vector = viewMatrix.MultiplyPoint3x4(point);
-        Vector3 vector2 = viewMatrix.MultiplyPoint3x4(point2);
-        Vector4 vector3 = projectionMatrix * new Vector4(vector.x, vector.y, vector.z, 1f);
-        Vector4 vector4 = projectionMatrix * new Vector4(vector2.x, vector2.y, vector2.z, 1f);
-        bool flag = vector3.x >= -vector3.w;
-        bool flag2 = vector4.x >= -vector4.w;
+        Vector3 v = viewMatrix.MultiplyPoint3x4(point);
+        Vector3 v2 = viewMatrix.MultiplyPoint3x4(point2);
+        Vector4 a = projectionMatrix * new Vector4(v.x, v.y, v.z, 1f);
+        Vector4 a2 = projectionMatrix * new Vector4(v2.x, v2.y, v2.z, 1f);
+        bool flag = a.x >= -a.w;
+        bool flag2 = a2.x >= -a2.w;
         if (!flag && !flag2)
         {
             for (int i = 0; i < 4; i++)
@@ -149,19 +148,11 @@ public class MeshBloomPrePassLight : BloomPrePassLight
         }
         if (flag != flag2)
         {
-            float d = (-vector3.w - vector3.x) / (vector4.x - vector3.x + vector4.w - vector3.w);
-            Vector4 vector5 = vector3 + (vector4 - vector3) * d;
-            if (flag)
-            {
-                vector4 = vector5;
-            }
-            else
-            {
-                vector3 = vector5;
-            }
+            float t = (-a.w - a.x) / (a2.x - a.x + a2.w - a.w);
+            this.ClipPoints(ref a, ref a2, ref v, ref v2, flag, t);
         }
-        flag = (vector3.x <= vector3.w);
-        flag2 = (vector4.x <= vector4.w);
+        flag = (a.x <= a.w);
+        flag2 = (a2.x <= a2.w);
         if (!flag && !flag2)
         {
             for (int j = 0; j < 4; j++)
@@ -172,19 +163,11 @@ public class MeshBloomPrePassLight : BloomPrePassLight
         }
         if (flag != flag2)
         {
-            float d2 = (vector3.w - vector3.x) / (vector4.x - vector3.x - vector4.w + vector3.w);
-            Vector4 vector6 = vector3 + (vector4 - vector3) * d2;
-            if (flag)
-            {
-                vector4 = vector6;
-            }
-            else
-            {
-                vector3 = vector6;
-            }
+            float t2 = (a.w - a.x) / (a2.x - a.x - a2.w + a.w);
+            this.ClipPoints(ref a, ref a2, ref v, ref v2, flag, t2);
         }
-        flag = (vector3.y >= -vector3.w);
-        flag2 = (vector4.y >= -vector4.w);
+        flag = (a.y >= -a.w);
+        flag2 = (a2.y >= -a2.w);
         if (!flag && !flag2)
         {
             for (int k = 0; k < 4; k++)
@@ -195,19 +178,11 @@ public class MeshBloomPrePassLight : BloomPrePassLight
         }
         if (flag != flag2)
         {
-            float d3 = (-vector3.w - vector3.y) / (vector4.y - vector3.y + vector4.w - vector3.w);
-            Vector4 vector7 = vector3 + (vector4 - vector3) * d3;
-            if (flag)
-            {
-                vector4 = vector7;
-            }
-            else
-            {
-                vector3 = vector7;
-            }
+            float t3 = (-a.w - a.y) / (a2.y - a.y + a2.w - a.w);
+            this.ClipPoints(ref a, ref a2, ref v, ref v2, flag, t3);
         }
-        flag = (vector3.y <= vector3.w);
-        flag2 = (vector4.y <= vector4.w);
+        flag = (a.y <= a.w);
+        flag2 = (a2.y <= a2.w);
         if (!flag && !flag2)
         {
             for (int l = 0; l < 4; l++)
@@ -218,19 +193,11 @@ public class MeshBloomPrePassLight : BloomPrePassLight
         }
         if (flag != flag2)
         {
-            float d4 = (vector3.w - vector3.y) / (vector4.y - vector3.y - vector4.w + vector3.w);
-            Vector4 vector8 = vector3 + (vector4 - vector3) * d4;
-            if (flag)
-            {
-                vector4 = vector8;
-            }
-            else
-            {
-                vector3 = vector8;
-            }
+            float t4 = (a.w - a.y) / (a2.y - a.y - a2.w + a.w);
+            this.ClipPoints(ref a, ref a2, ref v, ref v2, flag, t4);
         }
-        flag = (vector3.z <= vector3.w);
-        flag2 = (vector4.z <= vector4.w);
+        flag = (a.z <= a.w);
+        flag2 = (a2.z <= a2.w);
         if (!flag && !flag2)
         {
             for (int m = 0; m < 4; m++)
@@ -241,20 +208,12 @@ public class MeshBloomPrePassLight : BloomPrePassLight
         }
         if (flag != flag2)
         {
-            float d5 = (vector3.w - vector3.z) / (vector4.z - vector3.z - vector4.w + vector3.w);
-            Vector4 vector9 = vector3 + (vector4 - vector3) * d5;
-            if (flag)
-            {
-                vector4 = vector9;
-            }
-            else
-            {
-                vector3 = vector9;
-            }
+            float t5 = (a.w - a.z) / (a2.z - a.z - a2.w + a.w);
+            this.ClipPoints(ref a, ref a2, ref v, ref v2, flag, t5);
         }
         float num = 0.0001f;
-        flag = (vector3.z >= -vector3.w - num);
-        flag2 = (vector4.z >= -vector4.w - num);
+        flag = (a.z >= -a.w - num);
+        flag2 = (a2.z >= -a2.w - num);
         if (!flag && !flag2)
         {
             for (int n = 0; n < 4; n++)
@@ -265,55 +224,54 @@ public class MeshBloomPrePassLight : BloomPrePassLight
         }
         if (flag != flag2)
         {
-            float d6 = (-vector3.w - vector3.z) / (vector4.z - vector3.z + vector4.w - vector3.w);
-            Vector4 vector10 = vector3 + (vector4 - vector3) * d6;
-            if (flag)
-            {
-                vector4 = vector10;
-            }
-            else
-            {
-                vector3 = vector10;
-            }
+            float t6 = (-a.w - a.z) / (a2.z - a.z + a2.w - a.w);
+            this.ClipPoints(ref a, ref a2, ref v, ref v2, flag, t6);
         }
-        Matrix4x4 inverse = projectionMatrix.inverse;
-        vector = inverse * vector3;
-        vector2 = inverse * vector4;
-        Vector3 vector11 = vector3 / vector3.w;
-        Vector3 a = vector4 / vector4.w;
-        vector11.x = vector11.x * 0.5f + 0.5f;
-        vector11.y = vector11.y * 0.5f + 0.5f;
-        vector11.z = 0f;
-        a.x = a.x * 0.5f + 0.5f;
-        a.y = a.y * 0.5f + 0.5f;
-        a.z = 0f;
-        Vector3 vector12 = a - vector11;
-        Vector3 vector13 = new Vector3(-vector12.y, vector12.x, 0f);
-        vector13.Normalize();
-        vector13 *= lineWidth;
-        Vector3 v = new Vector3(vector.x / vector3.w, vector.y / vector3.w, vector.z / vector3.w);
-        Vector3 v2 = new Vector3(1f / vector3.w, 0f, 0f);
-        Vector3 v3 = new Vector3(vector2.x / vector4.w, vector2.y / vector4.w, vector2.z / vector4.w);
-        Vector3 v4 = new Vector3(1f / vector4.w, 0f, 0f);
+        Vector3 vector = a / a.w;
+        Vector3 a3 = a2 / a2.w;
+        vector.x = vector.x * 0.5f + 0.5f;
+        vector.y = vector.y * 0.5f + 0.5f;
+        vector.z = 0f;
+        a3.x = a3.x * 0.5f + 0.5f;
+        a3.y = a3.y * 0.5f + 0.5f;
+        a3.z = 0f;
+        Vector3 vector2 = a3 - vector;
+        Vector3 vector3 = new Vector3(-vector2.y, vector2.x, 0f);
+        vector3.Normalize();
+        vector3 *= lineWidth;
         int num2 = lightNum * 4;
-        vertices[num2] = vector11 - vector13;
-        vertices[num2 + 1] = vector11 + vector13;
-        vertices[num2 + 2] = a + vector13;
-        vertices[num2 + 3] = a - vector13;
-        Color32 color = this._color;
-        colors32[num2] = color;
-        colors32[num2 + 1] = color;
-        colors32[num2 + 2] = color;
-        colors32[num2 + 3] = color;
-        uv2[num2] = v;
-        uv2[num2 + 1] = v;
-        uv2[num2 + 2] = v3;
-        uv2[num2 + 3] = v3;
-        uv3[num2] = v2;
-        uv3[num2 + 1] = v2;
-        uv3[num2 + 2] = v4;
-        uv3[num2 + 3] = v4;
+        vertices[num2] = vector - vector3;
+        vertices[num2 + 1] = vector + vector3;
+        vertices[num2 + 2] = a3 + vector3;
+        vertices[num2 + 3] = a3 - vector3;
+        Color color = this._color * this._intensityMultiplier;
+        colors[num2] = color;
+        colors[num2 + 1] = color;
+        colors[num2 + 2] = color;
+        colors[num2 + 3] = color;
+        viewPos[num2] = v;
+        viewPos[num2 + 1] = v;
+        viewPos[num2 + 2] = v2;
+        viewPos[num2 + 3] = v2;
     }
+
+    public virtual void ClipPoints(ref Vector4 fromPointClipPos, ref Vector4 toPointClipPos, ref Vector3 fromPointViewPos, ref Vector3 toPointViewPos, bool fromPointInside, float t)
+    {
+        Vector4 vector = fromPointClipPos + (toPointClipPos - fromPointClipPos) * t;
+        Vector4 v = fromPointViewPos + (toPointViewPos - fromPointViewPos) * t;
+        if (fromPointInside)
+        {
+            toPointClipPos = vector;
+            toPointViewPos = v;
+        }
+        else
+        {
+            fromPointClipPos = vector;
+            fromPointViewPos = v;
+        }
+    }   
+
+    protected float _intensityMultiplier = 1f;
 
     // Token: 0x040001B6 RID: 438
     [SerializeField]

@@ -103,6 +103,102 @@ namespace CustomFloorPlugin
         }
     }
 
+    public abstract class IntSettingsController : IncDecSettingsController
+    {
+        private int _value;
+        protected int _min;
+        protected int _max;
+        protected int _increment;
+
+        protected abstract int GetInitValue();
+        protected abstract void ApplyValue(int value);
+        protected abstract string TextForValue(int value);
+
+
+        public override void Init()
+        {
+            _value = this.GetInitValue();
+            this.RefreshUI();
+        }
+        public override void ApplySettings()
+        {
+            this.ApplyValue(this._value);
+        }
+        private void RefreshUI()
+        {
+            this.text = this.TextForValue(this._value);
+            this.enableDec = _value > _min;
+            this.enableInc = _value < _max;
+        }
+        public override void IncButtonPressed()
+        {
+            this._value += _increment;
+            if (this._value > _max) this._value = _max;
+            this.RefreshUI();
+        }
+        public override void DecButtonPressed()
+        {
+            this._value -= _increment;
+            if (this._value < _min) this._value = _min;
+            this.RefreshUI();
+        }
+    }
+
+    public class IntViewController : IntSettingsController
+    {
+        public delegate int GetInt();
+        public event GetInt GetValue;
+
+        public delegate void SetInt(int value);
+        public event SetInt SetValue;
+
+        public void SetValues(int min, int max, int increment)
+        {
+            _min = min;
+            _max = max;
+            _increment = increment;
+        }
+
+        public void UpdateIncrement(int increment)
+        {
+            _increment = increment;
+        }
+
+        private int FixValue(int value)
+        {
+            if (value % _increment != 0)
+            {
+                value -= (value % _increment);
+            }
+            if (value > _max) value = _max;
+            if (value < _min) value = _min;
+            return value;
+        }
+
+        protected override int GetInitValue()
+        {
+            int value = 0;
+            if (GetValue != null)
+            {
+                value = FixValue(GetValue());
+            }
+            return value;
+        }
+
+        protected override void ApplyValue(int value)
+        {
+            if (SetValue != null)
+            {
+                SetValue(FixValue(value));
+            }
+        }
+
+        protected override string TextForValue(int value)
+        {
+            return value.ToString();
+        }
+    }
+
     public class SubMenu
     {
         public Transform transform;
@@ -115,6 +211,13 @@ namespace CustomFloorPlugin
         public BoolViewController AddBool(string name)
         {
             return AddToggleSetting<BoolViewController>(name);
+        }
+
+        public IntViewController AddInt(string name, int min, int max, int increment)
+        {
+            var view = AddIntSetting<IntViewController>(name);
+            view.SetValues(min, max, increment);
+            return view;
         }
 
         public ListViewController AddList(string name, float[] values)
@@ -153,6 +256,21 @@ namespace CustomFloorPlugin
 
             return newToggleSettingsController;
         }
+
+        public T AddIntSetting<T>(string name) where T : IntSettingsController
+        {
+            var volumeSettings = Resources.FindObjectsOfTypeAll<WindowModeSettingsController>().FirstOrDefault();
+            GameObject newSettingsObject = MonoBehaviour.Instantiate(volumeSettings.gameObject, transform);
+            newSettingsObject.name = name;
+
+            WindowModeSettingsController volume = newSettingsObject.GetComponent<WindowModeSettingsController>();
+            T newToggleSettingsController = (T)ReflectionUtil.CopyComponent(volume, typeof(IncDecSettingsController), typeof(T), newSettingsObject);
+            MonoBehaviour.DestroyImmediate(volume);
+
+            newSettingsObject.GetComponentInChildren<TMP_Text>().text = name;
+
+            return newToggleSettingsController;
+        }
     }
 
     public class SettingsUI : MonoBehaviour
@@ -184,7 +302,7 @@ namespace CustomFloorPlugin
             if (Instance == null)
             {
                 Instance = this;
-                SceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
+                BSSceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
                 DontDestroyOnLoad(gameObject);
             }
             else
@@ -198,8 +316,8 @@ namespace CustomFloorPlugin
             if (isMenuScene(scene))
             {
                 _mainMenuViewController = Resources.FindObjectsOfTypeAll<MainMenuViewController>().First();
-                var _menuMasterViewController = Resources.FindObjectsOfTypeAll<StandardLevelSelectionFlowCoordinator>().First();
-                prompt = ReflectionUtil.GetPrivateField<SimpleDialogPromptViewController>(_menuMasterViewController, "_simpleDialogPromptViewController");
+                //var _menuMasterViewController = Resources.FindObjectsOfTypeAll<StandardLevelSelectionFlowCoordinator>().First();
+                //prompt = ReflectionUtil.GetPrivateField<SimpleDialogPromptViewController>(_menuMasterViewController, "_simpleDialogPromptViewController");
             }
         }
 
@@ -238,13 +356,14 @@ namespace CustomFloorPlugin
 
             var temp = Resources.FindObjectsOfTypeAll<SettingsNavigationController>().FirstOrDefault();
 
-            var others = temp.transform.Find("Others");
+            var others = temp.transform.Find("OtherSettings");
+
             var tweakSettingsObject = Instantiate(others.gameObject, others.transform.parent);
             Transform mainContainer = CleanScreen(tweakSettingsObject.transform);
 
             var tweaksSubMenu = new SettingsSubMenuInfo();
             tweaksSubMenu.SetPrivateField("_menuName", name);
-            tweaksSubMenu.SetPrivateField("_controller", tweakSettingsObject.GetComponent<VRUIViewController>());
+            tweaksSubMenu.SetPrivateField("_viewController", tweakSettingsObject.GetComponent<VRUIViewController>());
 
             var mainSettingsMenu = Resources.FindObjectsOfTypeAll<MainSettingsMenuViewController>().FirstOrDefault();
             var subMenus = mainSettingsMenu.GetPrivateField<SettingsSubMenuInfo[]>("_settingsSubMenuInfos").ToList();

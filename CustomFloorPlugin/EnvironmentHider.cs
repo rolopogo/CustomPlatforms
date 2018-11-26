@@ -152,10 +152,11 @@ namespace CustomFloorPlugin
         {
             towers = new ArrayList();
             // Song Environments
-            FindAddGameObject("NearBuilding", towers);
-            FindAddGameObject("NearBuilding (1)", towers);
-            FindAddGameObject("NearBuilding (2)", towers);
-            FindAddGameObject("NearBuilding (3)", towers);
+            FindAddGameObject("NearBuildingLeft", towers);
+            FindAddGameObject("NearBuildingLeft (1)", towers);
+            FindAddGameObject("NearBuildingRight", towers);
+            FindAddGameObject("NearBuildingRight (1)", towers);
+
             // Menu
             FindAddGameObject("NearBuilding (4)", towers);
             FindAddGameObject("NearBuilding (5)", towers);
@@ -167,7 +168,9 @@ namespace CustomFloorPlugin
         {
             highway = new ArrayList();
             FindAddGameObject("Construction", highway);
-            FindAddGameObject("Environment/Static/Floor/Floor", highway);
+            FindAddGameObject("Frame", highway);
+            FindAddGameObject("Stripes", highway);
+            FindAddGameObject("Environment/Static/Floor", highway);
             FindAddGameObject("FrontColumns", highway);
         }
 

@@ -13,7 +13,6 @@ namespace CustomFloorPlugin
 {
     class PlatformListViewController : VRUIViewController, TableView.IDataSource
     {
-        PlatformMasterViewController _parentMasterViewController;
         PlatformUI ui;
 
         public Button _pageUpButton;
@@ -21,41 +20,33 @@ namespace CustomFloorPlugin
         public TextMeshProUGUI _versionNumber;
 
         public TableView _platformsTableView;
-        StandardLevelListTableCell _songListTableCellInstance;
+        LevelListTableCell _songListTableCellInstance;
         
         protected override void DidActivate(bool firstActivation, ActivationType type)
         {
-            ui = PlatformUI._instance;
-            _parentMasterViewController = transform.parent.GetComponent<PlatformMasterViewController>();
-
             try
             {
-                _songListTableCellInstance = Resources.FindObjectsOfTypeAll<StandardLevelListTableCell>().First(x => (x.name == "StandardLevelListTableCell"));
-
-                if (_platformsTableView == null)
+                if (firstActivation)
                 {
-                    _platformsTableView = new GameObject().AddComponent<TableView>();
+                    ui = PlatformUI._instance;
+                    _songListTableCellInstance = Resources.FindObjectsOfTypeAll<LevelListTableCell>().First(x => (x.name == "LevelListTableCell"));
+
+                    _platformsTableView = new GameObject("PlatformsListTableView").AddComponent<TableView>();
 
                     _platformsTableView.transform.SetParent(rectTransform, false);
-
-                    _platformsTableView.dataSource = this;
 
                     (_platformsTableView.transform as RectTransform).anchorMin = new Vector2(0f, 0.5f);
                     (_platformsTableView.transform as RectTransform).anchorMax = new Vector2(1f, 0.5f);
                     (_platformsTableView.transform as RectTransform).sizeDelta = new Vector2(0f, 60f);
                     (_platformsTableView.transform as RectTransform).position = new Vector3(0f, 0f, 2.4f);
-                    (_platformsTableView.transform as RectTransform).anchoredPosition = new Vector3(0f, 0f); // -3
+                    (_platformsTableView.transform as RectTransform).anchoredPosition = new Vector3(0f, 6f); // -3
+
+                    _platformsTableView.SetPrivateField("_preallocatedCells", new TableView.CellsGroup[0]);
+                    _platformsTableView.SetPrivateField("_isInitialized", false);
+                    _platformsTableView.dataSource = this;
 
                     _platformsTableView.didSelectRowEvent += _PlatformTableView_DidSelectRowEvent;
-
-                }
-                else
-                {
-                    _platformsTableView.ReloadData();
-                }
-
-                if (_pageUpButton == null)
-                {
+                    
                     _pageUpButton = Instantiate(Resources.FindObjectsOfTypeAll<Button>().First(x => (x.name == "PageUpButton")), rectTransform, false);
                     (_pageUpButton.transform as RectTransform).anchorMin = new Vector2(0.5f, 1f);
                     (_pageUpButton.transform as RectTransform).anchorMax = new Vector2(0.5f, 1f);
@@ -65,10 +56,8 @@ namespace CustomFloorPlugin
                     {
                         _platformsTableView.PageScrollUp();
                     });
-                }
 
-                if (_pageDownButton == null)
-                {
+
                     _pageDownButton = Instantiate(Resources.FindObjectsOfTypeAll<Button>().First(x => (x.name == "PageDownButton")), rectTransform, false);
                     (_pageDownButton.transform as RectTransform).anchorMin = new Vector2(0.5f, 0f);
                     (_pageDownButton.transform as RectTransform).anchorMax = new Vector2(0.5f, 0f);
@@ -78,10 +67,8 @@ namespace CustomFloorPlugin
                     {
                         _platformsTableView.PageScrollDown();
                     });
-                }
 
-                if(_versionNumber == null)
-                {
+
                     _versionNumber = Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().First(x => (x.name == "BuildInfoText")), rectTransform, false);
                     DestroyImmediate(_versionNumber.GetComponent<BuildInfoText>());
 
@@ -90,10 +77,16 @@ namespace CustomFloorPlugin
                     string versionNumber = (IllusionInjector.PluginManager.Plugins.Where(x => x.Name == "Custom Platforms").First()).Version;
                     _versionNumber.text = versionNumber;
                     _versionNumber.fontSize = 5;
+
+                }
+                else
+                {
+                    _platformsTableView.ReloadData();
                 }
 
                 _platformsTableView.SelectRow(PlatformLoader.Instance.GetPlatformIndex());
                 _platformsTableView.ScrollToRow(PlatformLoader.Instance.GetPlatformIndex(), true);
+
             }
             catch (Exception e)
             {
@@ -129,7 +122,7 @@ namespace CustomFloorPlugin
 
         public TableCell CellForRow(int row)
         {
-            StandardLevelListTableCell _tableCell = Instantiate(_songListTableCellInstance);
+            LevelListTableCell _tableCell = Instantiate(_songListTableCellInstance);
 
             CustomPlatform platform = PlatformLoader.Instance.GetPlatform(row);
 

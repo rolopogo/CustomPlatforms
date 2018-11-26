@@ -12,7 +12,7 @@ namespace CustomFloorPlugin
         List<RotationEventEffect> effectDescriptors;
         List<LightRotationEventEffect> lightRotationEffects;
 
-        private void BSSceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
+        private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
             UpdateSongController();
 
@@ -26,12 +26,12 @@ namespace CustomFloorPlugin
 
         private void OnEnable()
         {
-            BSSceneManager.activeSceneChanged += BSSceneManagerOnActiveSceneChanged;
+            BSSceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
         }
 
         private void OnDisable()
         {
-            BSSceneManager.activeSceneChanged -= BSSceneManagerOnActiveSceneChanged;
+            BSSceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
         }
 
         public void CreateEffects(GameObject go)

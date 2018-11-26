@@ -14,57 +14,48 @@ using VRUI;
 
 namespace CustomFloorPlugin
 {
-    class PlatformMasterViewController : VRUINavigationController
+    class PlatformListFlowCoordinator : FlowCoordinator
     {
         PlatformUI ui;
 
         public PlatformListViewController _platformListViewController;
-        
+        public MainFlowCoordinator mainFlowCoordinator;
         Button _backButton;
         
         public int _selectedRow = -1;
         
         protected override void DidActivate(bool firstActivation, ActivationType activationType)
         {
-            ui = PlatformUI._instance;
-
-            if (_platformListViewController == null)
+            if (firstActivation)
             {
+                
+                title = "Platform Select";
+
+                ui = PlatformUI._instance;
                 _platformListViewController = ui.CreateViewController<PlatformListViewController>();
                 _platformListViewController.rectTransform.anchorMin = new Vector2(0.3f, 0f);
                 _platformListViewController.rectTransform.anchorMax = new Vector2(0.7f, 1f);
-
-                PushViewController(_platformListViewController, true);
-
             }
-            else
+            if (activationType == FlowCoordinator.ActivationType.AddedToHierarchy)
             {
-                if (_viewControllers.IndexOf(_platformListViewController) < 0)
-                {
-                    PushViewController(_platformListViewController, true);
-                }
-
+                ProvideInitialViewControllers(_platformListViewController, null, null);
             }
-
+            
             if (_backButton == null)
             {
-                _backButton = ui.CreateBackButton(rectTransform);
+                _backButton = ui.CreateBackButton(_platformListViewController.rectTransform);
 
                 _backButton.onClick.AddListener(delegate ()
                 {
-                    
-                    DismissModalViewController(null, false);
-                    
+                    (mainFlowCoordinator as FlowCoordinator).InvokePrivateMethod("DismissFlowCoordinator", new object[] { this , null, false });
                 });
             }
-
-            base.DidActivate(firstActivation, activationType);
-
+            
         }
 
         protected override void DidDeactivate(DeactivationType type)
         {
-            base.DidDeactivate(type);
+
         }
     }
 }

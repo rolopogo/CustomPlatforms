@@ -23,7 +23,7 @@ namespace CustomFloorPlugin
                 _EventManager = this.gameObject.AddComponent<EventManager>();
         }
 
-        private void BSSceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
+        private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
             Init();
         }
@@ -62,7 +62,7 @@ namespace CustomFloorPlugin
 
         private void SubscribeToEvents()
         {
-            BSSceneManager.activeSceneChanged += BSSceneManagerOnActiveSceneChanged;
+            BSSceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
 
             if (_scoreController != null)
             {
@@ -88,7 +88,7 @@ namespace CustomFloorPlugin
 
         private void UnsubscribeFromEvents()
         {
-            BSSceneManager.activeSceneChanged -= BSSceneManagerOnActiveSceneChanged;
+            BSSceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
             if (_scoreController != null)
             {
                 _scoreController.noteWasCutEvent -= SliceCallBack;

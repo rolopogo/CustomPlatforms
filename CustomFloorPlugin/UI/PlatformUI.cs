@@ -17,18 +17,16 @@ namespace CustomFloorPlugin
 {
     class PlatformUI : MonoBehaviour
     {
-
         private RectTransform _mainMenuRectTransform;
         private MainMenuViewController _mainMenuViewController;
+        private MainFlowCoordinator _mainFlowCoordinator;
 
         private Button _buttonInstance;
         private Button _backButtonInstance;
 
         public static PlatformUI _instance;
-
-        public static List<Sprite> icons = new List<Sprite>();
-
-        public PlatformMasterViewController _platformMasterViewController;
+                
+        public PlatformListFlowCoordinator _platformListFlowCoordinator;
         
 
         internal static void OnLoad()
@@ -44,15 +42,12 @@ namespace CustomFloorPlugin
         private void Awake()
         {
             _instance = this;
-            foreach (Sprite sprite in Resources.FindObjectsOfTypeAll<Sprite>())
-            {
-                icons.Add(sprite);
-            }
             try
             {
                 _buttonInstance = Resources.FindObjectsOfTypeAll<Button>().First(x => (x.name == "QuitButton"));
                 _backButtonInstance = Resources.FindObjectsOfTypeAll<Button>().First(x => (x.name == "BackArrowButton"));
                 _mainMenuViewController = Resources.FindObjectsOfTypeAll<MainMenuViewController>().First();
+                _mainFlowCoordinator = Resources.FindObjectsOfTypeAll<MainFlowCoordinator>().First();
                 _mainMenuRectTransform = _buttonInstance.transform.parent as RectTransform;
             }
             catch (Exception e)
@@ -68,6 +63,7 @@ namespace CustomFloorPlugin
 
         private static void CreateSettingsUI()
         {
+            
             var subMenu = SettingsUI.CreateSubMenu("Platforms");
 
             // Feet Icon Override
@@ -96,12 +92,13 @@ namespace CustomFloorPlugin
                 ModPrefs.SetInt(CustomFloorPlugin.PluginName, "EnvironmentOverrideMode", (int)EnvironmentSceneOverrider.overrideMode);
             };
             environment.FormatValue += delegate (float value) { return EnvironmentSceneOverrider.Name((EnvironmentSceneOverrider.EnvOverrideMode)value); };
+            
         }
 
         private void CreatePlatformsButton()
         {
 
-            Button _platformsButton = CreateUIButton(_mainMenuRectTransform, "SettingsButton");
+            Button _platformsButton = CreateUIButton(_mainMenuRectTransform, "QuitButton");
 
             try
             {
@@ -114,11 +111,12 @@ namespace CustomFloorPlugin
 
                     try
                     {
-                        if (_platformMasterViewController == null)
+                        if (_platformListFlowCoordinator == null)
                         {
-                            _platformMasterViewController = CreateViewController<PlatformMasterViewController>();
+                            _platformListFlowCoordinator = new GameObject("PlatformListFlowCoordinator").AddComponent<PlatformListFlowCoordinator>();
+                            _platformListFlowCoordinator.mainFlowCoordinator = _mainFlowCoordinator;
                         }
-                        _mainMenuViewController.PresentModalViewController(_platformMasterViewController, null, false);
+                        _mainFlowCoordinator.InvokePrivateMethod("PresentFlowCoordinator", new object[] { _platformListFlowCoordinator, null, false, false } );
 
                     }
                     catch (Exception e)
@@ -135,9 +133,7 @@ namespace CustomFloorPlugin
             }
 
         }
-
-
-
+        
         public Button CreateUIButton(RectTransform parent, string buttonTemplate)
         {
             if (_buttonInstance == null)
@@ -162,7 +158,7 @@ namespace CustomFloorPlugin
             Button _button = Instantiate(_backButtonInstance, parent, false);
             DestroyImmediate(_button.GetComponent<SignalOnUIButtonClick>());
             _button.onClick = new Button.ButtonClickedEvent();
-
+            (_button.transform as RectTransform).anchoredPosition = new Vector2(-48f, 0f);
             return _button;
         }
 
@@ -178,21 +174,6 @@ namespace CustomFloorPlugin
             return vc;
         }
         
-        public TextMeshProUGUI CreateText(RectTransform parent, string text, Vector2 position)
-        {
-            TextMeshProUGUI textMesh = new GameObject("TextMeshProUGUI_GO").AddComponent<TextMeshProUGUI>();
-            textMesh.rectTransform.SetParent(parent, false);
-            textMesh.text = text;
-            textMesh.fontSize = 4;
-            textMesh.color = Color.white;
-            textMesh.font = Resources.Load<TMP_FontAsset>("Teko-Medium SDF No Glow");
-            textMesh.rectTransform.anchorMin = new Vector2(0.5f, 1f);
-            textMesh.rectTransform.anchorMax = new Vector2(0.5f, 1f);
-            textMesh.rectTransform.sizeDelta = new Vector2(60f, 10f);
-            textMesh.rectTransform.anchoredPosition = position;
-
-            return textMesh;
-        }
 
         public void SetButtonText(ref Button _button, string _text)
         {
@@ -203,36 +184,7 @@ namespace CustomFloorPlugin
             }
 
         }
-
-        public void SetButtonTextSize(ref Button _button, float _fontSize)
-        {
-            if (_button.GetComponentInChildren<TextMeshProUGUI>() != null)
-            {
-                _button.GetComponentInChildren<TextMeshProUGUI>().fontSize = _fontSize;
-            }
-
-
-        }
-
-        public void SetButtonIcon(ref Button _button, Sprite _icon)
-        {
-            if (_button.GetComponentsInChildren<UnityEngine.UI.Image>().Count() > 1)
-            {
-
-                _button.GetComponentsInChildren<UnityEngine.UI.Image>()[1].sprite = _icon;
-            }
-
-        }
-
-        public void SetButtonBackground(ref Button _button, Sprite _background)
-        {
-            if (_button.GetComponentsInChildren<Image>().Any())
-            {
-
-                _button.GetComponentsInChildren<UnityEngine.UI.Image>()[0].sprite = _background;
-            }
-
-        }
+        
 
 
     }

@@ -12,25 +12,25 @@ namespace CustomFloorPlugin
         List<Spectrogram> columnDescriptors;
         List<SpectrogramColumns> spectrogramColumns;
 
-        private void BSSceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
+        private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
             UpdateSpectrogramDataProvider();
         }
 
         private void OnEnable()
         {
-            BSSceneManager.activeSceneChanged += BSSceneManagerOnActiveSceneChanged;
+            BSSceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
             UpdateSpectrogramDataProvider();
         }
 
         private void OnDisable()
         {
-            BSSceneManager.activeSceneChanged -= BSSceneManagerOnActiveSceneChanged;
+            BSSceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
         }
 
         public void CreateColumns(GameObject go)
         {
-            Console.WriteLine("creating columns");
+            
             if (spectrogramColumns == null) spectrogramColumns = new List<SpectrogramColumns>();
             if (columnDescriptors == null) columnDescriptors = new List<Spectrogram>();
 
@@ -50,10 +50,12 @@ namespace CustomFloorPlugin
                 spectrogramColumns.Add(specCol);
                 columnDescriptors.Add(spec);
             }
+            
         }
         
         public void UpdateSpectrogramDataProvider()
         {
+            
             BasicSpectrogramData[] datas = Resources.FindObjectsOfTypeAll<BasicSpectrogramData>();
             if (datas.Length == 0) return;
             BasicSpectrogramData spectrogramData = datas.First();
@@ -62,6 +64,7 @@ namespace CustomFloorPlugin
             {
                 ReflectionUtil.SetPrivateField(specCol, "_spectrogramData", spectrogramData);
             }
+            
         }
     }
 }

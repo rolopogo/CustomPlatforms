@@ -44,9 +44,9 @@ namespace CustomFloorPlugin
             _arg0 = arg0;
             _arg1 = arg1;
 
-            var asyncLoader = Resources.FindObjectsOfTypeAll<AsyncScenesLoader>().FirstOrDefault();
+            var sceneManager = Resources.FindObjectsOfTypeAll<GameScenesManager>().FirstOrDefault();
 
-            if (asyncLoader == null)
+            if (sceneManager == null)
             {
                 // The scene was loaded normally
                 SceneWasLoaded();
@@ -54,8 +54,8 @@ namespace CustomFloorPlugin
             else
             {
                 // AsyncScenesLoader is loading the scene, subscribe to the load complete event
-                asyncLoader.loadingDidFinishEvent -= SceneWasLoaded; // make sure we don't subscribe twice
-                asyncLoader.loadingDidFinishEvent += SceneWasLoaded;
+                sceneManager.transitionDidFinishEvent -= SceneWasLoaded; // make sure we don't subscribe twice
+                sceneManager.transitionDidFinishEvent += SceneWasLoaded;
             }
         }
 

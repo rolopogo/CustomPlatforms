@@ -29,7 +29,7 @@ namespace CustomFloorPlugin
             }
         }
 
-        private void BSSceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
+        private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
             UpdateSongController();
             _beatmapObjectCallbackController.beatmapEventDidTriggerEvent -= HandleSongEvent;
@@ -38,7 +38,7 @@ namespace CustomFloorPlugin
 
         private void OnEnable()
         {
-            BSSceneManager.activeSceneChanged += BSSceneManagerOnActiveSceneChanged;
+            BSSceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
             UpdateSongController();
             _beatmapObjectCallbackController.beatmapEventDidTriggerEvent -= HandleSongEvent;
             _beatmapObjectCallbackController.beatmapEventDidTriggerEvent += HandleSongEvent;
@@ -46,7 +46,7 @@ namespace CustomFloorPlugin
 
         private void OnDisable()
         {
-            BSSceneManager.activeSceneChanged -= BSSceneManagerOnActiveSceneChanged;
+            BSSceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
             _beatmapObjectCallbackController.beatmapEventDidTriggerEvent -= HandleSongEvent;
         }
 

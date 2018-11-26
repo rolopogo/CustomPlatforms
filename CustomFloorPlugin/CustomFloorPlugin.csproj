@@ -86,6 +86,7 @@
     <Compile Include="Behaviour Descriptors\SpectrogramMaterial.cs" />
     <Compile Include="Behaviour Managers\SpectrogramAnimationStateManager.cs" />
     <Compile Include="Behaviour Managers\SpectrogramMaterialManager.cs" />
+    <Compile Include="Behaviours\SpectrogramColumns.cs" />
     <Compile Include="EnvironmentSceneOverrider.cs" />
     <Compile Include="Legacy Behaviours\CustomPlatformLegacy.cs" />
     <Compile Include="EnvironmentHider.cs" />
@@ -95,7 +96,7 @@
     <Compile Include="Behaviour Managers\PlatformEventManager.cs" />
     <Compile Include="UI\PlatformListViewController.cs" />
     <Compile Include="PlatformLoader.cs" />
-    <Compile Include="UI\PlatformMasterViewController.cs" />
+    <Compile Include="UI\PlatformListFlowCoordinator.cs" />
     <Compile Include="UI\PlatformUI.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -120,6 +121,7 @@
     <Compile Include="Behaviour Descriptors\Spectrogram.cs" />
     <Compile Include="Behaviour Descriptors\TrackRings.cs" />
     <Compile Include="Behaviour Descriptors\TubeLight.cs" />
+    <Compile Include="Util\SceneDumper.cs" />
     <Compile Include="Util\SettingsUI.cs" />
   </ItemGroup>
   <ItemGroup>

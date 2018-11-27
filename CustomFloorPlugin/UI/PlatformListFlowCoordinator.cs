@@ -24,9 +24,6 @@ namespace CustomFloorPlugin
 
                 ui = PlatformUI._instance;
                 _platformListViewController = BeatSaberUI.CreateViewController<PlatformListViewController>();
-                _platformListViewController.rectTransform.anchorMin = new Vector2(0.3f, 0f);
-                _platformListViewController.rectTransform.anchorMax = new Vector2(0.7f, 1f);
-
                 _platformListViewController.platformListBackWasPressed += Dismiss;
 
             }

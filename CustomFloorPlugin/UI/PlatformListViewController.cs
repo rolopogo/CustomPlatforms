@@ -32,15 +32,19 @@ namespace CustomFloorPlugin
                 {
                     ui = PlatformUI._instance;
                     _songListTableCellInstance = Resources.FindObjectsOfTypeAll<LevelListTableCell>().First(x => (x.name == "LevelListTableCell"));
-
+                    
+                    RectTransform container = new GameObject("PlatformsListContainer", typeof(RectTransform)).transform as RectTransform;
+                    container.SetParent(rectTransform, false);
+                    container.sizeDelta = new Vector2(60f, 0f);
+                    
                     _platformsTableView = new GameObject("PlatformsListTableView").AddComponent<TableView>();
+                    _platformsTableView.gameObject.AddComponent<RectMask2D>();
+                    _platformsTableView.transform.SetParent(container, false);
 
-                    _platformsTableView.transform.SetParent(rectTransform, false);
-
-                    (_platformsTableView.transform as RectTransform).anchorMin = new Vector2(0f, 0.5f);
-                    (_platformsTableView.transform as RectTransform).anchorMax = new Vector2(1f, 0.5f);
+                    (_platformsTableView.transform as RectTransform).anchorMin = new Vector2(0f, 0f);
+                    (_platformsTableView.transform as RectTransform).anchorMax = new Vector2(1f, 1f);
                     (_platformsTableView.transform as RectTransform).sizeDelta = new Vector2(0f, 60f);
-                    (_platformsTableView.transform as RectTransform).anchoredPosition = new Vector3(0f, 6f); // -3
+                    (_platformsTableView.transform as RectTransform).anchoredPosition = new Vector3(0f, 0f);
 
                     _platformsTableView.SetPrivateField("_preallocatedCells", new TableView.CellsGroup[0]);
                     _platformsTableView.SetPrivateField("_isInitialized", false);
@@ -48,37 +52,37 @@ namespace CustomFloorPlugin
 
                     _platformsTableView.didSelectRowEvent += _PlatformTableView_DidSelectRowEvent;
                     
-                    _pageUpButton = Instantiate(Resources.FindObjectsOfTypeAll<Button>().First(x => (x.name == "PageUpButton")), rectTransform, false);
-                    (_pageUpButton.transform as RectTransform).anchoredPosition = new Vector2(0f, -10f);//-14
+                    _pageUpButton = Instantiate(Resources.FindObjectsOfTypeAll<Button>().First(x => (x.name == "PageUpButton")), container, false);
+                    (_pageUpButton.transform as RectTransform).anchoredPosition = new Vector2(0f, 30f);//-14
                     _pageUpButton.interactable = true;
                     _pageUpButton.onClick.AddListener(delegate ()
                     {
                         _platformsTableView.PageScrollUp();
                     });
-
                     
-                    _pageDownButton = Instantiate(Resources.FindObjectsOfTypeAll<Button>().First(x => (x.name == "PageDownButton")), rectTransform, false);
-                    (_pageDownButton.transform as RectTransform).anchoredPosition = new Vector2(0f, 10);//8
+                    _pageDownButton = Instantiate(Resources.FindObjectsOfTypeAll<Button>().First(x => (x.name == "PageDownButton")), container, false);
+                    (_pageDownButton.transform as RectTransform).anchoredPosition = new Vector2(0f, -30f);//8
                     _pageDownButton.interactable = true;
                     _pageDownButton.onClick.AddListener(delegate ()
                     {
                         _platformsTableView.PageScrollDown();
                     });
 
+                    
+                    _versionNumber = Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().First(x => (x.name == "Text")), rectTransform, false);
 
-                    _versionNumber = Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().First(x => (x.name == "BuildInfoText")), rectTransform, false);
-                    DestroyImmediate(_versionNumber.GetComponent<BuildInfoText>());
-
-                    (_versionNumber.transform as RectTransform).anchoredPosition = new Vector2(44f, 2f);
+                    (_versionNumber.transform as RectTransform).anchoredPosition = new Vector2(-10f, 10f);
+                    (_versionNumber.transform as RectTransform).anchorMax = new Vector2(1f, 0f);
+                    (_versionNumber.transform as RectTransform).anchorMin = new Vector2(1f, 0f);
 
                     string versionNumber = (IllusionInjector.PluginManager.Plugins.Where(x => x.Name == "Custom Platforms").First()).Version;
-                    _versionNumber.text = versionNumber;
+                    _versionNumber.text = "v" + versionNumber;
                     _versionNumber.fontSize = 5;
-
+                    _versionNumber.color = Color.white;
 
                     if (_backButton == null)
                     {
-                        _backButton = BeatSaberUI.CreateBackButton(rectTransform.transform.parent as RectTransform);
+                        _backButton = BeatSaberUI.CreateBackButton(rectTransform as RectTransform);
 
                         _backButton.onClick.AddListener(delegate ()
                         {

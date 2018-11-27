@@ -90,10 +90,6 @@ namespace CustomFloorPlugin
                         });
                     }
                 }
-                else
-                {
-                    _platformsTableView.ReloadData();
-                }
 
                 _platformsTableView.SelectRow(PlatformLoader.Instance.GetPlatformIndex());
                 _platformsTableView.ScrollToRow(PlatformLoader.Instance.GetPlatformIndex(), true);

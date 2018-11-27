@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CustomFloorPlugin</RootNamespace>
-    <AssemblyName>CustomFloorPlugin</AssemblyName>
+    <AssemblyName>CustomPlatforms</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

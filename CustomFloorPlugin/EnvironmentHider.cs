@@ -146,6 +146,7 @@ namespace CustomFloorPlugin
             visualizer = new ArrayList();
             FindAddGameObject("SpectrogramLeft", visualizer);
             FindAddGameObject("SpectrogramRight", visualizer);
+            FindAddGameObject("Spectrograms", visualizer);
         }
         
         private void FindTowers()
@@ -162,6 +163,7 @@ namespace CustomFloorPlugin
             FindAddGameObject("NearBuilding (5)", towers);
             FindAddGameObject("NearBuilding (6)", towers);
             FindAddGameObject("NearBuilding (7)", towers);
+
         }
         
         private void FindHighway()
@@ -180,6 +182,7 @@ namespace CustomFloorPlugin
             FindAddGameObject("BackColumns", backColumns);
             FindAddGameObject("BackColumnNeon", backColumns);
             FindAddGameObject("BackColumnNeon (1)", backColumns);
+            FindAddGameObject("CeilingLamp", backColumns);
         }
 
         private void FindRotatingLasers()
@@ -213,12 +216,7 @@ namespace CustomFloorPlugin
         private void FindBackLasers()
         {
             backLasers = new ArrayList();
-            FindAddGameObject("BackLaser", backLasers);
-            FindAddGameObject("BackLaser (1)", backLasers);
-            FindAddGameObject("BackLaser (2)", backLasers);
-            FindAddGameObject("BackLaser (3)", backLasers);
-            FindAddGameObject("BackLaser (4)", backLasers);
-            FindAddGameObject("BackLaser (5)", backLasers);
+            FindAddGameObject("FrontLights", backLasers);
         }
 
         private void FindTrackLights()

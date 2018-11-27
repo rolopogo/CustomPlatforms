@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using IllusionPlugin;
 using UnityEngine.SceneManagement;
@@ -40,8 +37,7 @@ namespace CustomFloorPlugin
             if (arg0.name == "Menu" && !init)
             {
                 init = true;
-
-                SettingsUI.OnLoad();
+                
                 PlatformLoader.OnLoad();
                 BSSceneManager.OnLoad();
 

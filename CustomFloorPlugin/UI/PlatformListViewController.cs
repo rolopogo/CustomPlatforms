@@ -1,13 +1,12 @@
 ﻿using HMUI;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using CustomUI.BeatSaber;
 using VRUI;
-using IllusionPlugin;
+using UnityEngine.Events;
 
 namespace CustomFloorPlugin
 {
@@ -17,11 +16,14 @@ namespace CustomFloorPlugin
 
         public Button _pageUpButton;
         public Button _pageDownButton;
+        public Button _backButton;
         public TextMeshProUGUI _versionNumber;
 
         public TableView _platformsTableView;
         LevelListTableCell _songListTableCellInstance;
-        
+
+        public Action platformListBackWasPressed;
+
         protected override void DidActivate(bool firstActivation, ActivationType type)
         {
             try
@@ -38,7 +40,6 @@ namespace CustomFloorPlugin
                     (_platformsTableView.transform as RectTransform).anchorMin = new Vector2(0f, 0.5f);
                     (_platformsTableView.transform as RectTransform).anchorMax = new Vector2(1f, 0.5f);
                     (_platformsTableView.transform as RectTransform).sizeDelta = new Vector2(0f, 60f);
-                    (_platformsTableView.transform as RectTransform).position = new Vector3(0f, 0f, 2.4f);
                     (_platformsTableView.transform as RectTransform).anchoredPosition = new Vector3(0f, 6f); // -3
 
                     _platformsTableView.SetPrivateField("_preallocatedCells", new TableView.CellsGroup[0]);
@@ -48,8 +49,6 @@ namespace CustomFloorPlugin
                     _platformsTableView.didSelectRowEvent += _PlatformTableView_DidSelectRowEvent;
                     
                     _pageUpButton = Instantiate(Resources.FindObjectsOfTypeAll<Button>().First(x => (x.name == "PageUpButton")), rectTransform, false);
-                    (_pageUpButton.transform as RectTransform).anchorMin = new Vector2(0.5f, 1f);
-                    (_pageUpButton.transform as RectTransform).anchorMax = new Vector2(0.5f, 1f);
                     (_pageUpButton.transform as RectTransform).anchoredPosition = new Vector2(0f, -10f);//-14
                     _pageUpButton.interactable = true;
                     _pageUpButton.onClick.AddListener(delegate ()
@@ -57,10 +56,8 @@ namespace CustomFloorPlugin
                         _platformsTableView.PageScrollUp();
                     });
 
-
+                    
                     _pageDownButton = Instantiate(Resources.FindObjectsOfTypeAll<Button>().First(x => (x.name == "PageDownButton")), rectTransform, false);
-                    (_pageDownButton.transform as RectTransform).anchorMin = new Vector2(0.5f, 0f);
-                    (_pageDownButton.transform as RectTransform).anchorMax = new Vector2(0.5f, 0f);
                     (_pageDownButton.transform as RectTransform).anchoredPosition = new Vector2(0f, 10);//8
                     _pageDownButton.interactable = true;
                     _pageDownButton.onClick.AddListener(delegate ()
@@ -78,6 +75,16 @@ namespace CustomFloorPlugin
                     _versionNumber.text = versionNumber;
                     _versionNumber.fontSize = 5;
 
+
+                    if (_backButton == null)
+                    {
+                        _backButton = BeatSaberUI.CreateBackButton(rectTransform.transform.parent as RectTransform);
+
+                        _backButton.onClick.AddListener(delegate ()
+                        {
+                            if (platformListBackWasPressed != null) platformListBackWasPressed();
+                        });
+                    }
                 }
                 else
                 {

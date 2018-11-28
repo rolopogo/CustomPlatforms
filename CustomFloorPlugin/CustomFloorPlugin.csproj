@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CustomFloorPlugin</RootNamespace>
-    <AssemblyName>CustomPlatforms</AssemblyName>
+    <AssemblyName>CustomFloorPlugin</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -101,6 +101,7 @@
     <Compile Include="MaterialSwapper.cs" />
     <Compile Include="Behaviours\MeshBloomPrePassLight.cs" />
     <Compile Include="Behaviour Managers\PlatformEventManager.cs" />
+    <Compile Include="PlatformManager.cs" />
     <Compile Include="UI\PlatformListViewController.cs" />
     <Compile Include="PlatformLoader.cs" />
     <Compile Include="UI\PlatformListFlowCoordinator.cs" />

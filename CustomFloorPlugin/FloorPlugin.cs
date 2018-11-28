@@ -11,7 +11,7 @@ namespace CustomFloorPlugin
     public class CustomFloorPlugin : IPlugin
     {
         public string Name => "Custom Platforms";
-        public string Version => "2.4.0";
+        public string Version => "2.4.1";
 
         static CustomFloorPlugin Instance;
         private bool init = false;
@@ -38,17 +38,10 @@ namespace CustomFloorPlugin
             {
                 init = true;
                 
-                PlatformLoader.OnLoad();
+                PlatformManager.OnLoad();
                 BSSceneManager.OnLoad();
-
-                // Load from modprefs
-                EnvironmentHider.showFeetOverride = ModPrefs.GetBool(PluginName, "AlwaysShowFeet", false, true);
                 
-                EnvironmentSceneOverrider.overrideMode = (EnvironmentSceneOverrider.EnvOverrideMode)ModPrefs.GetInt(PluginName, "EnvironmentOverrideMode", 0, true);
-                EnvironmentSceneOverrider.GetSceneInfos();
-                EnvironmentSceneOverrider.OverrideEnvironmentScene();
-
-                //Application.logMessageReceived += LogCallback;
+                Application.logMessageReceived += LogCallback;
             }
         }
 

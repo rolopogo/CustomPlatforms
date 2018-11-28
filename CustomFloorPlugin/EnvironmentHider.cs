@@ -24,16 +24,14 @@ namespace CustomFloorPlugin
         private ArrayList rotatingLasers;
         private ArrayList trackLights;
 
-        public static bool showFeetOverride = false;
-        
+        public bool showFeetOverride = false;
+
         /// <summary>
         /// Hide and unhide world objects as required by a platform
         /// </summary>
         /// <param name="platform">A platform that defines which objects are to be hidden</param>
         public void HideObjectsForPlatform(CustomPlatform platform)
         {
-            Console.WriteLine("Hiding env for: " + platform.platName);
-
             SetCollectionHidden(feet, (platform.hideDefaultPlatform && !showFeetOverride));
             SetCollectionHidden(originalPlatform, platform.hideDefaultPlatform);
             SetCollectionHidden(smallRings, platform.hideSmallRings);
@@ -46,8 +44,6 @@ namespace CustomFloorPlugin
             SetCollectionHidden(doubleColorLasers, platform.hideDoubleColorLasers);
             SetCollectionHidden(rotatingLasers, platform.hideRotatingLasers);
             SetCollectionHidden(trackLights, platform.hideTrackLights);
-            
-            Console.WriteLine("Environment hidden");
         }
 
         /// <summary>

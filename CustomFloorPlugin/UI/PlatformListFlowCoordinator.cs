@@ -14,18 +14,18 @@ namespace CustomFloorPlugin
         public PlatformListViewController _platformListViewController;
         public MainFlowCoordinator mainFlowCoordinator;
         
-        
         protected override void DidActivate(bool firstActivation, ActivationType activationType)
         {
             if (firstActivation)
             {
-                
                 title = "Platform Select";
 
                 ui = PlatformUI._instance;
+            }
+            if (_platformListViewController == null)
+            {
                 _platformListViewController = BeatSaberUI.CreateViewController<PlatformListViewController>();
                 _platformListViewController.platformListBackWasPressed += Dismiss;
-
             }
             if (activationType == FlowCoordinator.ActivationType.AddedToHierarchy)
             {

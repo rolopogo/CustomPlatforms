@@ -67,7 +67,6 @@ namespace CustomFloorPlugin
                     {
                         _platformsTableView.PageScrollDown();
                     });
-
                     
                     _versionNumber = Instantiate(Resources.FindObjectsOfTypeAll<TextMeshProUGUI>().First(x => (x.name == "Text")), rectTransform, false);
 
@@ -91,8 +90,8 @@ namespace CustomFloorPlugin
                     }
                 }
 
-                _platformsTableView.SelectRow(PlatformLoader.Instance.GetPlatformIndex());
-                _platformsTableView.ScrollToRow(PlatformLoader.Instance.GetPlatformIndex(), true);
+                _platformsTableView.SelectRow(PlatformManager.Instance.currentPlatformIndex);
+                _platformsTableView.ScrollToRow(PlatformManager.Instance.currentPlatformIndex, true);
 
             }
             catch (Exception e)
@@ -113,8 +112,7 @@ namespace CustomFloorPlugin
         
         private void _PlatformTableView_DidSelectRowEvent(TableView sender, int row)
         {
-            // swap platform
-            PlatformLoader.Instance.ChangeToPlatform(row);
+            PlatformManager.Instance.ChangeToPlatform(row);
         }
 
         public float RowHeight()
@@ -124,18 +122,19 @@ namespace CustomFloorPlugin
 
         public int NumberOfRows()
         {
-            return PlatformLoader.Instance.GetPlatforms().Count;
+            return PlatformManager.Instance.GetPlatforms().Length;
         }
 
         public TableCell CellForRow(int row)
         {
             LevelListTableCell _tableCell = Instantiate(_songListTableCellInstance);
 
-            CustomPlatform platform = PlatformLoader.Instance.GetPlatform(row);
+            CustomPlatform platform = PlatformManager.Instance.GetPlatform(row);
 
             _tableCell.songName = platform.platName;
             _tableCell.author = platform.platAuthor;
             _tableCell.coverImage = platform.icon;
+            _tableCell.reuseIdentifier = "PlatformListCell";
             
             return _tableCell;
         }

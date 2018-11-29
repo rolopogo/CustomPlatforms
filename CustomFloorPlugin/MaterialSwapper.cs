@@ -22,6 +22,7 @@ namespace CustomFloorPlugin
 
         public void ReplaceMaterialsForGameObject(GameObject go)
         {
+            if (dark == null || glow == null) GetMaterials();
             ReplaceAllMaterialsForGameObjectChildren(go, dark, darkReplaceMatName);
             ReplaceAllMaterialsForGameObjectChildren(go, glow, glowReplaceMatName);
         }

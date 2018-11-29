@@ -9,20 +9,13 @@ namespace CustomFloorPlugin
 {
     class PlatformEventManager : MonoBehaviour
     {
-        private EventManager _EventManager;
+        public EventManager _EventManager;
 
         private ScoreController _scoreController;
         private ObstacleSaberSparkleEffectManager _saberCollisionManager;
         private GameEnergyCounter _gameEnergyCounter;
         private BeatmapObjectCallbackController _beatmapObjectCallbackController;
-
-        private void Awake()
-        {
-            _EventManager = this.gameObject.GetComponent<EventManager>();
-            if (_EventManager == null)
-                _EventManager = this.gameObject.AddComponent<EventManager>();
-        }
-
+        
         private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
             Init();

@@ -10,12 +10,11 @@ namespace CustomFloorPlugin
 {
     class SongEventManager : MonoBehaviour
     {
-        private SongEventHandler _songEventHandler;
+        public SongEventHandler _songEventHandler;
         private BeatmapObjectCallbackController _beatmapObjectCallbackController;
 
         public void Awake()
         {
-            _songEventHandler = GetComponent<SongEventHandler>();
         }
 
         public void HandleSongEvent(BeatmapEventData songEventData)
@@ -32,14 +31,17 @@ namespace CustomFloorPlugin
         private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
             UpdateSongController();
+            if (_beatmapObjectCallbackController == null) return;
             _beatmapObjectCallbackController.beatmapEventDidTriggerEvent -= HandleSongEvent;
             _beatmapObjectCallbackController.beatmapEventDidTriggerEvent += HandleSongEvent;
         }
 
         private void OnEnable()
         {
+            BSSceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
             BSSceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
             UpdateSongController();
+            if (_beatmapObjectCallbackController == null) return;
             _beatmapObjectCallbackController.beatmapEventDidTriggerEvent -= HandleSongEvent;
             _beatmapObjectCallbackController.beatmapEventDidTriggerEvent += HandleSongEvent;
         }
@@ -47,12 +49,13 @@ namespace CustomFloorPlugin
         private void OnDisable()
         {
             BSSceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
+            if (_beatmapObjectCallbackController == null) return;
             _beatmapObjectCallbackController.beatmapEventDidTriggerEvent -= HandleSongEvent;
         }
 
         public void UpdateSongController()
         {
-            _beatmapObjectCallbackController = Resources.FindObjectsOfTypeAll<BeatmapObjectCallbackController>().First();
+            _beatmapObjectCallbackController = Resources.FindObjectsOfTypeAll<BeatmapObjectCallbackController>().FirstOrDefault();
         }
     }
 }

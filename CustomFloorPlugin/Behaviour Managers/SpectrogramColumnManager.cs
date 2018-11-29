@@ -58,8 +58,9 @@ namespace CustomFloorPlugin
             
             BasicSpectrogramData[] datas = Resources.FindObjectsOfTypeAll<BasicSpectrogramData>();
             if (datas.Length == 0) return;
-            BasicSpectrogramData spectrogramData = datas.First();
-                
+            BasicSpectrogramData spectrogramData = datas.FirstOrDefault();
+
+            if (spectrogramData == null) return;
             foreach (SpectrogramColumns specCol in spectrogramColumns)
             {
                 ReflectionUtil.SetPrivateField(specCol, "_spectrogramData", spectrogramData);

@@ -18,6 +18,7 @@ namespace CustomFloorPlugin
 
         private void OnEnable()
         {
+            BSSceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
             BSSceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
             UpdateSpectrogramDataProvider();
         }
@@ -42,8 +43,8 @@ namespace CustomFloorPlugin
 
             BasicSpectrogramData[] datas = Resources.FindObjectsOfTypeAll<BasicSpectrogramData>();
             if (datas.Length == 0) return;
-            BasicSpectrogramData spectrogramData = datas.First();
-
+            BasicSpectrogramData spectrogramData = datas.FirstOrDefault();
+            if (spectrogramData == null) return;
             foreach (SpectrogramMaterial specMat in spectrogramMaterials)
             {
                 specMat.setData(spectrogramData);

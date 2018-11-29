@@ -11,7 +11,19 @@ public class SpectrogramColumns : MonoBehaviour
     
     protected void Update()
     {
-        float[] processedSamples = this._spectrogramData.ProcessedSamples;
+        float[] processedSamples;
+        if (_spectrogramData == null) {
+            processedSamples = new float[64];
+            for (int i = 0; i < processedSamples.Length; i++)
+            {
+                processedSamples[i] = (Mathf.Sin((float)i / 64 * 9 * Mathf.PI + 1.4f* Mathf.PI) + 1.2f)/25;
+            }
+        }
+        else
+        {
+            processedSamples = this._spectrogramData.ProcessedSamples;
+        }
+        
         for (int i = 0; i < processedSamples.Length; i++)
         {
             float num = processedSamples[i] * (5f + (float)i * 0.07f);
@@ -22,6 +34,15 @@ public class SpectrogramColumns : MonoBehaviour
             num = Mathf.Pow(num, 2f);
             this._columnTransforms[i].localScale = new Vector3(this._columnWidth, Mathf.Lerp(this._minHeight, this._maxHeight, num) + (float)i * 0.1f, this._columnDepth);
             this._columnTransforms[i + 64].localScale = new Vector3(this._columnWidth, Mathf.Lerp(this._minHeight, this._maxHeight, num), this._columnDepth);
+        }
+        
+        if (Input.GetKeyDown(KeyCode.Space)){
+
+            for (int i = 0; i < processedSamples.Length; i++)
+            {
+                Console.Write(processedSamples[i] + " ");
+            }
+            Console.WriteLine(" ");
         }
     }
     

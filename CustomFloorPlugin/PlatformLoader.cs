@@ -181,15 +181,22 @@ namespace CustomFloorPlugin
                 specManager.CreateColumns(go);
             }
 
-            // Add spectrogram materials manager
-            SpectrogramMaterialManager specMatManager = go.GetComponent<SpectrogramMaterialManager>();
-            if (specMatManager == null) specMatManager = go.AddComponent<SpectrogramMaterialManager>();
-            specMatManager.UpdateMaterials();
+            if (go.GetComponentInChildren<SpectrogramMaterial>(true) != null)
+            {
+                // Add spectrogram materials manager
+                SpectrogramMaterialManager specMatManager = go.GetComponent<SpectrogramMaterialManager>();
+                if (specMatManager == null) specMatManager = go.AddComponent<SpectrogramMaterialManager>();
+                specMatManager.UpdateMaterials();
+            }
 
-            // Add spectrogram animation state manager
-            SpectrogramAnimationStateManager specAnimManager = go.GetComponent<SpectrogramAnimationStateManager>();
-            if (specAnimManager == null) specAnimManager = go.AddComponent<SpectrogramAnimationStateManager>();
-            specAnimManager.UpdateAnimationStates();
+
+            if (go.GetComponentInChildren<SpectrogramAnimationState>(true) != null)
+            {
+                // Add spectrogram animation state manager
+                SpectrogramAnimationStateManager specAnimManager = go.GetComponent<SpectrogramAnimationStateManager>();
+                if (specAnimManager == null) specAnimManager = go.AddComponent<SpectrogramAnimationStateManager>();
+                specAnimManager.UpdateAnimationStates();
+            }
 
             // Add Song event manager
             if (go.GetComponentInChildren<SongEventHandler>(true) != null)
@@ -197,6 +204,7 @@ namespace CustomFloorPlugin
                 foreach (SongEventHandler handler in go.GetComponentsInChildren<SongEventHandler>())
                 {
                     SongEventManager manager = handler.gameObject.AddComponent<SongEventManager>();
+                    manager._songEventHandler = handler;
                 }
             }
 
@@ -205,7 +213,8 @@ namespace CustomFloorPlugin
             {
                 foreach (EventManager em in go.GetComponentsInChildren<EventManager>())
                 {
-                    em.gameObject.AddComponent<PlatformEventManager>();
+                    PlatformEventManager pem = em.gameObject.AddComponent<PlatformEventManager>();
+                    pem._EventManager = em;
                 }
             }
         }

@@ -104,7 +104,7 @@ namespace CustomFloorPlugin
 
         public void FindBeatMapEventController()
         {
-            BeatmapObjectCallbackController _beatmapObjectCallbackController = Resources.FindObjectsOfTypeAll<BeatmapObjectCallbackController>().First();
+            BeatmapObjectCallbackController _beatmapObjectCallbackController = Resources.FindObjectsOfTypeAll<BeatmapObjectCallbackController>().FirstOrDefault();
             if (_beatmapObjectCallbackController == null) return;
 
             foreach (TrackLaneRingsRotationEffectSpawner spawner in rotationSpawners)

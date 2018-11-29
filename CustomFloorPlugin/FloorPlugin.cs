@@ -41,7 +41,7 @@ namespace CustomFloorPlugin
                 PlatformManager.OnLoad();
                 BSSceneManager.OnLoad();
                 
-                Application.logMessageReceived += LogCallback;
+                //Application.logMessageReceived += LogCallback;
             }
         }
 

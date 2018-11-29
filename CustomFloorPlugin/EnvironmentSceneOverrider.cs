@@ -16,18 +16,18 @@ namespace CustomFloorPlugin
         private static SceneInfo bigMirrorSceneInfo;
         private static SceneInfo triangleSceneInfo;
 
-        private const string DEFAULT = "DefaultEnvironment";
-        private const string NICE = "NiceEnvironment";
-        private const string BIGMIRROR = "BigMirrorEnvironment";
-        private const string TRIANGLE = "TriangleEnvironment";
-
+        private const string DEFAULT = "DefaultEnvironmentSceneInfo";
+        private const string NICE = "NiceEnvironmentSceneInfo";
+        private const string BIGMIRROR = "BigMirrorEnvironmentSceneInfo";
+        private const string TRIANGLE = "TriangleEnvironmentSceneInfo";
+        
         public static void GetSceneInfos()
         {
             var sceneInfos = Resources.FindObjectsOfTypeAll<SceneInfo>();
-            if (defaultSceneInfo == null) defaultSceneInfo = sceneInfos.First(x => x.sceneName == DEFAULT);
-            if (niceSceneInfo == null) niceSceneInfo = sceneInfos.First(x => x.sceneName == NICE);
-            if (bigMirrorSceneInfo == null) bigMirrorSceneInfo = sceneInfos.First(x => x.sceneName == BIGMIRROR);
-            if (triangleSceneInfo == null) triangleSceneInfo = sceneInfos.First(x => x.sceneName == TRIANGLE);
+            if (defaultSceneInfo == null) defaultSceneInfo = sceneInfos.First(x => x.name == DEFAULT);
+            if (niceSceneInfo == null) niceSceneInfo = sceneInfos.First(x => x.name == NICE);
+            if (bigMirrorSceneInfo == null) bigMirrorSceneInfo = sceneInfos.First(x => x.name == BIGMIRROR);
+            if (triangleSceneInfo == null) triangleSceneInfo = sceneInfos.First(x => x.name == TRIANGLE);
         }
 
         public static void OverrideEnvironmentScene()

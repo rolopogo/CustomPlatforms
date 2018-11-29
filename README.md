@@ -2,11 +2,19 @@
 An IPA Plugin for BeatSaber to support custom platforms and environments
 
 ## Installation
+### Easy Method
 
-Ensure you have the latest verion of the Beat Saber Mod Installer installed:
-https://github.com/Umbranoxio/BeatSaberModInstaller/releases
+* Ensure you have the latest verion of the Beat Saber Mod Installer installed: https://github.com/Umbranoxio/BeatSaberModInstaller/releases
+* Launch the mod installer
+* Select the checkbox for Custom Platforms
+* Click Install
 
-Copy the contents of the "Plugin" Folderinto your "Steam\steamapps\common\Beat Saber" folder.
+### Manual Method
+
+* Ensure your game is patched with IPA (The mod installer does this for you)
+* Copy the CustomPlatforms.dll into your "Steam\steamapps\common\Beat Saber\Plugins" folder.
+* Create a directory "CustomPlatforms" in the Beat Saber Directory
+* Add .plat files to the "CustomPlatforms" directory
 
 Your Beat Saber folder should then look like this:
 
@@ -23,32 +31,31 @@ Your Beat Saber folder should then look like this:
 
 ## Controls
 
-Press P to cycle through installed Platforms
+Press P to cycle through installed Platforms, or use the main menu option
 
 ## Adding More Platforms
 
-Place platforms (.plat) files in the BeatSaber\CustomPlatforms folder.
+Place platforms (.plat) files in the "BeatSaber\CustomPlatforms" folder.
 Your installed platforms will be available upon relaunching the game.
 
 ## Creating New Platforms
 
-1. Open the Unity project in the "Unity Project" folder.
-The project was created and tested in version 2017.4.0, but it should work in other 2017 versions.
+There's a comprehensive guide at https://bs.assistant.moe/Platforms/ written by Emma. The following are the basic steps:
 
-2. Create an empty GameObject and attach a "Custom Platform" component to it, fill out the fields
-for your name and the name of the platform.
+1. Download the Unity project from the releases page, unzip it.
 
-3. Create your custom platform as a child of the root object.
+2. Open the Unity project
+The project was created and tested in version 2018.1.6f1, other versions may not be supported.
+
+3. Create an empty GameObject and attach a "Custom Platform" component to it
+Fill out the fields for your name and the name of the platform.  You can also toggle the visibility of default environment parts if you need to make room for your platform.
+Add an icon for your platform by importing an image, settings it to Sprite/UI in import settings, and dragging it into the icon field of your CustomPlatform
+
+4. Create your custom platform as a child of this root object
 You can use most of the built in Unity components, custom shaders and materials, custom meshes, animators, etc.
-You cannot attach custom scripts to these objects.
+You cannot attach your own custom scripts to these objects. Only scripts from the CustomPlatforms dll will work.
 
-4. When you are finished, select the root object you attached the "Custom Platform" component to.
+5. When you are finished, select the root object you attached the "Custom Platform" component to.
 In the inspector, click "Export". Navigate to your CustomPlatforms folder, and press save.
 
-5. Share your custom platform with other players by uploading the .plat file
-
-## Support 
-
-For questions and issues, post in the Beat Saber Mod Group discord's support channel:
-https://discord.gg/UXpRn2n
-Tag @Rolo for specific CustomPlatforms questions.
+6. Share your custom platform with other players by uploading the .plat file

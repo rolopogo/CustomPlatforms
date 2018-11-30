@@ -106,66 +106,122 @@ namespace CustomFloorPlugin
 
         private void SliceCallBack(NoteData noteData, NoteCutInfo noteCutInfo, int multiplier)
         {
-            if (!noteCutInfo.allIsOK)
+            try
             {
-                _EventManager.OnComboBreak.Invoke();
+                if (!noteCutInfo.allIsOK)
+                {
+                    _EventManager.OnComboBreak.Invoke();
+                }
+                else
+                {
+                    _EventManager.OnSlice.Invoke();
+                }
             }
-            else
+            catch(Exception e)
             {
-                _EventManager.OnSlice.Invoke();
+                Console.WriteLine(e);
             }
         }
 
         private void NoteMissCallBack(NoteData noteData, int multiplier)
         {
-            if (noteData.noteType != NoteType.Bomb)
+            try
             {
-                _EventManager.OnComboBreak.Invoke();
+                if (noteData.noteType != NoteType.Bomb)
+                {
+                    _EventManager.OnComboBreak.Invoke();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
             }
         }
 
         private void MultiplierCallBack(int multiplier, float progress)
         {
-            if (multiplier > 1 && progress < 0.1f)
+            try
             {
-                _EventManager.MultiplierUp.Invoke();
+                if (multiplier > 1 && progress < 0.1f)
+                {
+                    _EventManager.MultiplierUp.Invoke();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
             }
         }
 
         private void SaberStartCollide(Saber.SaberType saber)
         {
-            _EventManager.SaberStartColliding.Invoke();
+            try
+            {
+                _EventManager.SaberStartColliding.Invoke();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
         private void SaberEndCollide(Saber.SaberType saber)
         {
-            _EventManager.SaberStopColliding.Invoke();
+            try
+            {
+                _EventManager.SaberStopColliding.Invoke();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
         private void FailLevelCallBack()
         {
-            _EventManager.OnLevelFail.Invoke();
+            try
+            {
+                _EventManager.OnLevelFail.Invoke();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
         private void LightEventCallBack(BeatmapEventData songEvent)
         {
-            if ((int)songEvent.type < 5)
+            try
             {
-                if (songEvent.value > 0 && songEvent.value < 4)
+                if ((int)songEvent.type < 5)
                 {
-                    _EventManager.OnBlueLightOn.Invoke();
-                }
+                    if (songEvent.value > 0 && songEvent.value < 4)
+                    {
+                        _EventManager.OnBlueLightOn.Invoke();
+                    }
 
-                if (songEvent.value > 4 && songEvent.value < 8)
-                {
-                    _EventManager.OnRedLightOn.Invoke();
+                    if (songEvent.value > 4 && songEvent.value < 8)
+                    {
+                        _EventManager.OnRedLightOn.Invoke();
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
             }
         }
 
         private void ComboChangeEvent(int combo)
         {
-            _EventManager.OnComboChanged.Invoke(combo);
+            try
+            {
+                _EventManager.OnComboChanged.Invoke(combo);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
     }
 }

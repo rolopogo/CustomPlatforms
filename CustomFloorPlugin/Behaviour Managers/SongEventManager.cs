@@ -23,7 +23,13 @@ namespace CustomFloorPlugin
             {
                 if (songEventData.value == _songEventHandler.value || _songEventHandler.anyValue)
                 {
-                    _songEventHandler.OnTrigger.Invoke();
+                    try
+                    {
+                        _songEventHandler.OnTrigger.Invoke();
+                    } catch
+                    {
+                        Console.WriteLine("Exception while invoking songEvent");
+                    }
                 }
             }
         }

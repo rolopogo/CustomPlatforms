@@ -87,6 +87,18 @@ namespace CustomFloorPlugin
             }
         }
 
+        public static void CreateAdditionalLightSwitchControllers()
+        {
+            LightSwitchEventEffect templateSwitchEffect = Resources.FindObjectsOfTypeAll<LightSwitchEventEffect>().FirstOrDefault();
+
+            for (int i = 6; i < 16; i++)
+            {
+                LightSwitchEventEffect newSwitchEffect = ReflectionUtil.CopyComponent(templateSwitchEffect, typeof(LightSwitchEventEffect), typeof(LightSwitchEventEffect), templateSwitchEffect.gameObject) as LightSwitchEventEffect;
+                newSwitchEffect.SetPrivateField("_lightsID", i);
+            }
+            UpdateEventTubeLightList();
+        }
+
         private void DestroyTubeLights()
         {
             try
@@ -108,11 +120,12 @@ namespace CustomFloorPlugin
             foreach (LightSwitchEventEffect switchEffect in lightSwitchEvents)
             {
                 ReflectionUtil.SetPrivateField(
-                    switchEffect, 
-                    "_lights", 
+                    switchEffect,
+                    "_lights",
                     BloomPrePass.GetLightsWithID(ReflectionUtil.GetPrivateField<int>(switchEffect, "_lightsID"))
                 );
             }
+            
         }
     }
 }

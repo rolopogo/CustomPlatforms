@@ -88,12 +88,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Behaviour Descriptors\CameraVisibility.cs" />
     <Compile Include="Behaviour Descriptors\PrefabLightmapData.cs" />
     <Compile Include="Behaviour Descriptors\SpectrogramAnimationState.cs" />
     <Compile Include="Behaviour Descriptors\SpectrogramMaterial.cs" />
+    <Compile Include="Behaviour Managers\CameraVisibilityManager.cs" />
     <Compile Include="Behaviour Managers\SpectrogramAnimationStateManager.cs" />
     <Compile Include="Behaviour Managers\SpectrogramMaterialManager.cs" />
     <Compile Include="Behaviours\SpectrogramColumns.cs" />
+    <Compile Include="EnvironmentRepositioner.cs" />
     <Compile Include="EnvironmentSceneOverrider.cs" />
     <Compile Include="Legacy Behaviours\CustomPlatformLegacy.cs" />
     <Compile Include="EnvironmentHider.cs" />

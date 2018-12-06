@@ -35,15 +35,6 @@ public class SpectrogramColumns : MonoBehaviour
             this._columnTransforms[i].localScale = new Vector3(this._columnWidth, Mathf.Lerp(this._minHeight, this._maxHeight, num) + (float)i * 0.1f, this._columnDepth);
             this._columnTransforms[i + 64].localScale = new Vector3(this._columnWidth, Mathf.Lerp(this._minHeight, this._maxHeight, num), this._columnDepth);
         }
-        
-        if (Input.GetKeyDown(KeyCode.Space)){
-
-            for (int i = 0; i < processedSamples.Length; i++)
-            {
-                Console.Write(processedSamples[i] + " ");
-            }
-            Console.WriteLine(" ");
-        }
     }
     
     private void CreateColums()

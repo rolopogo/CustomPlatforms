@@ -95,6 +95,7 @@ namespace CustomFloorPlugin
             {
                 LightSwitchEventEffect newSwitchEffect = ReflectionUtil.CopyComponent(templateSwitchEffect, typeof(LightSwitchEventEffect), typeof(LightSwitchEventEffect), templateSwitchEffect.gameObject) as LightSwitchEventEffect;
                 newSwitchEffect.SetPrivateField("_lightsID", i);
+                newSwitchEffect.SetPrivateField("_event", (BeatmapEventType)(i-1));
             }
             UpdateEventTubeLightList();
         }

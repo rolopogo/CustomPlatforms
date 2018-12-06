@@ -78,6 +78,18 @@ namespace CustomFloorPlugin
             };
             environment.FormatValue += delegate (float value) { return EnvironmentSceneOverrider.Name((EnvironmentSceneOverrider.EnvOverrideMode)value); };
             
+            var arrangement = subMenu.AddList("Environment Arrangement", EnvironmentArranger.RepositionModes());
+            arrangement.GetValue += delegate
+            {
+                return (float)EnvironmentArranger.arrangement;
+            };
+            arrangement.SetValue += delegate (float value)
+            {
+                EnvironmentArranger.arrangement = (EnvironmentArranger.Arrangement)value;
+                ModPrefs.SetInt(CustomFloorPlugin.PluginName, "EnvironmentArrangement", (int)EnvironmentArranger.arrangement);
+            };
+            arrangement.FormatValue += delegate (float value) { return EnvironmentArranger.Name((EnvironmentArranger.Arrangement)value); };
+            
         }
 
         private void CreatePlatformsButton()

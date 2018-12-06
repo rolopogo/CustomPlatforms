@@ -51,7 +51,8 @@ namespace CustomFloorPlugin
                     }
                 }
             }
-            
+
+            EnvironmentArranger.arrangement = (EnvironmentArranger.Arrangement)ModPrefs.GetInt(CustomFloorPlugin.PluginName, "EnvironmentArrangement", 0, true);
             EnvironmentSceneOverrider.overrideMode = (EnvironmentSceneOverrider.EnvOverrideMode)ModPrefs.GetInt(CustomFloorPlugin.PluginName, "EnvironmentOverrideMode", 0, true);
             EnvironmentSceneOverrider.GetSceneInfos();
             EnvironmentSceneOverrider.OverrideEnvironmentScene();
@@ -75,12 +76,19 @@ namespace CustomFloorPlugin
         {
             envHider.FindEnvironment();
             envHider.HideObjectsForPlatform(currentPlatform);
+            
+            if(SceneManager.GetActiveScene().name == "GameCore")
+            {
+                EnvironmentArranger.RearrangeEnvironment();
+                TubeLightManager.CreateAdditionalLightSwitchControllers();
+                TubeLightManager.UpdateEventTubeLightList();
+            }
+            Camera.main.cullingMask &= ~(1 << CameraVisibilityManager.OnlyInThirdPerson);
+            Camera.main.cullingMask |= 1 << CameraVisibilityManager.OnlyInHeadset;
         }
         
         private void Update()
         {
-            
-
             if (Input.GetKeyDown(KeyCode.P))
             {
                 NextPlatform();

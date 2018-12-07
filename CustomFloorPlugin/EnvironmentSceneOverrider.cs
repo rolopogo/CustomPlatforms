@@ -32,6 +32,9 @@ namespace CustomFloorPlugin
 
         public static void OverrideEnvironmentScene()
         {
+            // Disabled Scene overriding until SongLoader fixes Scene loading - sorry!
+            return;
+
             if(overrideMode == EnvOverrideMode.Off)
             {
                 SetSceneName(defaultSceneInfo, DEFAULT);

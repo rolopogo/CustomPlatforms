@@ -52,7 +52,8 @@ namespace CustomFloorPlugin
             for (int i = 0; i < allBundlePaths.Length; i++)
             {
                 AssetBundle bundle = AssetBundle.LoadFromFile(allBundlePaths[i]);
-
+                if(bundle == null) continue;
+                
                 Log("Loading: " + Path.GetFileName(allBundlePaths[i]));
 
                 CustomPlatform newPlatform = LoadPlatform(bundle, parent);

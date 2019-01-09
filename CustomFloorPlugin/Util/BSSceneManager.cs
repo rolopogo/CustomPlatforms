@@ -61,7 +61,7 @@ namespace CustomFloorPlugin
 
         private void SceneWasLoaded()
         {
-            activeSceneChanged.Invoke(_arg0, _arg1);
+            activeSceneChanged?.Invoke(_arg0, _arg1);
         }
 
     }

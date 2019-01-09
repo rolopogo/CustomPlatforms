@@ -28,7 +28,6 @@ namespace CustomFloorPlugin
             if (Instance != null) return;
             Instance = this;
 
-            BSSceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
 
             DontDestroyOnLoad(gameObject);
         }
@@ -63,6 +62,8 @@ namespace CustomFloorPlugin
             envHider.HideObjectsForPlatform(currentPlatform);
 
             currentPlatform.gameObject.SetActive(true);
+
+            BSSceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
 
             PlatformUI.OnLoad();
         }

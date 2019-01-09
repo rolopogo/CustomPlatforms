@@ -10,37 +10,42 @@ namespace CustomFloorPlugin
     public class EnvironmentSceneOverrider
     {
         public static EnvOverrideMode overrideMode = EnvOverrideMode.Off;
-        
+
         private static SceneInfo defaultSceneInfo;
         private static SceneInfo niceSceneInfo;
         private static SceneInfo bigMirrorSceneInfo;
         private static SceneInfo triangleSceneInfo;
+        private static SceneInfo kdaSceneInfo;
 
         private const string DEFAULT = "DefaultEnvironment";
         private const string NICE = "NiceEnvironment";
         private const string BIGMIRROR = "BigMirrorEnvironment";
         private const string TRIANGLE = "TriangleEnvironment";
-        
+        private const string KDA = "KDAEnvironment";
+
         public static void GetSceneInfos()
         {
             var sceneInfos = Resources.FindObjectsOfTypeAll<SceneInfo>();
+            foreach (SceneInfo si in sceneInfos)
+            {
+                Console.WriteLine(si.name);
+            }
             if (defaultSceneInfo == null) defaultSceneInfo = sceneInfos.First(x => x.name == DEFAULT + "SceneInfo");
             if (niceSceneInfo == null) niceSceneInfo = sceneInfos.First(x => x.name == NICE + "SceneInfo");
             if (bigMirrorSceneInfo == null) bigMirrorSceneInfo = sceneInfos.First(x => x.name == BIGMIRROR + "SceneInfo");
             if (triangleSceneInfo == null) triangleSceneInfo = sceneInfos.First(x => x.name == TRIANGLE + "SceneInfo");
+            if (kdaSceneInfo == null) kdaSceneInfo = sceneInfos.First(x => x.name == KDA + "SceneInfo");
         }
 
         public static void OverrideEnvironmentScene()
         {
-            // Disabled Scene overriding until SongLoader fixes Scene loading - sorry!
-            return;
-
-            if(overrideMode == EnvOverrideMode.Off)
+            if (overrideMode == EnvOverrideMode.Off)
             {
                 SetSceneName(defaultSceneInfo, DEFAULT);
                 SetSceneName(niceSceneInfo, NICE);
                 SetSceneName(bigMirrorSceneInfo, BIGMIRROR);
                 SetSceneName(triangleSceneInfo, TRIANGLE);
+                SetSceneName(kdaSceneInfo, KDA);
             }
             else
             {
@@ -59,8 +64,11 @@ namespace CustomFloorPlugin
                     case EnvOverrideMode.Triangle:
                         sceneName = TRIANGLE;
                         break;
+                    case EnvOverrideMode.KDA:
+                        sceneName = KDA;
+                        break;
                     case EnvOverrideMode.Random:
-                        sceneName = new RandomObjectPicker<string>(new string[] { DEFAULT, NICE, BIGMIRROR, TRIANGLE }, 0).PickRandomObject();
+                        sceneName = new RandomObjectPicker<string>(new string[] { DEFAULT, NICE, BIGMIRROR, TRIANGLE, KDA }, 0).PickRandomObject();
                         break;
                 }
 
@@ -68,6 +76,7 @@ namespace CustomFloorPlugin
                 SetSceneName(niceSceneInfo, sceneName);
                 SetSceneName(bigMirrorSceneInfo, sceneName);
                 SetSceneName(triangleSceneInfo, sceneName);
+                SetSceneName(kdaSceneInfo, sceneName);
 
             }
 
@@ -82,6 +91,7 @@ namespace CustomFloorPlugin
                 (float)EnvironmentSceneOverrider.EnvOverrideMode.Nice,
                 (float)EnvironmentSceneOverrider.EnvOverrideMode.BigMirror,
                 (float)EnvironmentSceneOverrider.EnvOverrideMode.Triangle,
+                (float)EnvironmentSceneOverrider.EnvOverrideMode.KDA,
                 (float)EnvironmentSceneOverrider.EnvOverrideMode.Random
             };
         }
@@ -90,7 +100,7 @@ namespace CustomFloorPlugin
         {
             sceneInfo.SetPrivateField("_sceneName", newName);
         }
-        
+
         public static string Name(EnvOverrideMode mode)
         {
             switch (mode)
@@ -105,13 +115,15 @@ namespace CustomFloorPlugin
                     return "Big Mirror";
                 case EnvOverrideMode.Triangle:
                     return "Triangle";
+                case EnvOverrideMode.KDA:
+                    return "K/DA";
                 case EnvOverrideMode.Random:
                     return "Random";
                 default:
                     return "?";
             }
         }
-        
+
         public enum EnvOverrideMode
         {
             Off,
@@ -119,6 +131,7 @@ namespace CustomFloorPlugin
             Nice,
             BigMirror,
             Triangle,
+            KDA,
             Random
         };
 

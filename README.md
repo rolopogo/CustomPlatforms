@@ -12,16 +12,15 @@ An IPA Plugin for BeatSaber to support custom platforms and environments
 ### Manual Method
 
 * Ensure your game is patched with IPA (The mod installer does this for you)
-* Copy the CustomPlatforms.dll into your "Steam\steamapps\common\Beat Saber\Plugins" folder.
-* Create a directory "CustomPlatforms" in the Beat Saber Directory
-* Add .plat files to the "CustomPlatforms" directory
+* Extract CustomPlatformsX.Y.zip (Not the Unity Project zip!) into your Beat Saber directory
+* Add .plat files to the "CustomPlatforms" directory - A few are included 
 
 Your Beat Saber folder should then look like this:
 
 ```
 | Beat Saber
   | Plugins
-    | CustomFloorPlugin.dll     <-- 
+    | CustomPlatforms.dll     <-- 
   | CustomPlatforms		<--
     | <.plat files>		<--
   | IPA

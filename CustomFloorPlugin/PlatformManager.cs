@@ -7,7 +7,7 @@ using IllusionPlugin;
 
 namespace CustomFloorPlugin
 {
-    class PlatformManager : MonoBehaviour
+    public class PlatformManager : MonoBehaviour
     {
         public static PlatformManager Instance;
         
@@ -130,6 +130,24 @@ namespace CustomFloorPlugin
             // Save path into ModPrefs
             ModPrefs.SetString(CustomFloorPlugin.PluginName, "CustomPlatformPath", currentPlatform.platName + currentPlatform.platAuthor);
             
+            // Show new platform
+            currentPlatform.gameObject.SetActive(true);
+
+            // Hide environment for new platform
+            envHider.HideObjectsForPlatform(currentPlatform);
+
+            // Update lightSwitchEvent TubeLight references
+            TubeLightManager.UpdateEventTubeLightList();
+        }
+
+        public void TempChangeToPlatform(int index)
+        {
+            // Hide current Platform
+            currentPlatform.gameObject.SetActive(false);
+
+            // Increment index
+            platformIndex = index % platforms.Length;
+
             // Show new platform
             currentPlatform.gameObject.SetActive(true);
 

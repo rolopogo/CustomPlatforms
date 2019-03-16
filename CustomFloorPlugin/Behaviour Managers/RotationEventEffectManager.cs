@@ -1,9 +1,6 @@
-﻿using System;
+﻿using CustomFloorPlugin.Util;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace CustomFloorPlugin
 {
@@ -11,27 +8,35 @@ namespace CustomFloorPlugin
     {
         List<RotationEventEffect> effectDescriptors;
         List<LightRotationEventEffect> lightRotationEffects;
-
-        private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
+        
+        private void OnEnable()
         {
-            UpdateSongController();
-
-            // reset position on new scene
-            foreach(LightRotationEventEffect rotEffect in lightRotationEffects)
+            foreach (LightRotationEventEffect rotEffect in lightRotationEffects)
+            {
+                BSEvents.beatmapEvent += delegate (BeatmapEventData data) { rotEffect.InvokePrivateMethod("HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger", new object[] { data }); };
+            }
+            BSEvents.menuSceneLoaded += HandleSceneChange;
+            BSEvents.gameSceneLoaded += HandleSceneChange;
+            HandleSceneChange();
+        }
+        
+        private void OnDisable()
+        {
+            foreach (LightRotationEventEffect rotEffect in lightRotationEffects)
+            {
+                BSEvents.beatmapEvent -= delegate (BeatmapEventData data) { rotEffect.InvokePrivateMethod("HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger", new object[] { data }); };
+            }
+            BSEvents.menuSceneLoaded -= HandleSceneChange;
+            BSEvents.gameSceneLoaded -= HandleSceneChange;
+        }
+        
+        private void HandleSceneChange()
+        {
+            foreach (LightRotationEventEffect rotEffect in lightRotationEffects)
             {
                 rotEffect.transform.localRotation = ReflectionUtil.GetPrivateField<Quaternion>(rotEffect, "_startRotation");
                 rotEffect.enabled = false;
             }
-        }
-
-        private void OnEnable()
-        {
-            BSSceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
-        }
-
-        private void OnDisable()
-        {
-            BSSceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
         }
 
         public void CreateEffects(GameObject go)
@@ -53,19 +58,6 @@ namespace CustomFloorPlugin
                 ReflectionUtil.SetPrivateField(rotEvent, "_startRotation", rotEvent.transform.rotation);
                 lightRotationEffects.Add(rotEvent);
                 effectDescriptors.Add(effectDescriptor);
-            }
-        }
-
-        public void UpdateSongController()
-        {
-            BeatmapObjectCallbackController beatmapObjectCallbackController = Resources.FindObjectsOfTypeAll<BeatmapObjectCallbackController>().First();
-            
-            if (beatmapObjectCallbackController == null) return;
-
-            foreach (LightRotationEventEffect rotationEffect in lightRotationEffects)
-            {
-                ReflectionUtil.SetPrivateField(rotationEffect, "_beatmapObjectCallbackController", beatmapObjectCallbackController);
-                beatmapObjectCallbackController.beatmapEventDidTriggerEvent += rotationEffect.HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger;
             }
         }
     }

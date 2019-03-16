@@ -1,25 +1,18 @@
 ﻿using HMUI;
 using IllusionPlugin;
-using System;
-using System.Linq;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
-using VRUI;
 using CustomUI.MenuButton;
 using CustomUI.Settings;
-using UnityEngine.SceneManagement;
 using CustomUI.BeatSaber;
+using CustomFloorPlugin.Util;
 
 namespace CustomFloorPlugin
 {
     class PlatformUI : MonoBehaviour
-    {
-        private MainFlowCoordinator _mainFlowCoordinator;
-        
+    {   
         public static PlatformUI _instance;
                 
-        public PlatformListFlowCoordinator _platformListFlowCoordinator;
+        public CustomMenu _platformMenu;
 
         internal static void OnLoad()
         {
@@ -33,19 +26,14 @@ namespace CustomFloorPlugin
         private void Awake()
         {
             _instance = this;
-            _mainFlowCoordinator = Resources.FindObjectsOfTypeAll<MainFlowCoordinator>().First();
-            SceneManager.sceneLoaded += SceneManager_sceneLoaded;
             DontDestroyOnLoad(gameObject);
-            CreatePlatformsButton();
-            CreateSettingsUI();
+
+            BSEvents.menuSceneLoadedFresh += HandleMenuSceneLoadedFresh;
+            HandleMenuSceneLoadedFresh();
         }
-        
-        private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
+
+        private void HandleMenuSceneLoadedFresh()
         {
-            if (arg0.name != "Menu") return;
-
-            _mainFlowCoordinator = Resources.FindObjectsOfTypeAll<MainFlowCoordinator>().First();
-
             CreatePlatformsButton();
             CreateSettingsUI();
         }
@@ -57,12 +45,12 @@ namespace CustomFloorPlugin
             var feetMenu = subMenu.AddBool("Always Show Feet");
             feetMenu.GetValue += delegate
             {
-                return PlatformManager.Instance.envHider.showFeetOverride;
+                return EnvironmentHider.showFeetOverride;
             };
             feetMenu.SetValue += delegate (bool value)
             {
-                PlatformManager.Instance.envHider.showFeetOverride = value;
-                ModPrefs.SetBool(CustomFloorPlugin.PluginName, "AlwaysShowFeet", PlatformManager.Instance.envHider.showFeetOverride);
+                EnvironmentHider.showFeetOverride = value;
+                ModPrefs.SetBool(CustomFloorPlugin.PluginName, "AlwaysShowFeet", EnvironmentHider.showFeetOverride);
             };
             
             var environment = subMenu.AddList("Environment Override", EnvironmentSceneOverrider.OverrideModes());
@@ -98,13 +86,16 @@ namespace CustomFloorPlugin
                 "Platforms", 
                 delegate ()
                 {
-                    if (_platformListFlowCoordinator == null)
+                    if (_platformMenu == null)
                     {
-                        _platformListFlowCoordinator = new GameObject("PlatformListFlowCoordinator").AddComponent<PlatformListFlowCoordinator>();
-                        _platformListFlowCoordinator.mainFlowCoordinator = _mainFlowCoordinator;
+                        _platformMenu = new GameObject("PlatformListFlowCoordinator").AddComponent<CustomMenu>();
+                        _platformMenu.title = "Platform Select";
+                        PlatformListViewController platformListViewController = new GameObject("PlatformListViewController").AddComponent<PlatformListViewController>();
+                        _platformMenu.mainViewController = platformListViewController;
+                        platformListViewController.DidSelectRowEvent += delegate (TableView view, int row) { PlatformManager.Instance.ChangeToPlatform(row); };
                     }
 
-                    _mainFlowCoordinator.InvokePrivateMethod( "PresentFlowCoordinator", new object[] { _platformListFlowCoordinator, null, false, false });
+                    _platformMenu.Present();
                 }
             );
         }

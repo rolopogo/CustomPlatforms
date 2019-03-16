@@ -105,16 +105,15 @@
     <Compile Include="Behaviours\MeshBloomPrePassLight.cs" />
     <Compile Include="Behaviour Managers\PlatformEventManager.cs" />
     <Compile Include="PlatformManager.cs" />
+    <Compile Include="Util\BSEvents.cs" />
     <Compile Include="UI\PlatformListViewController.cs" />
     <Compile Include="PlatformLoader.cs" />
-    <Compile Include="UI\PlatformListFlowCoordinator.cs" />
     <Compile Include="UI\PlatformUI.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Util\BSSceneManager.cs" />
     <Compile Include="Util\ReflectionUtil.cs" />
     <Compile Include="Behaviour Managers\RotationEventEffectManager.cs" />
     <Compile Include="Behaviour Managers\SongEventManager.cs" />

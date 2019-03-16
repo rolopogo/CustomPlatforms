@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CustomFloorPlugin.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,22 +11,16 @@ namespace CustomFloorPlugin
     public class SpectrogramMaterialManager : MonoBehaviour
     {
         List<SpectrogramMaterial> spectrogramMaterials;
-
-        private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
-        {
-            UpdateSpectrogramDataProvider();
-        }
-
+        
         private void OnEnable()
         {
-            BSSceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
-            BSSceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
+            BSEvents.gameSceneLoaded += UpdateSpectrogramDataProvider;
             UpdateSpectrogramDataProvider();
         }
 
         private void OnDisable()
         {
-            BSSceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
+            BSEvents.gameSceneLoaded -= UpdateSpectrogramDataProvider;
         }
 
         public void UpdateMaterials()
@@ -40,7 +35,6 @@ namespace CustomFloorPlugin
         
         public void UpdateSpectrogramDataProvider()
         {
-
             BasicSpectrogramData[] datas = Resources.FindObjectsOfTypeAll<BasicSpectrogramData>();
             if (datas.Length == 0) return;
             BasicSpectrogramData spectrogramData = datas.FirstOrDefault();

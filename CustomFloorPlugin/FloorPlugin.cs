@@ -2,6 +2,7 @@
 using UnityEngine;
 using IllusionPlugin;
 using UnityEngine.SceneManagement;
+using CustomFloorPlugin.Util;
 
 namespace CustomFloorPlugin
 {
@@ -27,21 +28,17 @@ namespace CustomFloorPlugin
         public void OnApplicationStart()
         {
             Instance = this;
-            SceneManager.sceneLoaded += SceneManager_sceneLoaded;
+            BSEvents.OnLoad();
+            BSEvents.menuSceneLoadedFresh += OnMenuSceneLoadedFresh;
+
+            Application.logMessageReceived += LogCallback;
         }
-        
-        private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
+
+        private void OnMenuSceneLoadedFresh()
         {
-            
-            // Load in the menu scene
-            if (arg0.name == "Menu" && !init)
-            {
+            if(!init){ 
                 init = true;
-                
                 PlatformManager.OnLoad();
-                BSSceneManager.OnLoad();
-                
-                //Application.logMessageReceived += LogCallback;
             }
         }
 
@@ -55,7 +52,7 @@ namespace CustomFloorPlugin
 
         public void OnApplicationQuit()
         {
-            SceneManager.sceneLoaded -= SceneManager_sceneLoaded;
+            BSEvents.menuSceneLoadedFresh -= OnMenuSceneLoadedFresh;
         }
 
         public void OnLevelWasLoaded(int level)

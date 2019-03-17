@@ -34,7 +34,17 @@ namespace CustomFloorPlugin
 
         private void HandleMenuSceneLoadedFresh()
         {
-            CreatePlatformsButton();
+            if (_platformMenu == null)
+            {
+                _platformMenu = BeatSaberUI.CreateCustomMenu<CustomMenu>("Platform Select");
+                PlatformListViewController platformListViewController = BeatSaberUI.CreateViewController<PlatformListViewController>();
+                platformListViewController.backButtonPressed += delegate () { _platformMenu.Dismiss(); };
+                _platformMenu.SetMainViewController(platformListViewController, true);
+                platformListViewController.DidSelectRowEvent += delegate (TableView view, int row) { PlatformManager.Instance.ChangeToPlatform(row); };
+            }
+
+            MenuButtonUI.AddButton( "Platforms", delegate () { _platformMenu.Present(); } );
+            
             CreateSettingsUI();
         }
 
@@ -78,26 +88,6 @@ namespace CustomFloorPlugin
             };
             arrangement.FormatValue += delegate (float value) { return EnvironmentArranger.Name((EnvironmentArranger.Arrangement)value); };
             
-        }
-
-        private void CreatePlatformsButton()
-        {
-            MenuButtonUI.AddButton(
-                "Platforms", 
-                delegate ()
-                {
-                    if (_platformMenu == null)
-                    {
-                        _platformMenu = new GameObject("PlatformListFlowCoordinator").AddComponent<CustomMenu>();
-                        _platformMenu.title = "Platform Select";
-                        PlatformListViewController platformListViewController = new GameObject("PlatformListViewController").AddComponent<PlatformListViewController>();
-                        _platformMenu.mainViewController = platformListViewController;
-                        platformListViewController.DidSelectRowEvent += delegate (TableView view, int row) { PlatformManager.Instance.ChangeToPlatform(row); };
-                    }
-
-                    _platformMenu.Present();
-                }
-            );
         }
     }
 }

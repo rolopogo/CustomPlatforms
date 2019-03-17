@@ -1,23 +1,18 @@
 ﻿using HMUI;
-using System;
-using System.Linq;
-using TMPro;
-using UnityEngine;
-using UnityEngine.UI;
 using CustomUI.BeatSaber;
-using VRUI;
-using UnityEngine.Events;
 using CustomUI.Utilities;
+using TMPro;
 
 namespace CustomFloorPlugin
 {
     class PlatformListViewController : CustomListViewController
     {
-        public TextMeshProUGUI _versionNumber;
+        public override void __Activate(ActivationType activationType)
+        {
+            base.__Activate(activationType);
+            _customListTableView.SelectCellWithIdx(PlatformManager.Instance.currentPlatformIndex);
+        }
 
-        public TableView _platformsTableView;
-        LevelListTableCell _songListTableCellInstance;
-        
         public override int NumberOfCells()
         {
             return PlatformManager.Instance.GetPlatforms().Length;
@@ -27,10 +22,10 @@ namespace CustomFloorPlugin
         {
             CustomPlatform platform = PlatformManager.Instance.GetPlatform(idx);
 
-            LevelListTableCell _tableCell = Instantiate(_songListTableCellInstance);
-            _tableCell.SetPrivateField("_songNameText", platform.platName);
-            _tableCell.SetPrivateField("_authorText", platform.platAuthor);
-            _tableCell.SetPrivateField("_coverImage", platform.icon);
+            LevelListTableCell _tableCell = GetTableCell(idx, false);
+            _tableCell.GetPrivateField<TextMeshProUGUI>("_songNameText").text = platform.platName;
+            _tableCell.GetPrivateField<TextMeshProUGUI>("_authorText").text = platform.platAuthor;
+            _tableCell.GetPrivateField<UnityEngine.UI.Image>("_coverImage").sprite = platform.icon;
             _tableCell.reuseIdentifier = "PlatformListCell";
             return _tableCell;
         }

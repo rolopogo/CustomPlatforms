@@ -12,19 +12,15 @@ namespace CustomFloorPlugin
     class PlatformLoader
     {
         private const string customFolder = "CustomPlatforms";
-
-        private MaterialSwapper matSwapper;
-
+        
         private List<string> bundlePaths;
         private List<CustomPlatform> platforms;
-        
+
         /// <summary>
         /// Loads AssetBundles and populates the platforms array with CustomPlatform objects
         /// </summary>
         public CustomPlatform[] CreateAllPlatforms(Transform parent)
-        {
-            if(matSwapper == null) matSwapper = new MaterialSwapper();
-
+        {   
             string customPlatformsFolderPath = Path.Combine(Environment.CurrentDirectory, customFolder);
 
             // Create the CustomPlatforms folder if it doesn't already exist
@@ -82,7 +78,7 @@ namespace CustomFloorPlugin
                 Log("Assetbundle didnt contain a Custom Platform");
                 return null;
             }
-            
+
             GameObject newPlatform = GameObject.Instantiate(platformPrefab.gameObject);
             newPlatform.transform.parent = parent;
 
@@ -117,10 +113,10 @@ namespace CustomFloorPlugin
             newPlatform.name = customPlatform.platName + " by " + customPlatform.platAuthor;
             
             if (customPlatform.icon == null) customPlatform.icon = Resources.FindObjectsOfTypeAll<Sprite>().Where(x => x.name == "FeetIcon").FirstOrDefault();
+            
+            AddManagers(newPlatform);
 
             newPlatform.SetActive(false);
-
-            AddManagers(newPlatform);
 
             return customPlatform;
         }
@@ -133,8 +129,8 @@ namespace CustomFloorPlugin
         private void AddManagers(GameObject go, GameObject root)
         {
             // Replace materials for this object
-            matSwapper.ReplaceMaterialsForGameObject(go);
-
+            MaterialSwapper.ReplaceMaterialsForGameObject(go);
+            
             // Add a tube light manager if there are tube light descriptors
             if (go.GetComponentInChildren<TubeLight>(true) != null)
             {
@@ -142,7 +138,7 @@ namespace CustomFloorPlugin
                 if(tlm == null) tlm = root.AddComponent<TubeLightManager>();
                 tlm.CreateTubeLights(go);
             }
-
+            
             // Rotation effect manager
             if (go.GetComponentInChildren<RotationEventEffect>(true) != null)
             {
@@ -166,7 +162,7 @@ namespace CustomFloorPlugin
                 if(trms == null) trms = root.AddComponent<TrackRingsManagerSpawner>();
                 trms.CreateTrackRings(go);
             }
-
+            
             // Add spectrogram manager
             if (go.GetComponentInChildren<Spectrogram>(true) != null)
             {

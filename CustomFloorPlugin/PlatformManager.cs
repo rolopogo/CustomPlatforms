@@ -4,14 +4,18 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.SceneManagement;
 using IllusionPlugin;
+using CustomFloorPlugin.Util;
 
 namespace CustomFloorPlugin
 {
-    class PlatformManager : MonoBehaviour
+    public class PlatformManager : MonoBehaviour
     {
         public static PlatformManager Instance;
         
-        public EnvironmentHider envHider;
+        private EnvironmentHider menuEnvHider;
+        private EnvironmentHider gameEnvHider;
+
+        private PlatformLoader platformLoader;
 
         private CustomPlatform[] platforms;
         private int platformIndex = 0;
@@ -27,15 +31,42 @@ namespace CustomFloorPlugin
         {
             if (Instance != null) return;
             Instance = this;
-
-
             DontDestroyOnLoad(gameObject);
         }
 
         private void Start()
         {
-            platforms = new PlatformLoader().CreateAllPlatforms(transform);
+            EnvironmentArranger.arrangement = (EnvironmentArranger.Arrangement)ModPrefs.GetInt(CustomFloorPlugin.PluginName, "EnvironmentArrangement", 0, true);
+            EnvironmentSceneOverrider.overrideMode = (EnvironmentSceneOverrider.EnvOverrideMode)ModPrefs.GetInt(CustomFloorPlugin.PluginName, "EnvironmentOverrideMode", 0, true);
+            EnvironmentSceneOverrider.GetSceneInfos();
+            EnvironmentSceneOverrider.OverrideEnvironmentScene();
+
+            menuEnvHider = new EnvironmentHider();
+            gameEnvHider = new EnvironmentHider();
+            platformLoader = new PlatformLoader();
+
+            BSEvents.gameSceneLoaded += HandleGameSceneLoaded;
+            BSEvents.menuSceneLoaded += HandleMenuSceneLoadedFresh;
+            BSEvents.menuSceneLoaded += HandleMenuSceneLoaded;
             
+            RefreshPlatforms();
+
+            HandleMenuSceneLoadedFresh();
+            
+            PlatformUI.OnLoad();
+        }
+
+        public void RefreshPlatforms()
+        {
+            if (platforms != null)
+            {
+                foreach (CustomPlatform platform in platforms)
+                {
+                    Destroy(platform.gameObject);
+                }
+            }
+            platforms = platformLoader.CreateAllPlatforms(transform);
+
             // Retrieve saved path from player prefs if it exists
             if (ModPrefs.HasKey(CustomFloorPlugin.PluginName, "CustomPlatformPath"))
             {
@@ -50,44 +81,38 @@ namespace CustomFloorPlugin
                     }
                 }
             }
-
-            EnvironmentArranger.arrangement = (EnvironmentArranger.Arrangement)ModPrefs.GetInt(CustomFloorPlugin.PluginName, "EnvironmentArrangement", 0, true);
-            EnvironmentSceneOverrider.overrideMode = (EnvironmentSceneOverrider.EnvOverrideMode)ModPrefs.GetInt(CustomFloorPlugin.PluginName, "EnvironmentOverrideMode", 0, true);
-            EnvironmentSceneOverrider.GetSceneInfos();
-            EnvironmentSceneOverrider.OverrideEnvironmentScene();
-
-            envHider = new EnvironmentHider();
-            envHider.showFeetOverride = ModPrefs.GetBool(CustomFloorPlugin.PluginName, "AlwaysShowFeet", false, true);
-            envHider.FindEnvironment();
-            envHider.HideObjectsForPlatform(currentPlatform);
-
-            currentPlatform.gameObject.SetActive(true);
-
-            BSSceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
-
-            PlatformUI.OnLoad();
+            ChangeToPlatform(platformIndex);
         }
 
-        public void OnApplicationQuit()
+        private void HandleGameSceneLoaded()
         {
-            BSSceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
+            gameEnvHider.FindEnvironment();
+            gameEnvHider.HideObjectsForPlatform(currentPlatform);
+
+            EnvironmentArranger.RearrangeEnvironment();
+            TubeLightManager.CreateAdditionalLightSwitchControllers();
+            TubeLightManager.UpdateEventTubeLightList();
+            SetCameraMask();
         }
-        
-        private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
+
+        private void HandleMenuSceneLoadedFresh()
         {
-            envHider.FindEnvironment();
-            envHider.HideObjectsForPlatform(currentPlatform);
-            
-            if(SceneManager.GetActiveScene().name == "GameCore")
-            {
-                EnvironmentArranger.RearrangeEnvironment();
-                TubeLightManager.CreateAdditionalLightSwitchControllers();
-                TubeLightManager.UpdateEventTubeLightList();
-            }
+            menuEnvHider.FindEnvironment();
+            HandleMenuSceneLoaded();
+        }
+
+        private void HandleMenuSceneLoaded()
+        {
+            menuEnvHider.HideObjectsForPlatform(currentPlatform);
+            SetCameraMask();
+        }
+
+        private void SetCameraMask()
+        {
             Camera.main.cullingMask &= ~(1 << CameraVisibilityManager.OnlyInThirdPerson);
             Camera.main.cullingMask |= 1 << CameraVisibilityManager.OnlyInHeadset;
         }
-        
+
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.P))
@@ -126,7 +151,7 @@ namespace CustomFloorPlugin
 
             // Increment index
             platformIndex = index % platforms.Length;
-
+            
             // Save path into ModPrefs
             ModPrefs.SetString(CustomFloorPlugin.PluginName, "CustomPlatformPath", currentPlatform.platName + currentPlatform.platAuthor);
             
@@ -134,7 +159,7 @@ namespace CustomFloorPlugin
             currentPlatform.gameObject.SetActive(true);
 
             // Hide environment for new platform
-            envHider.HideObjectsForPlatform(currentPlatform);
+            menuEnvHider.HideObjectsForPlatform(currentPlatform);
 
             // Update lightSwitchEvent TubeLight references
             TubeLightManager.UpdateEventTubeLightList();

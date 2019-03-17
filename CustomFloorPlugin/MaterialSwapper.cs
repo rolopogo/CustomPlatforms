@@ -1,33 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Linq;
 using UnityEngine;
 
 namespace CustomFloorPlugin
 {
-    class MaterialSwapper
+    static class MaterialSwapper
     {
-        Material dark;
-        Material glow;
+        public static Material dark { get; private set; }
+        public static Material glow { get; private set; }
+        public static Material opaqueGlow { get; private set; }
 
-        string darkReplaceMatName = "_dark_replace (Instance)";
-        string glowReplaceMatName = "_glow_replace (Instance)";
+        const string darkReplaceMatName = "_dark_replace (Instance)";
+        const string glowReplaceMatName = "_transparent_glow_replace (Instance)";
+        const string opaqueGlowReplaceMatName = "_glow_replace (Instance)";
 
-        public void GetMaterials()
+        public static void GetMaterials()
         {
             // This object should be created in the Menu Scene
             // Grab materials from Menu Scene objects
-            dark = new Material(GameObject.Find("Column").GetComponent<Renderer>().material);
-            glow = new Material(GameObject.Find("Neon").GetComponent<Renderer>().material);
+            var materials = Resources.FindObjectsOfTypeAll<Material>();
+            
+            dark = new Material(materials.First(x => x.name == "DarkEnvironment1"));
+            opaqueGlow = new Material(materials.First(x => x.name == "EnvLightOpaque"));
+            glow = new Material(materials.First(x => x.name == "EnvLight"));
         }
 
-        public void ReplaceMaterialsForGameObject(GameObject go)
+        public static void ReplaceMaterialsForGameObject(GameObject go)
         {
             if (dark == null || glow == null) GetMaterials();
             ReplaceAllMaterialsForGameObjectChildren(go, dark, darkReplaceMatName);
             ReplaceAllMaterialsForGameObjectChildren(go, glow, glowReplaceMatName);
+            ReplaceAllMaterialsForGameObjectChildren(go, opaqueGlow, opaqueGlowReplaceMatName);
         }
 
-        public void ReplaceAllMaterialsForGameObjectChildren(GameObject go, Material mat, string matToReplaceName = "")
+        public static void ReplaceAllMaterialsForGameObjectChildren(GameObject go, Material mat, string matToReplaceName = "")
         {
             foreach (Renderer r in go.GetComponentsInChildren<Renderer>(true))
             {
@@ -35,7 +40,7 @@ namespace CustomFloorPlugin
             }
         }
 
-        public void ReplaceAllMaterialsForGameObject(GameObject go, Material mat, string matToReplaceName = "")
+        public static void ReplaceAllMaterialsForGameObject(GameObject go, Material mat, string matToReplaceName = "")
         {
             Renderer r = go.GetComponent<Renderer>();
             Material[] materialsCopy = r.materials;

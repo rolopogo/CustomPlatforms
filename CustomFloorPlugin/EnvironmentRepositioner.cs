@@ -14,8 +14,6 @@ namespace CustomFloorPlugin
 
         public static void RearrangeEnvironment()
         {
-            
-            if (SceneManager.GetActiveScene().name != "GameCore") return;
             switch (arrangement)
             {
                 case Arrangement.Default:

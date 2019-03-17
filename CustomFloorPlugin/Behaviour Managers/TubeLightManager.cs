@@ -1,21 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using System.Reflection;
+using CustomFloorPlugin.Util;
+using CustomUI.Utilities;
 
 namespace CustomFloorPlugin
 {
     public class TubeLightManager : MonoBehaviour
     {
-        private List<BloomPrePassLight> tbppLights;
+        private List<TubeBloomPrePassLight> tbppLights;
         private List<TubeLight> tubeLightDescriptors;
-        
-        private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
+
+        static TubeBloomPrePassLight prefab;
+
+        private void OnEnable()
         {
+            BSEvents.menuSceneLoaded += SetColorToDefault;
+            BSEvents.menuSceneLoadedFresh += SetColorToDefault;
             SetColorToDefault();
+            foreach (BloomPrePassLight light in tbppLights)
+            {
+                (light as TubeBloomPrePassLight).Refresh();
+            }
+        }
+
+        private void OnDisable()
+        {
+            BSEvents.menuSceneLoaded -= SetColorToDefault;
+            BSEvents.menuSceneLoadedFresh -= SetColorToDefault;
         }
 
         private void SetColorToDefault()
@@ -28,59 +42,63 @@ namespace CustomFloorPlugin
                 if (tube != null)
                 {
                     tube.color = tl.color;
-                }
-
-                MeshBloomPrePassLight mesh = tl.gameObject.GetComponent<MeshBloomPrePassLight>();
-                if (mesh != null)
-                {
-                    mesh.color = tl.color;
+                    tube.Refresh();
                 }
             }
         }
-
-        private void OnEnable()
-        {
-            BSSceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
-
-            SetColorToDefault();
-        }
-
-        private void OnDisable()
-        {
-            BSSceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
-        }
         
-
         public void CreateTubeLights(GameObject go)
         {
-            if(tbppLights == null) tbppLights = new List<BloomPrePassLight>();
+            if (prefab == null)
+            {
+                prefab = Resources.FindObjectsOfTypeAll<TubeBloomPrePassLight>().First(x => x.name == "Neon");
+            }
+            
+            if (tbppLights == null) tbppLights = new List<TubeBloomPrePassLight>();
             if (tubeLightDescriptors == null) tubeLightDescriptors = new List<TubeLight>();
-
+             
             TubeLight[] localDescriptors = go.GetComponentsInChildren<TubeLight>(true);
 
             if (localDescriptors == null) return;
-
+            
             foreach (TubeLight tl in localDescriptors)
             {
-                BloomPrePassLight tubeBloomLight;
+                TubeBloomPrePassLight tubeBloomLight;
+                tubeBloomLight = Instantiate(prefab, tl.transform);
+                tubeBloomLight.transform.localScale = new Vector3(1 / tl.transform.lossyScale.x, 1 / tl.transform.lossyScale.y, 1 / tl.transform.lossyScale.z);
 
                 if (tl.GetComponent<MeshFilter>().mesh.vertexCount == 0)
                 {
-                    tubeBloomLight = tl.gameObject.AddComponent<TubeBloomPrePassLight>();
-                    (tubeBloomLight as TubeBloomPrePassLight).Init();
-                } else
+                    tl.GetComponent<MeshRenderer>().enabled = false;
+                }
+                else
                 {
-                    tubeBloomLight = tl.gameObject.AddComponent<MeshBloomPrePassLight>();
-                    (tubeBloomLight as MeshBloomPrePassLight).Init();
+                    // swap for MeshBloomPrePassLight
+                    MeshBloomPrePassLight meshbloom = ReflectionUtil.CopyComponent(tubeBloomLight, typeof(TubeBloomPrePassLight), typeof(MeshBloomPrePassLight), tubeBloomLight.gameObject) as MeshBloomPrePassLight;
+                    meshbloom.Init(tl.GetComponent<Renderer>());
+                    Destroy(tubeBloomLight);
+                    tubeBloomLight = meshbloom;
                 }
 
-                ReflectionUtil.SetPrivateField(tubeBloomLight, "_width", tl.width);
-                ReflectionUtil.SetPrivateField(tubeBloomLight, "_length", tl.length);
-                ReflectionUtil.SetPrivateField(tubeBloomLight, "_center", tl.center);
+                tubeBloomLight.SetPrivateField("_width", tl.width * 2);
+                tubeBloomLight.SetPrivateField("_length", tl.length);
+                tubeBloomLight.SetPrivateField("_center", tl.center);
+                tubeBloomLight.SetPrivateField("_transform", tubeBloomLight.transform);
+                var parabox = tubeBloomLight.GetComponentInChildren<ParametricBoxController>();
+                parabox.GetComponent<MeshRenderer>().enabled = false;
+                tubeBloomLight.SetPrivateField("_parametricBoxController", parabox);
+                var parasprite = tubeBloomLight.GetComponentInChildren<Parametric3SliceSpriteController>();
+                tubeBloomLight.SetPrivateField("_dynamic3SliceSprite", parasprite);
+                parasprite.Init();
+                parasprite.GetComponent<MeshRenderer>().enabled = false;
+                
                 tubeBloomLight.color = tl.color;
-
-                var prop = typeof(BloomPrePassLight).GetField("_ID", BindingFlags.NonPublic | BindingFlags.Instance);
+                tubeBloomLight.transform.localPosition = Vector3.zero;
+                
+                var prop = typeof(BSLight).GetField("_ID", BindingFlags.NonPublic | BindingFlags.Instance);
                 prop.SetValue(tubeBloomLight, (int)tl.lightsID);
+
+                tubeBloomLight.InvokePrivateMethod("OnDisable", new object[0]);
 
                 tbppLights.Add(tubeBloomLight);
                 tubeLightDescriptors.Add(tl);
@@ -117,13 +135,15 @@ namespace CustomFloorPlugin
 
         public static void UpdateEventTubeLightList()
         {
+            BSLight[] allLights = GameObject.FindObjectsOfType<BSLight>();
+
             LightSwitchEventEffect[] lightSwitchEvents = Resources.FindObjectsOfTypeAll<LightSwitchEventEffect>();
             foreach (LightSwitchEventEffect switchEffect in lightSwitchEvents)
             {
                 ReflectionUtil.SetPrivateField(
                     switchEffect,
                     "_lights",
-                    BloomPrePass.GetLightsWithID(ReflectionUtil.GetPrivateField<int>(switchEffect, "_lightsID"))
+                    allLights.Where(x => x.ID == switchEffect.LightsID).ToArray()
                 );
             }
             

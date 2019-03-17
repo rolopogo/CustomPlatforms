@@ -24,7 +24,7 @@ namespace CustomFloorPlugin
         private ArrayList rotatingLasers;
         private ArrayList trackLights;
 
-        public bool showFeetOverride = false;
+        public static bool showFeetOverride = false;
 
         /// <summary>
         /// Hide and unhide world objects as required by a platform

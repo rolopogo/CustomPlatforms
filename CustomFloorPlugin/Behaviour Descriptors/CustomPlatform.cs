@@ -20,5 +20,10 @@ namespace CustomFloorPlugin
         public bool hideDoubleColorLasers = false;
         public bool hideRotatingLasers = false;
         public bool hideTrackLights = false;
+
+        public void Awake()
+        {
+            gameObject.SetActive(false);
+        }
     }
 }

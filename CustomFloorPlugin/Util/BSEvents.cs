@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using CustomUI.Utilities;
 
 namespace CustomFloorPlugin.Util
 {
@@ -11,9 +12,8 @@ namespace CustomFloorPlugin.Util
 
         /* TODO
          * -Right/Left Hand Block Slice
--Level Complete (We have level failed but it only triggers on failure)
--New HighScore
-*/
+         * -New HighScore
+         */
 
         //Scene Events
         public static event Action menuSceneLoaded;
@@ -33,7 +33,7 @@ namespace CustomFloorPlugin.Util
         public static event Action<StandardLevelScenesTransitionSetupDataSO, LevelCompletionResults> levelQuit;
         public static event Action<StandardLevelScenesTransitionSetupDataSO, LevelCompletionResults> levelFailed;
         public static event Action<StandardLevelScenesTransitionSetupDataSO, LevelCompletionResults> levelRestarted;
-
+        
         public static event Action<NoteData, NoteCutInfo, int> noteWasCut;
         public static event Action<NoteData, int> noteWasMissed;
         public static event Action<int, float> multiplierDidChange;
@@ -42,7 +42,8 @@ namespace CustomFloorPlugin.Util
         public static event Action comboDidBreak;
         public static event Action<int> scoreDidChange;
         public static event Action<float> energyDidChange;
-        
+        public static event Action energyReachedZero;
+
         public static event Action<BeatmapEventData> beatmapEvent;
 
         public static event Action<Saber.SaberType> sabersStartCollide;
@@ -139,14 +140,15 @@ namespace CustomFloorPlugin.Util
             saberCollisionManager.sparkleEffectDidEndEvent += delegate (Saber.SaberType saber) { InvokeAll(sabersEndCollide, saber); };
 
             var gameEnergyCounter = Resources.FindObjectsOfTypeAll<GameEnergyCounter>().FirstOrDefault();
-            gameEnergyCounter.gameEnergyDidReach0Event += delegate() { InvokeAll(levelFailed); };
+            gameEnergyCounter.gameEnergyDidReach0Event += delegate() { InvokeAll(energyReachedZero); };
             gameEnergyCounter.gameEnergyDidChangeEvent += delegate (float energy) { InvokeAll(energyDidChange, energy); };
 
             var beatmapObjectCallbackController = Resources.FindObjectsOfTypeAll<BeatmapObjectCallbackController>().FirstOrDefault();
             beatmapObjectCallbackController.beatmapEventDidTriggerEvent += delegate (BeatmapEventData songEvent) { InvokeAll(beatmapEvent, songEvent); };
 
             var transitionSetup = Resources.FindObjectsOfTypeAll<StandardLevelScenesTransitionSetupDataSO>().FirstOrDefault();
-            transitionSetup.didFinishEvent += delegate (StandardLevelScenesTransitionSetupDataSO data, LevelCompletionResults results) {
+            transitionSetup.didFinishEvent += delegate (StandardLevelScenesTransitionSetupDataSO data, LevelCompletionResults results) 
+            {
                 switch (results.levelEndStateType) {
                     case LevelCompletionResults.LevelEndStateType.Cleared:
                         InvokeAll(levelCleared, data, results);
@@ -198,6 +200,7 @@ namespace CustomFloorPlugin.Util
                 }
             }
         }
+          
         public void InvokeAll<T>(Action<T> action, params object[] args)
         {
             if (action == null) return;

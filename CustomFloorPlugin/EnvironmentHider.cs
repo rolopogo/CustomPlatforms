@@ -9,7 +9,7 @@ namespace CustomFloorPlugin
     /// <summary> 
     /// Activates and deactivates world geometry in the active scene as required by CustomPlatforms
     /// </summary>
-    class EnvironmentHider
+    public class EnvironmentHider
     {
         private ArrayList feet;
         private ArrayList originalPlatform;

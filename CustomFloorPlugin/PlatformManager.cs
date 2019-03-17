@@ -144,7 +144,7 @@ namespace CustomFloorPlugin
             ChangeToPlatform(platformIndex - 1);
         }
 
-        public void ChangeToPlatform(int index)
+        public void ChangeToPlatform(int index, bool save = true)
         {
             // Hide current Platform
             currentPlatform.gameObject.SetActive(false);
@@ -153,7 +153,8 @@ namespace CustomFloorPlugin
             platformIndex = index % platforms.Length;
             
             // Save path into ModPrefs
-            ModPrefs.SetString(CustomFloorPlugin.PluginName, "CustomPlatformPath", currentPlatform.platName + currentPlatform.platAuthor);
+            if (save)
+                ModPrefs.SetString(CustomFloorPlugin.PluginName, "CustomPlatformPath", currentPlatform.platName + currentPlatform.platAuthor);
             
             // Show new platform
             currentPlatform.gameObject.SetActive(true);

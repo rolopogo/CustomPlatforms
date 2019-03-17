@@ -1,6 +1,7 @@
 ﻿using CustomFloorPlugin.Util;
 using System.Collections.Generic;
 using UnityEngine;
+using CustomUI.Utilities;
 
 namespace CustomFloorPlugin
 {
@@ -13,7 +14,7 @@ namespace CustomFloorPlugin
         {
             foreach (LightRotationEventEffect rotEffect in lightRotationEffects)
             {
-                BSEvents.beatmapEvent += delegate (BeatmapEventData data) { rotEffect.InvokePrivateMethod("HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger", new object[] { data }); };
+                BSEvents.beatmapEvent += rotEffect.HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger;
             }
             BSEvents.menuSceneLoaded += HandleSceneChange;
             BSEvents.gameSceneLoaded += HandleSceneChange;
@@ -24,7 +25,7 @@ namespace CustomFloorPlugin
         {
             foreach (LightRotationEventEffect rotEffect in lightRotationEffects)
             {
-                BSEvents.beatmapEvent -= delegate (BeatmapEventData data) { rotEffect.InvokePrivateMethod("HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger", new object[] { data }); };
+                BSEvents.beatmapEvent -= rotEffect.HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger;
             }
             BSEvents.menuSceneLoaded -= HandleSceneChange;
             BSEvents.gameSceneLoaded -= HandleSceneChange;

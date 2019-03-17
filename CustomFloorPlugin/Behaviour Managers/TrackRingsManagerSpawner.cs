@@ -1,9 +1,7 @@
-﻿using System;
+﻿using CustomFloorPlugin.Util;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using CustomUI.Utilities;
 
 namespace CustomFloorPlugin
 {
@@ -13,16 +11,17 @@ namespace CustomFloorPlugin
         public List<TrackLaneRingsManager> trackLaneRingsManagers;
         List<TrackLaneRingsRotationEffectSpawner> rotationSpawners;
         List<TrackLaneRingsPositionStepEffectSpawner> stepSpawners;
-
-        private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
-        {
-            FindBeatMapEventController();
-        }
-
+        
         private void OnEnable()
         {
-            BSSceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
-            FindBeatMapEventController();
+            foreach (TrackLaneRingsRotationEffectSpawner spawner in rotationSpawners)
+            {
+                BSEvents.beatmapEvent += spawner.HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger;
+            }
+            foreach (TrackLaneRingsPositionStepEffectSpawner spawner in stepSpawners)
+            {
+                BSEvents.beatmapEvent += spawner.HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger;
+            }
         }
 
         private void Start()
@@ -40,7 +39,14 @@ namespace CustomFloorPlugin
 
         private void OnDisable()
         {
-            BSSceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
+            foreach (TrackLaneRingsRotationEffectSpawner spawner in rotationSpawners)
+            {
+                BSEvents.beatmapEvent -= spawner.HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger;
+            }
+            foreach (TrackLaneRingsPositionStepEffectSpawner spawner in stepSpawners)
+            {
+                BSEvents.beatmapEvent -= spawner.HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger;
+            }
         }
 
         public void CreateTrackRings(GameObject go)
@@ -99,23 +105,6 @@ namespace CustomFloorPlugin
                     ReflectionUtil.SetPrivateField(stepEffectSpawner, "_maxPositionStep", trackRingDesc.maxPositionStep);
                     ReflectionUtil.SetPrivateField(stepEffectSpawner, "_moveSpeed", trackRingDesc.moveSpeed);
                 }
-            }
-        }
-
-        public void FindBeatMapEventController()
-        {
-            BeatmapObjectCallbackController _beatmapObjectCallbackController = Resources.FindObjectsOfTypeAll<BeatmapObjectCallbackController>().FirstOrDefault();
-            if (_beatmapObjectCallbackController == null) return;
-
-            foreach (TrackLaneRingsRotationEffectSpawner spawner in rotationSpawners)
-            {
-                ReflectionUtil.SetPrivateField(spawner, "_beatmapObjectCallbackController", _beatmapObjectCallbackController);
-                _beatmapObjectCallbackController.beatmapEventDidTriggerEvent += spawner.HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger;
-            }
-            foreach (TrackLaneRingsPositionStepEffectSpawner spawner in stepSpawners)
-            {
-                ReflectionUtil.SetPrivateField(spawner, "_beatmapObjectCallbackController", _beatmapObjectCallbackController);
-                _beatmapObjectCallbackController.beatmapEventDidTriggerEvent += spawner.HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger;
             }
         }
     }

@@ -47,22 +47,25 @@ namespace CustomFloorPlugin
             // Populate the platforms array
             for (int i = 0; i < allBundlePaths.Length; i++)
             {
-                AssetBundle bundle = AssetBundle.LoadFromFile(allBundlePaths[i]);
-                if(bundle == null) continue;
-                
-                Log("Loading: " + Path.GetFileName(allBundlePaths[i]));
-
-                CustomPlatform newPlatform = LoadPlatform(bundle, parent);
-
-                if(newPlatform != null)
-                {
-                    platforms.Add(newPlatform);
-                    bundlePaths.Add(allBundlePaths[i]);
-                    Log("Loaded: " + newPlatform.name);
-                }
+                CustomPlatform newPlatform = LoadPlatformBundle(allBundlePaths[i],parent);
             }
 
             return platforms.ToArray();
+        }
+
+        public CustomPlatform LoadPlatformBundle(string bundlePath, Transform parent)
+        {
+            AssetBundle bundle = AssetBundle.LoadFromFile(bundlePath);
+            if (bundle == null) return null;
+            
+            CustomPlatform newPlatform = LoadPlatform(bundle, parent);
+            if (newPlatform != null)
+            {
+                bundlePaths.Add(bundlePath);
+                platforms.Add(newPlatform);
+                Log("Loaded: " + newPlatform.name);
+            }
+            return newPlatform;
         }
         
         /// <summary>

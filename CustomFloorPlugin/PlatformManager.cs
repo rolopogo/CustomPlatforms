@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using UnityEngine.SceneManagement;
 using IllusionPlugin;
 using CustomFloorPlugin.Util;
 
@@ -46,7 +44,7 @@ namespace CustomFloorPlugin
             platformLoader = new PlatformLoader();
 
             BSEvents.gameSceneLoaded += HandleGameSceneLoaded;
-            BSEvents.menuSceneLoaded += HandleMenuSceneLoadedFresh;
+            BSEvents.menuSceneLoadedFresh += HandleMenuSceneLoadedFresh;
             BSEvents.menuSceneLoaded += HandleMenuSceneLoaded;
             
             RefreshPlatforms();
@@ -54,6 +52,18 @@ namespace CustomFloorPlugin
             HandleMenuSceneLoadedFresh();
             
             PlatformUI.OnLoad();
+        }
+
+        public CustomPlatform AddPlatform(string path)
+        {
+            CustomPlatform newPlatform = platformLoader.LoadPlatformBundle(path, transform);
+            if(newPlatform != null)
+            {
+                var platList = platforms.ToList();
+                platList.Add(newPlatform);
+                platforms = platList.ToArray();
+            }
+            return newPlatform;
         }
 
         public void RefreshPlatforms()
@@ -92,11 +102,10 @@ namespace CustomFloorPlugin
             EnvironmentArranger.RearrangeEnvironment();
             TubeLightManager.CreateAdditionalLightSwitchControllers();
             TubeLightManager.UpdateEventTubeLightList();
-            SetCameraMask();
         }
 
         private void HandleMenuSceneLoadedFresh()
-        {
+        {   
             menuEnvHider.FindEnvironment();
             HandleMenuSceneLoaded();
         }
@@ -104,15 +113,8 @@ namespace CustomFloorPlugin
         private void HandleMenuSceneLoaded()
         {
             menuEnvHider.HideObjectsForPlatform(currentPlatform);
-            SetCameraMask();
         }
-
-        private void SetCameraMask()
-        {
-            Camera.main.cullingMask &= ~(1 << CameraVisibilityManager.OnlyInThirdPerson);
-            Camera.main.cullingMask |= 1 << CameraVisibilityManager.OnlyInHeadset;
-        }
-
+        
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.P))
@@ -161,6 +163,7 @@ namespace CustomFloorPlugin
 
             // Hide environment for new platform
             menuEnvHider.HideObjectsForPlatform(currentPlatform);
+            gameEnvHider.HideObjectsForPlatform(currentPlatform);
 
             // Update lightSwitchEvent TubeLight references
             TubeLightManager.UpdateEventTubeLightList();

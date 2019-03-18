@@ -48,11 +48,13 @@ namespace CustomFloorPlugin.Util
 
         public static event Action<Saber.SaberType> sabersStartCollide;
         public static event Action<Saber.SaberType> sabersEndCollide;
-        
+
         const string Menu = "MenuCore";
         const string Game = "GameCore";
         const string EmptyTransition = "EmptyTransition";
-        
+
+        GameScenesManager gameScenesManager;
+
         public static void OnLoad()
         {
             if (Instance != null) return;
@@ -78,23 +80,31 @@ namespace CustomFloorPlugin.Util
                 {
                     InvokeAll(gameSceneActive);
 
-                    var sceneManager = Resources.FindObjectsOfTypeAll<GameScenesManager>().FirstOrDefault();
+                    gameScenesManager = Resources.FindObjectsOfTypeAll<GameScenesManager>().FirstOrDefault();
 
-                    if (sceneManager != null)
+                    if (gameScenesManager != null)
                     {
-                        sceneManager.transitionDidFinishEvent -= GameSceneSceneWasLoaded; // make sure we don't ever subscribe twice
-                        sceneManager.transitionDidFinishEvent += GameSceneSceneWasLoaded;
+                        gameScenesManager.transitionDidFinishEvent -= GameSceneSceneWasLoaded; 
+                        gameScenesManager.transitionDidFinishEvent += GameSceneSceneWasLoaded;
                     }
                 }
                 else if (arg1.name == Menu)
                 {
-                    if (arg0.name == EmptyTransition)
+                    gameScenesManager = Resources.FindObjectsOfTypeAll<GameScenesManager>().FirstOrDefault();
+                    
+                    if (gameScenesManager != null)
                     {
-                        OnMenuSceneWasLoadedFresh();
-                    }
-                    else
-                    {
-                        InvokeAll(menuSceneLoaded);
+                        
+                        if (arg0.name == EmptyTransition)
+                        {
+                            gameScenesManager.transitionDidFinishEvent -= OnMenuSceneWasLoadedFresh;
+                            gameScenesManager.transitionDidFinishEvent += OnMenuSceneWasLoadedFresh;
+                        }
+                        else
+                        {
+                            gameScenesManager.transitionDidFinishEvent -= OnMenuSceneWasLoaded; 
+                            gameScenesManager.transitionDidFinishEvent += OnMenuSceneWasLoaded;
+                        }
                     }
                 }
             }
@@ -104,8 +114,16 @@ namespace CustomFloorPlugin.Util
             }
         }
 
+        private void OnMenuSceneWasLoaded()
+        {
+            gameScenesManager.transitionDidFinishEvent -= GameSceneSceneWasLoaded;
+            InvokeAll(menuSceneLoaded);
+        }
+
         private void OnMenuSceneWasLoadedFresh()
         {
+            gameScenesManager.transitionDidFinishEvent -= GameSceneSceneWasLoaded;
+
             var levelDetailViewController = Resources.FindObjectsOfTypeAll<StandardLevelDetailViewController>().FirstOrDefault();
             levelDetailViewController.didChangeDifficultyBeatmapEvent += delegate (StandardLevelDetailViewController vc, IDifficultyBeatmap beatmap) { InvokeAll(difficultySelected, vc, beatmap); };
 

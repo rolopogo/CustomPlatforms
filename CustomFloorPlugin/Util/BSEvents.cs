@@ -116,13 +116,13 @@ namespace CustomFloorPlugin.Util
 
         private void OnMenuSceneWasLoaded()
         {
-            gameScenesManager.transitionDidFinishEvent -= GameSceneSceneWasLoaded;
+            gameScenesManager.transitionDidFinishEvent -= OnMenuSceneWasLoaded;
             InvokeAll(menuSceneLoaded);
         }
 
         private void OnMenuSceneWasLoadedFresh()
         {
-            gameScenesManager.transitionDidFinishEvent -= GameSceneSceneWasLoaded;
+            gameScenesManager.transitionDidFinishEvent -= OnMenuSceneWasLoadedFresh;
 
             var levelDetailViewController = Resources.FindObjectsOfTypeAll<StandardLevelDetailViewController>().FirstOrDefault();
             levelDetailViewController.didChangeDifficultyBeatmapEvent += delegate (StandardLevelDetailViewController vc, IDifficultyBeatmap beatmap) { InvokeAll(difficultySelected, vc, beatmap); };

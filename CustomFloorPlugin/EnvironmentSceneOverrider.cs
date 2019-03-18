@@ -16,10 +16,6 @@ namespace CustomFloorPlugin
         public static void GetSceneInfos()
         {
             var sceneInfos = Resources.FindObjectsOfTypeAll<SceneInfo>();
-            foreach (SceneInfo si in sceneInfos)
-            {
-                Console.WriteLine(si.name);
-            }
             envInfos = new Dictionary<EnvOverrideMode, EnvSceneInfo>();
             envInfos.Add(EnvOverrideMode.Default, new EnvSceneInfo("Default", sceneInfos.First(x => x.name == "DefaultEnvironmentSceneInfo")));
             envInfos.Add(EnvOverrideMode.Nice, new EnvSceneInfo("Nice", sceneInfos.First(x => x.name == "NiceEnvironmentSceneInfo")));
@@ -70,11 +66,15 @@ namespace CustomFloorPlugin
 
         public static float[] OverrideModes()
         {
-            return envInfos.Keys.Select(x => (float)x).ToArray<float>();
+            List<float> floats = new List<float>();
+            floats.Add((float)EnvOverrideMode.Off);
+            floats.AddRange(envInfos.Keys.Select(x => (float)x));
+            return floats.ToArray();
         }
 
         public static string Name(EnvOverrideMode mode)
         {
+            if (mode == EnvOverrideMode.Off) return "Off";
             return envInfos[mode].displayName;
         }
     }

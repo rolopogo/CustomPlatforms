@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine;
 
 namespace CustomFloorPlugin
 {
@@ -26,8 +20,6 @@ namespace CustomFloorPlugin
 
         private static void RearrangeClassic()
         {
-            Console.WriteLine("rearranging");
-            SceneDumper.DumpScene2();
             TryMove("RotatingLaserLeft0", new Vector3(-8, 0, 45));
             TryMove("RotatingLaserLeft1", new Vector3(-8, 0, 40));
             TryMove("RotatingLaserLeft2", new Vector3(-8, 0, 35));

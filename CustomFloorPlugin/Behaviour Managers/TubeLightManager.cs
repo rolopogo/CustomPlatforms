@@ -97,7 +97,7 @@ namespace CustomFloorPlugin
                 
                 var prop = typeof(BSLight).GetField("_ID", BindingFlags.NonPublic | BindingFlags.Instance);
                 prop.SetValue(tubeBloomLight, (int)tl.lightsID);
-
+                
                 tubeBloomLight.InvokePrivateMethod("OnDisable", new object[0]);
 
                 tbppLights.Add(tubeBloomLight);

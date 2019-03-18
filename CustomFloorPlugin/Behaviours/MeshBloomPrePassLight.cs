@@ -6,11 +6,11 @@
 [RequireComponent(typeof(MeshRenderer))]
 public class MeshBloomPrePassLight : TubeBloomPrePassLight
 {
-    Material material;
+    public Renderer renderer;
 
     public void Init(Renderer renderer)
     {
-        material = renderer.material;
+        this.renderer = renderer;
     }
 
     protected override void OnEnable()
@@ -28,13 +28,13 @@ public class MeshBloomPrePassLight : TubeBloomPrePassLight
         set
         {
             base.color = value;
-            material.color = value;
+            if(renderer.material!=null) renderer.material.color = value;
         }
     }
 
     public override void Refresh()
     {
         base.Refresh();
-        material.color = color;
+        renderer.material.color = color;
     }
 }

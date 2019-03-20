@@ -9,15 +9,11 @@ namespace CustomFloorPlugin.Util
     class BSEvents : MonoBehaviour
     {
         static BSEvents Instance;
-
-        /* TODO
-         * -Right/Left Hand Block Slice
-         * -New HighScore
-         */
-
+        
         //Scene Events
+        public static event Action menuSceneActive; 
         public static event Action menuSceneLoaded;
-        public static event Action menuSceneLoadedFresh; // bool?
+        public static event Action menuSceneLoadedFresh;
         public static event Action gameSceneActive;
         public static event Action gameSceneLoaded;
 
@@ -91,7 +87,9 @@ namespace CustomFloorPlugin.Util
                 else if (arg1.name == Menu)
                 {
                     gameScenesManager = Resources.FindObjectsOfTypeAll<GameScenesManager>().FirstOrDefault();
-                    
+
+                    InvokeAll(menuSceneActive);
+
                     if (gameScenesManager != null)
                     {
                         

@@ -12,7 +12,7 @@ namespace CustomFloorPlugin
     public class CustomFloorPlugin : IPlugin
     {
         public string Name => "Custom Platforms";
-        public string Version => "2.7.0";
+        public string Version => "2.7.2";
 
         static CustomFloorPlugin Instance;
         private bool init = false;
@@ -31,7 +31,7 @@ namespace CustomFloorPlugin
             BSEvents.OnLoad();
             BSEvents.menuSceneLoadedFresh += OnMenuSceneLoadedFresh;
 
-            Application.logMessageReceived += LogCallback;
+            //Application.logMessageReceived += LogCallback;
         }
 
         private void OnMenuSceneLoadedFresh()

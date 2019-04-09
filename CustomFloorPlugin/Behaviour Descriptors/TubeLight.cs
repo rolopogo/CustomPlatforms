@@ -1,6 +1,9 @@
-﻿using System;
+﻿using CustomFloorPlugin.Util;
+using CustomUI.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using UnityEngine;
 
@@ -43,6 +46,83 @@ namespace CustomFloorPlugin
             Gizmos.matrix = transform.localToWorldMatrix;
             Vector3 cubeCenter = Vector3.up * (0.5f - center) * length;
             Gizmos.DrawCube(cubeCenter, new Vector3(2 * width, length, 2 * width));
+        }
+
+        // ----------------
+
+        private TubeBloomPrePassLight tubeBloomLight;
+
+        private void Awake()
+        {
+            var prefab = Resources.FindObjectsOfTypeAll<TubeBloomPrePassLight>().First(x => x.name == "Neon");
+            
+            TubeLight[] localDescriptors = GetComponentsInChildren<TubeLight>(true);
+
+            if (localDescriptors == null) return;
+
+            TubeLight tl = this;
+            
+            tubeBloomLight = Instantiate(prefab);
+            tubeBloomLight.transform.SetParent(tl.transform);
+            tubeBloomLight.transform.localRotation = Quaternion.identity;
+            tubeBloomLight.transform.localPosition = Vector3.zero;
+            tubeBloomLight.transform.localScale = new Vector3(1 / tl.transform.lossyScale.x, 1 / tl.transform.lossyScale.y, 1 / tl.transform.lossyScale.z);
+
+            if (tl.GetComponent<MeshFilter>().mesh.vertexCount == 0)
+            {
+                tl.GetComponent<MeshRenderer>().enabled = false;
+            }
+            else
+            {
+                // swap for MeshBloomPrePassLight
+                MeshBloomPrePassLight meshbloom = ReflectionUtil.CopyComponent(tubeBloomLight, typeof(TubeBloomPrePassLight), typeof(MeshBloomPrePassLight), tubeBloomLight.gameObject) as MeshBloomPrePassLight;
+                meshbloom.Init(tl.GetComponent<Renderer>());
+                Destroy(tubeBloomLight);
+                tubeBloomLight = meshbloom;
+            }
+
+            tubeBloomLight.SetPrivateField("_width", tl.width * 2);
+            tubeBloomLight.SetPrivateField("_length", tl.length);
+            tubeBloomLight.SetPrivateField("_center", tl.center);
+            tubeBloomLight.SetPrivateField("_transform", tubeBloomLight.transform);
+            var parabox = tubeBloomLight.GetComponentInChildren<ParametricBoxController>();
+            //parabox.GetComponent<MeshRenderer>().enabled = false;
+            tubeBloomLight.SetPrivateField("_parametricBoxController", parabox);
+            var parasprite = tubeBloomLight.GetComponentInChildren<Parametric3SliceSpriteController>();
+            tubeBloomLight.SetPrivateField("_dynamic3SliceSprite", parasprite);
+            parasprite.Init();
+            parasprite.GetComponent<MeshRenderer>().enabled = false;
+
+            tubeBloomLight.color = tl.color;
+            tubeBloomLight.transform.localPosition = Vector3.zero;
+
+            var prop = typeof(BSLight).GetField("_ID", BindingFlags.NonPublic | BindingFlags.Instance);
+            prop.SetValue(tubeBloomLight, (int)tl.lightsID);
+
+            //tubeBloomLight.InvokePrivateMethod("OnDisable", new object[0]);
+            tubeBloomLight.Refresh();
+            TubeLightManager.UpdateEventTubeLightList();
+        }
+
+
+        private void OnEnable()
+        {
+            BSEvents.menuSceneLoaded += SetColorToDefault;
+            BSEvents.menuSceneLoadedFresh += SetColorToDefault;
+            SetColorToDefault();
+            tubeBloomLight.Refresh();
+        }
+
+        private void OnDisable()
+        {
+            BSEvents.menuSceneLoaded -= SetColorToDefault;
+            BSEvents.menuSceneLoadedFresh -= SetColorToDefault;
+        }
+
+        private void SetColorToDefault()
+        {
+            tubeBloomLight.color = color;
+            tubeBloomLight.Refresh();
         }
     }
 }

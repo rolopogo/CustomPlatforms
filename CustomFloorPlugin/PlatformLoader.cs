@@ -134,6 +134,7 @@ namespace CustomFloorPlugin
             // Replace materials for this object
             MaterialSwapper.ReplaceMaterialsForGameObject(go);
             
+            /*
             // Add a tube light manager if there are tube light descriptors
             if (go.GetComponentInChildren<TubeLight>(true) != null)
             {
@@ -141,6 +142,7 @@ namespace CustomFloorPlugin
                 if(tlm == null) tlm = root.AddComponent<TubeLightManager>();
                 tlm.CreateTubeLights(go);
             }
+            */
             
             // Rotation effect manager
             if (go.GetComponentInChildren<RotationEventEffect>(true) != null)
@@ -172,7 +174,6 @@ namespace CustomFloorPlugin
                 foreach (Spectrogram spec in go.GetComponentsInChildren<Spectrogram>(true))
                 {
                     GameObject colPrefab = spec.columnPrefab;
-
                     AddManagers(colPrefab, root);
                 }
 

@@ -63,7 +63,7 @@ namespace CustomFloorPlugin
             {
                 bundlePaths.Add(bundlePath);
                 platforms.Add(newPlatform);
-                Log("Loaded: " + newPlatform.name);
+                Plugin.logger.Info("Loaded: " + newPlatform.name);
             }
             return newPlatform;
         }
@@ -78,7 +78,7 @@ namespace CustomFloorPlugin
             GameObject platformPrefab = bundle.LoadAsset<GameObject>("_CustomPlatform");
             if (platformPrefab == null)
             {
-                Log("Assetbundle didnt contain a Custom Platform");
+                Plugin.logger.Info("Assetbundle didnt contain a Custom Platform");
                 return null;
             }
 
@@ -95,7 +95,7 @@ namespace CustomFloorPlugin
                 global::CustomPlatform legacyPlatform = newPlatform.GetComponent<global::CustomPlatform>();
                 if(legacyPlatform != null)
                 {
-                    Log("legacy version of customPlatform detected, updating");
+                    Plugin.logger.Info("legacy version of customPlatform detected, updating");
                     // Replace legacyplatform component with up to date one
                     customPlatform = newPlatform.AddComponent<CustomPlatform>();
                     customPlatform.platName = legacyPlatform.platName;
@@ -107,7 +107,7 @@ namespace CustomFloorPlugin
                 else
                 {
                     // no customplatform component, abort
-                    Log("Loaded object had no customplatform attached, skipping");
+                    Plugin.logger.Info("Loaded object had no customplatform attached, skipping");
                     GameObject.Destroy(newPlatform);
                     return null;
                 }
@@ -217,11 +217,6 @@ namespace CustomFloorPlugin
                     pem._EventManager = em;
                 }
             }
-        }
-        
-        private static void Log(string s)
-        {
-            Console.WriteLine("[PlatLoader] " + s);
-        }
+        }        
     }
 }

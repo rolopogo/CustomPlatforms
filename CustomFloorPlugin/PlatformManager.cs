@@ -1,7 +1,5 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Linq;
-using IllusionPlugin;
 using CustomFloorPlugin.Util;
 
 namespace CustomFloorPlugin
@@ -34,8 +32,8 @@ namespace CustomFloorPlugin
 
         private void Start()
         {
-            EnvironmentArranger.arrangement = (EnvironmentArranger.Arrangement)ModPrefs.GetInt(CustomFloorPlugin.PluginName, "EnvironmentArrangement", 0, true);
-            EnvironmentSceneOverrider.overrideMode = (EnvironmentSceneOverrider.EnvOverrideMode)ModPrefs.GetInt(CustomFloorPlugin.PluginName, "EnvironmentOverrideMode", 0, true);
+            EnvironmentArranger.arrangement = (EnvironmentArranger.Arrangement)Plugin.config.GetInt("Settings", "EnvironmentArrangement", 0, true);
+            EnvironmentSceneOverrider.overrideMode = (EnvironmentSceneOverrider.EnvOverrideMode)Plugin.config.GetInt("Settings", "EnvironmentOverrideMode", 0, true);
             EnvironmentSceneOverrider.GetSceneInfos();
             EnvironmentSceneOverrider.OverrideEnvironmentScene();
 
@@ -78,9 +76,9 @@ namespace CustomFloorPlugin
             platforms = platformLoader.CreateAllPlatforms(transform);
 
             // Retrieve saved path from player prefs if it exists
-            if (ModPrefs.HasKey(CustomFloorPlugin.PluginName, "CustomPlatformPath"))
+            if (Plugin.config.HasKey("Data", "CustomPlatformPath"))
             {
-                string savedPath = ModPrefs.GetString(CustomFloorPlugin.PluginName, "CustomPlatformPath");
+                string savedPath = Plugin.config.GetString("Data", "CustomPlatformPath");
                 // Check if this path was loaded and update our platform index
                 for (int i = 0; i < platforms.Length; i++)
                 {
@@ -156,7 +154,7 @@ namespace CustomFloorPlugin
             
             // Save path into ModPrefs
             if (save)
-                ModPrefs.SetString(CustomFloorPlugin.PluginName, "CustomPlatformPath", currentPlatform.platName + currentPlatform.platAuthor);
+                Plugin.config.SetString("Data", "CustomPlatformPath", currentPlatform.platName + currentPlatform.platAuthor);
             
             // Show new platform
             currentPlatform.gameObject.SetActive(true);

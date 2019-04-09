@@ -161,9 +161,9 @@ namespace CustomFloorPlugin
 
             // Menu
             FindAddGameObject("Wrapper/NearBuildingRight (1)", towers);
-            FindAddGameObject("Wrapper/Environment/Static/NearBuildingLeft (1)", towers);
-            FindAddGameObject("Wrapper/Environment/Static/NearBuildingLeft", towers);
-            FindAddGameObject("Wrapper/Environment/Static/NearBuildingRight", towers);
+            FindAddGameObject("Wrapper/NearBuildingLeft (1)", towers);
+            FindAddGameObject("Wrapper/NearBuildingLeft", towers);
+            FindAddGameObject("Wrapper/NearBuildingRight", towers);
 
             // Monstercat
             FindAddGameObject("Environment/Static/MonstercatLogoL", towers);

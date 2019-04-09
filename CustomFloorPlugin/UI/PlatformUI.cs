@@ -1,5 +1,4 @@
 ﻿using HMUI;
-using IllusionPlugin;
 using UnityEngine;
 using CustomUI.MenuButton;
 using CustomUI.Settings;
@@ -60,7 +59,7 @@ namespace CustomFloorPlugin
             feetMenu.SetValue += delegate (bool value)
             {
                 EnvironmentHider.showFeetOverride = value;
-                ModPrefs.SetBool(CustomFloorPlugin.PluginName, "AlwaysShowFeet", EnvironmentHider.showFeetOverride);
+                Plugin.config.SetBool("Settings", "AlwaysShowFeet", EnvironmentHider.showFeetOverride);
             };
             
             var environment = subMenu.AddList("Environment Override", EnvironmentSceneOverrider.OverrideModes());
@@ -72,7 +71,7 @@ namespace CustomFloorPlugin
             {
                 EnvironmentSceneOverrider.overrideMode = (EnvironmentSceneOverrider.EnvOverrideMode)value;
                 EnvironmentSceneOverrider.OverrideEnvironmentScene();
-                ModPrefs.SetInt(CustomFloorPlugin.PluginName, "EnvironmentOverrideMode", (int)EnvironmentSceneOverrider.overrideMode);
+                Plugin.config.SetInt("Settings", "EnvironmentOverrideMode", (int)EnvironmentSceneOverrider.overrideMode);
             };
             environment.FormatValue += delegate (float value) { return EnvironmentSceneOverrider.Name((EnvironmentSceneOverrider.EnvOverrideMode)value); };
             
@@ -84,7 +83,7 @@ namespace CustomFloorPlugin
             arrangement.SetValue += delegate (float value)
             {
                 EnvironmentArranger.arrangement = (EnvironmentArranger.Arrangement)value;
-                ModPrefs.SetInt(CustomFloorPlugin.PluginName, "EnvironmentArrangement", (int)EnvironmentArranger.arrangement);
+                Plugin.config.SetInt("Settings", "EnvironmentArrangement", (int)EnvironmentArranger.arrangement);
             };
             arrangement.FormatValue += delegate (float value) { return EnvironmentArranger.Name((EnvironmentArranger.Arrangement)value); };
             

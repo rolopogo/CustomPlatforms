@@ -64,7 +64,10 @@ namespace CustomFloorPlugin
             foreach (TubeLight tl in localDescriptors)
             {
                 TubeBloomPrePassLight tubeBloomLight;
-                tubeBloomLight = Instantiate(prefab, tl.transform);
+                tubeBloomLight = Instantiate(prefab);
+                tubeBloomLight.transform.SetParent(tl.transform);
+                tubeBloomLight.transform.localRotation = Quaternion.identity;
+                tubeBloomLight.transform.localPosition = Vector3.zero;
                 tubeBloomLight.transform.localScale = new Vector3(1 / tl.transform.lossyScale.x, 1 / tl.transform.lossyScale.y, 1 / tl.transform.lossyScale.z);
 
                 if (tl.GetComponent<MeshFilter>().mesh.vertexCount == 0)
@@ -129,7 +132,7 @@ namespace CustomFloorPlugin
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Plugin.logger.Error(e);
             }
         }
 

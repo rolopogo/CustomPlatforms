@@ -63,7 +63,7 @@ namespace CustomFloorPlugin
                 }
             } catch (Exception e)
             {
-                Console.WriteLine(e);
+                Plugin.logger.Error(e);
             }
         }
     }

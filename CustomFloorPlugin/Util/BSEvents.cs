@@ -9,9 +9,9 @@ namespace CustomFloorPlugin.Util
     class BSEvents : MonoBehaviour
     {
         static BSEvents Instance;
-        
+
         //Scene Events
-        public static event Action menuSceneActive; 
+        public static event Action menuSceneActive;
         public static event Action menuSceneLoaded;
         public static event Action menuSceneLoadedFresh;
         public static event Action gameSceneActive;
@@ -21,6 +21,7 @@ namespace CustomFloorPlugin.Util
         public static event Action<StandardLevelDetailViewController, IDifficultyBeatmap> difficultySelected;
         public static event Action<BeatmapCharacteristicSegmentedControlController, BeatmapCharacteristicSO> characteristicSelected;
         public static event Action<LevelPacksViewController, IBeatmapLevelPack> levelPackSelected;
+        public static event Action<LevelPackLevelsViewController, IBeatmapLevel> levelSelected;
 
         // Game Events
         public static event Action songPaused;
@@ -29,7 +30,7 @@ namespace CustomFloorPlugin.Util
         public static event Action<StandardLevelScenesTransitionSetupDataSO, LevelCompletionResults> levelQuit;
         public static event Action<StandardLevelScenesTransitionSetupDataSO, LevelCompletionResults> levelFailed;
         public static event Action<StandardLevelScenesTransitionSetupDataSO, LevelCompletionResults> levelRestarted;
-        
+
         public static event Action<NoteData, NoteCutInfo, int> noteWasCut;
         public static event Action<NoteData, int> noteWasMissed;
         public static event Action<int, float> multiplierDidChange;
@@ -80,7 +81,7 @@ namespace CustomFloorPlugin.Util
 
                     if (gameScenesManager != null)
                     {
-                        gameScenesManager.transitionDidFinishEvent -= GameSceneSceneWasLoaded; 
+                        gameScenesManager.transitionDidFinishEvent -= GameSceneSceneWasLoaded;
                         gameScenesManager.transitionDidFinishEvent += GameSceneSceneWasLoaded;
                     }
                 }
@@ -92,7 +93,7 @@ namespace CustomFloorPlugin.Util
 
                     if (gameScenesManager != null)
                     {
-                        
+
                         if (arg0.name == EmptyTransition)
                         {
                             gameScenesManager.transitionDidFinishEvent -= OnMenuSceneWasLoadedFresh;
@@ -100,7 +101,7 @@ namespace CustomFloorPlugin.Util
                         }
                         else
                         {
-                            gameScenesManager.transitionDidFinishEvent -= OnMenuSceneWasLoaded; 
+                            gameScenesManager.transitionDidFinishEvent -= OnMenuSceneWasLoaded;
                             gameScenesManager.transitionDidFinishEvent += OnMenuSceneWasLoaded;
                         }
                     }
@@ -130,6 +131,8 @@ namespace CustomFloorPlugin.Util
 
             var packSelectViewController = Resources.FindObjectsOfTypeAll<LevelPacksViewController>().FirstOrDefault();
             packSelectViewController.didSelectPackEvent += delegate (LevelPacksViewController controller, IBeatmapLevelPack pack) { InvokeAll(levelPackSelected, controller, pack); };
+            var levelSelectViewController = Resources.FindObjectsOfTypeAll<LevelPackLevelsViewController>().FirstOrDefault();
+            levelSelectViewController.didSelectLevelEvent += delegate (LevelPackLevelsViewController controller, IPreviewBeatmapLevel level) { InvokeAll(levelSelected, controller, level); };
 
             InvokeAll(menuSceneLoadedFresh);
         }
@@ -146,26 +149,27 @@ namespace CustomFloorPlugin.Util
             var scoreController = Resources.FindObjectsOfTypeAll<ScoreController>().FirstOrDefault();
             scoreController.noteWasCutEvent += delegate (NoteData noteData, NoteCutInfo noteCutInfo, int multiplier) { InvokeAll(noteWasCut, noteData, noteCutInfo, multiplier); };
             scoreController.noteWasMissedEvent += delegate (NoteData noteData, int multiplier) { InvokeAll(noteWasMissed, noteData, multiplier); }; ;
-            scoreController.multiplierDidChangeEvent += delegate(int multiplier, float progress) { InvokeAll(multiplierDidChange, multiplier, progress); if (multiplier > 1 && progress < 0.1f) InvokeAll(multiplierDidIncrease, multiplier); };
+            scoreController.multiplierDidChangeEvent += delegate (int multiplier, float progress) { InvokeAll(multiplierDidChange, multiplier, progress); if (multiplier > 1 && progress < 0.1f) InvokeAll(multiplierDidIncrease, multiplier); };
             scoreController.comboDidChangeEvent += delegate (int combo) { InvokeAll(comboDidChange, combo); };
             scoreController.comboBreakingEventHappenedEvent += delegate () { InvokeAll(comboDidBreak); };
             scoreController.scoreDidChangeEvent += delegate (int score) { InvokeAll(scoreDidChange); };
-            
+
             var saberCollisionManager = Resources.FindObjectsOfTypeAll<ObstacleSaberSparkleEffectManager>().FirstOrDefault();
             saberCollisionManager.sparkleEffectDidStartEvent += delegate (Saber.SaberType saber) { InvokeAll(sabersStartCollide, saber); };
             saberCollisionManager.sparkleEffectDidEndEvent += delegate (Saber.SaberType saber) { InvokeAll(sabersEndCollide, saber); };
 
             var gameEnergyCounter = Resources.FindObjectsOfTypeAll<GameEnergyCounter>().FirstOrDefault();
-            gameEnergyCounter.gameEnergyDidReach0Event += delegate() { InvokeAll(energyReachedZero); };
+            gameEnergyCounter.gameEnergyDidReach0Event += delegate () { InvokeAll(energyReachedZero); };
             gameEnergyCounter.gameEnergyDidChangeEvent += delegate (float energy) { InvokeAll(energyDidChange, energy); };
 
             var beatmapObjectCallbackController = Resources.FindObjectsOfTypeAll<BeatmapObjectCallbackController>().FirstOrDefault();
             beatmapObjectCallbackController.beatmapEventDidTriggerEvent += delegate (BeatmapEventData songEvent) { InvokeAll(beatmapEvent, songEvent); };
 
             var transitionSetup = Resources.FindObjectsOfTypeAll<StandardLevelScenesTransitionSetupDataSO>().FirstOrDefault();
-            transitionSetup.didFinishEvent += delegate (StandardLevelScenesTransitionSetupDataSO data, LevelCompletionResults results) 
+            transitionSetup.didFinishEvent += delegate (StandardLevelScenesTransitionSetupDataSO data, LevelCompletionResults results)
             {
-                switch (results.levelEndStateType) {
+                switch (results.levelEndStateType)
+                {
                     case LevelCompletionResults.LevelEndStateType.Cleared:
                         InvokeAll(levelCleared, data, results);
                         break;
@@ -184,7 +188,7 @@ namespace CustomFloorPlugin.Util
             InvokeAll(gameSceneLoaded);
         }
 
-        public void InvokeAll<T1,T2,T3>(Action<T1, T2, T3> action, params object[] args)
+        public void InvokeAll<T1, T2, T3>(Action<T1, T2, T3> action, params object[] args)
         {
             if (action == null) return;
             foreach (Delegate invoc in action.GetInvocationList())
@@ -216,7 +220,7 @@ namespace CustomFloorPlugin.Util
                 }
             }
         }
-          
+
         public void InvokeAll<T>(Action<T> action, params object[] args)
         {
             if (action == null) return;
@@ -233,7 +237,7 @@ namespace CustomFloorPlugin.Util
                 }
             }
         }
-        public void InvokeAll(Action action, params object[] args) 
+        public void InvokeAll(Action action, params object[] args)
         {
             if (action == null) return;
             foreach (Delegate invoc in action.GetInvocationList())
@@ -251,4 +255,3 @@ namespace CustomFloorPlugin.Util
         }
     }
 }
- 

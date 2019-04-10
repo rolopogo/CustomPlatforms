@@ -36,5 +36,6 @@ public class MeshBloomPrePassLight : TubeBloomPrePassLight
     {
         base.Refresh();
         renderer.material.color = color;
+        _parametricBoxController.enabled = false;
     }
 }

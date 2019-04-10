@@ -86,15 +86,13 @@ namespace CustomFloorPlugin
             tubeBloomLight.SetPrivateField("_center", tl.center);
             tubeBloomLight.SetPrivateField("_transform", tubeBloomLight.transform);
             var parabox = tubeBloomLight.GetComponentInChildren<ParametricBoxController>();
-            //parabox.GetComponent<MeshRenderer>().enabled = false;
             tubeBloomLight.SetPrivateField("_parametricBoxController", parabox);
             var parasprite = tubeBloomLight.GetComponentInChildren<Parametric3SliceSpriteController>();
             tubeBloomLight.SetPrivateField("_dynamic3SliceSprite", parasprite);
             parasprite.Init();
             parasprite.GetComponent<MeshRenderer>().enabled = false;
 
-            tubeBloomLight.color = tl.color;
-            tubeBloomLight.transform.localPosition = Vector3.zero;
+            tubeBloomLight.color = tl.color * 0.9f;
 
             var prop = typeof(BSLight).GetField("_ID", BindingFlags.NonPublic | BindingFlags.Instance);
             prop.SetValue(tubeBloomLight, (int)tl.lightsID);
@@ -121,7 +119,7 @@ namespace CustomFloorPlugin
 
         private void SetColorToDefault()
         {
-            tubeBloomLight.color = color;
+            tubeBloomLight.color = color * 0.9f;
             tubeBloomLight.Refresh();
         }
     }

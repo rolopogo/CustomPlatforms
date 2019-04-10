@@ -7,7 +7,7 @@ namespace CustomFloorPlugin
         public const int OnlyInThirdPerson = 3;
         public const int OnlyInHeadset = 4;
         
-        private void OnEnable()
+        public static void SetCameraMasks()
         {
             Camera.main.cullingMask &= ~(1 << OnlyInThirdPerson);
             Camera.main.cullingMask |= 1 << OnlyInHeadset;

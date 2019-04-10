@@ -38,6 +38,8 @@ namespace CustomFloorPlugin
             {
                 gameObject.layer = layer;
             }
+
+            CameraVisibilityManager.SetCameraMasks();
         }
 
         // Recursively set the layer of an object and all children in its hierarchy

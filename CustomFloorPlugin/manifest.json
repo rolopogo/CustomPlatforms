@@ -7,10 +7,10 @@
   "name": "Custom Platforms",
   "version": "2.8.0",
   "features": [
-    "no-update"
+    
   ],
   "dependsOn": {
     "BS Utils": "^1.2.3",
-	"CustomUI": "^1.5.3"
+	"CustomUI": "^1.5.4"
   },
 }

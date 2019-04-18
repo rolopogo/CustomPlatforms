@@ -77,8 +77,8 @@ namespace CustomFloorPlugin
                 // swap for MeshBloomPrePassLight
                 tubeBloomLight.gameObject.SetActive(false);
                 MeshBloomPrePassLight meshbloom = ReflectionUtil.CopyComponent(tubeBloomLight, typeof(TubeBloomPrePassLight), typeof(MeshBloomPrePassLight), tubeBloomLight.gameObject) as MeshBloomPrePassLight;
-                tubeBloomLight.gameObject.SetActive(true);
                 meshbloom.Init(tl.GetComponent<Renderer>());
+                tubeBloomLight.gameObject.SetActive(true);
                 Destroy(tubeBloomLight);
                 tubeBloomLight = meshbloom;
             }
